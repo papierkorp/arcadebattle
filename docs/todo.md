@@ -1,95 +1,94 @@
 # ToDo
 
+analyze the current available code and the docs and act like a scrum master to create a sprint to finish this projekt.
+break the tasks left into a few Epics but dont go too deep since i will know what to do with the epics
+
 Based on the current code and the read me file give me a guideline on how i proceed with the next steps in form of a short to do list to progress in the game development:
 
-LIST OF TO DOs
+I've analyzed the codebase and documentation for your Arcadebattle text-based RPG. Here's a sprint plan that organizes the remaining work into several focused epics to help you complete the project efficiently.
 
-- [Project/Game Structure](#project-game-structure)
-- [State System](#state-system)
-- [Player Management](#player-management)
-- [Skill Framework](#skill-framework)
-- [Battle State](#battle-state)
-- [Boss Progression](#boss-progression)
-- [Statistics & Progression Tracking](#statistics-progression-tracking)
-- [QOL Features](#qol-features)
-- [Game Balance/Configuration](#game-balance-json-configuration)
+# Current to do
 
-## Project / Game Structure
+If I were to identify the most critical tasks to focus on first, they would be:
 
-- basic game loop with exit handling
-- command parser with error handling
+1. **Complete the skill effect implementations** - This is crucial for battle mechanics
+- Complete the skill cost calculation functions in `balancing_calculation.go`
+- Implement the effect functions in `skilleffects.go` (currently they all just print "asdf")
+- Finish the skill upgrade functionality
+- Test skill effects in battle scenarios
+2. **Implement boss AI and battle logic** - Without this, the core gameplay loop doesn't function
+- Complete the boss AI in `bosses.go` (currently does nothing substantive)
+- Implement proper skill usage and effect application during battles
+- Add status effect handling for both player and bosses
+- Create the battle UI to clearly show what's happening each turn
+- Implement proper battle conclusion logic (victory/defeat)
+3. **Balance the talent point system** - Important for game progression and difficulty
+- Finalize all skill effect costs in `balancing_calculation.go`
+- Balance boss stat progressions by difficulty level
+- Tune talent point awards after boss victories
+- Create appropriate starting talent points for each difficulty
+
+# General Plan
+
+- Project/Game Structure
+  - basic game loop with exit handling
+  - command parser with error handling
+- State System
+  - state machine
+  - 3 states
+  - handle transitions
+- Player Management
+  - create a character system
+  - stat management (health, power, speed)
+  - talent point system
+  - character persistence (saving/loading)
+  - character selection
+- Skill Framework
+  - basic skill struct
+  - create a skill system (interface?)
+    - skill validation
+    - cost calculations
+    - cooldown system
+  - implement effect system
+  - skill upgrading system
+- Battle State
+  - implement turn based mechanics
+  - skill usage implementation
+  - status effect handling
+  - victory/defeat conditions
+  - basic boss ai behavior
+  - effect duration tracking
+  - effect stacking rules
+  - effect cancellation/cleansing
+- Boss Progression
+  - create 9 boss templates
+  - difficulty scaling
+  - reward system
+- Statistics & Progression Tracking
+  - persistent time tracking
+    - overall
+    - per boss
+  - persistent input tracking
+    - commands overall
+    - characters typed overall
+  - persistent game tracking
+    - amount of skills used
+    - amount of skills created
+    - talent point usage
+- QOL Features
+  - help system with command documentation
+  - game state saving/loading
+  - character management (multiple character)
+  - Tutorial
+  - Statistics Export
+- Game Balance/Configuration
+  - json templates
+  - balance talent point costs
+  - tune damage multipliers
+  - balance boss difficulty
 
 
-## State System
-
-- state machine
-- 3 states
-- handle transitions
-
-## Player Management
-
-- create a character system
-- stat management (health, power, speed)
-- talent point system
-- character persistence (saving/loading)
-- character selection
-
-## Skill Framework
-
-- basic skill struct
-- create a skill system (interface?)
-  - skill validation
-  - cost calculations
-  - cooldown system
-- implement effect system
-- skill upgrading system
-
-## Battle State
-
-- implement turn based mechanics
-- skill usage implementation
-- status effect handling
-- victory/defeat conditions
-- basic boss ai behavior
-- effect duration tracking
-- effect stacking rules
-- effect cancellation/cleansing
-
-## Boss Progression
-
-- create 9 boss templates
-- difficulty scaling
-- reward system
-
-## Statistics & Progression Tracking
-
-- persistent time tracking
-  - overall
-  - per boss
-- persistent input tracking
-  - commands overall
-  - characters typed overall
-- persistent game tracking
-  - amount of skills used
-  - amount of skills created
-  - talent point usage
-
-## QOL Features
-
-- help system with command documentation
-- game state saving/loading
-- character management (multiple character)
-- Tutorial
-- Statistics Export
-
-## Game Balance / Json Configuration
-
-- json templates
-- balance talent point costs
-- tune damage multipliers
-- balance boss difficulty
-
-## Future Features
+# Future Features
 
 - Elementpoints => 8 total, 1 at the beginning, 1 after each defeated boss
 

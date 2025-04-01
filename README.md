@@ -83,4 +83,4 @@ No attribution required. No restrictions whatsoever. Enjoy the game and do whate
 
 ---
 
-Created by [https://github.com/papierkorp] - Happy gaming!
+Created by [papierkorp](https://github.com/papierkorp) - Happy gaming!
