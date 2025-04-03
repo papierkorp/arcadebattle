@@ -41,7 +41,7 @@ func CreateNewImmediateSkill(args []string) (error, *ImmediateSkill) {
 	}
 	dmgMultiFloat32 := float32(dmgMulti)
 
-	err, effectList := createEffectList(args, 5)
+	err, effectList := createEffectList(args, "immediate", 5)
 	if err != nil {
 		return err, nil
 	}
@@ -123,11 +123,14 @@ func (is *ImmediateSkill) GetDamageMultiplier() float32 {
 	return is.dmgmulti
 }
 
-func (is *ImmediateSkill) Use(user *Player, target *Boss) error {
+func (is *ImmediateSkill) Use() error {
 	// todo rework
 	// ---------------------------------------------------------------------------------
 	// --------------------- EXAMPLE IMPLEMENTATION OF AI - REWORK ---------------------
 	// ---------------------------------------------------------------------------------
+
+	user := current_player
+	target := current_boss
 
 	// Calculate damage
 	baseDamage := int(float32(user.stats.power) * is.dmgmulti)

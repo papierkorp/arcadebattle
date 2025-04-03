@@ -51,7 +51,7 @@ func getEffectCost(effectName string) (error, int) {
 		"shield":                5,
 		"reflectdamage":         5,
 		"evasion":               5,
-		"criticalstrike":        5,
+		"critrate":              5,
 		"dot":                   5,
 		"stun":                  5,
 		"damagereduction":       5,

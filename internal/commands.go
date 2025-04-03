@@ -32,7 +32,7 @@ func newCommand(commandArgs []string) {
 			err, skill = CreateNewPassiveSkill(commandArgs)
 		default:
 			invalidskilltypeMsg := GetGameTextError("invalidskilltype")
-			fmt.Println(invalidskillcreationMsg + " - " + invalidskilltypeMsg)
+			fmt.Println(invalidskillcreationMsg + " - " + invalidskilltypeMsg + "\n")
 			return
 		}
 

@@ -27,7 +27,8 @@
         "invalidskilltype": "Invalid skill type: must be immediate, duration, or passive",
         "invalidskillcost": "Invalid skillcost",
         "missingdmgmulti": "missing damage multiplier for non-passive skill",
-        "notavailable": "Not available"
+        "notavailable": "Not available",
+        "invalidskilltypeeffect": "Invalid effect: cant be used with this skilltype"
     },
     "status": {
         "player": {
@@ -223,8 +224,8 @@
             "name": "Evasion",
             "description": "50% chance to avoid damage"
         },
-        "criticalstrike": {
-            "name": "Critical Strike",
+        "critrate": {
+            "name": "Critical Rate",
             "description": "50% chance to double damage"
         },
         "stun": {

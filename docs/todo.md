@@ -1,5 +1,19 @@
 # ToDo
 
+## battle / skill usage
+
+**turn.start**
+- use effect if necessary
+
+**skill.use**
+- apply dmgmulti
+- add effect
+
+**turn.end**
+- check duration of effects
+
+# ToDo AI
+
 analyze the current available code and the docs and act like a scrum master to create a sprint to finish this projekt.
 break the tasks left into a few Epics but dont go too deep since i will know what to do with the epics
 
@@ -7,7 +21,7 @@ Based on the current code and the read me file give me a guideline on how i proc
 
 I've analyzed the codebase and documentation for your Arcadebattle text-based RPG. Here's a sprint plan that organizes the remaining work into several focused epics to help you complete the project efficiently.
 
-# Current to do
+-----
 
 If I were to identify the most critical tasks to focus on first, they would be:
 
@@ -28,7 +42,7 @@ If I were to identify the most critical tasks to focus on first, they would be:
 - Tune talent point awards after boss victories
 - Create appropriate starting talent points for each difficulty
 
-# General Plan
+# General Plan AI
 
 - Project/Game Structure
   - basic game loop with exit handling

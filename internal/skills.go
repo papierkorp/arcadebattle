@@ -16,11 +16,11 @@ type Skill interface {
 	GetTalentPointCostsTotal() int
 	GetSkillType() string
 	GetDamageMultiplier() float32
-	Use(user *Player, target *Boss) error
+	Use() error
 	String() string
 }
 
-func createEffectList(args []string, startIndex int) (error, []SkillEffect) {
+func createEffectList(args []string, skilltype string, startIndex int) (error, []SkillEffect) {
 	effectList := []SkillEffect{}
 
 	if len(args) <= startIndex {
@@ -31,7 +31,7 @@ func createEffectList(args []string, startIndex int) (error, []SkillEffect) {
 	for i := startIndex; i < len(args); i++ {
 		effectName := strings.ToLower(args[i])
 
-		err, effect := newSkillEffect(effectName)
+		err, effect := newSkillEffect(skilltype, effectName)
 		if err != nil {
 			return err, nil
 		}

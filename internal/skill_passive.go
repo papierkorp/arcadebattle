@@ -32,7 +32,7 @@ func CreateNewPassiveSkill(args []string) (error, *PassiveSkill) {
 		return fmt.Errorf("%s", emptySkillNameMsg), nil
 	}
 
-	err, effectList := createEffectList(args, 4)
+	err, effectList := createEffectList(args, "passive", 4)
 	if err != nil {
 		return err, nil
 	}
@@ -109,7 +109,7 @@ func (ps *PassiveSkill) GetDamageMultiplier() float32 {
 	return 0
 }
 
-func (ps *PassiveSkill) Use(user *Player, target *Boss) error {
+func (ps *PassiveSkill) Use() error {
 	// todo rework
 	// ---------------------------------------------------------------------------------
 	// --------------------- EXAMPLE IMPLEMENTATION OF AI - REWORK ---------------------

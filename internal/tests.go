@@ -5,52 +5,51 @@ import (
 	"strings"
 )
 
-/*
-Example playthrough:
-
-1. Start game
-2. Create player:
-   > test player
-   Creates: John (normal) with HP:10, ATK:5, SPD:5
-
-3. Check status:
-   > status
-   Shows player stats and available talent points
-
-4. Create skill:
-   > test skill
-   Creates: Fireball (DMG:1.5x, Duration:3, Effect:Direct Damage)
-
-5. Create more skills:
-   > new skill Snowstorm 0.7 2 stun
-   > new skill Shield 1.0 2 shield
-   > new skill PowerUp 1.0 3 buff
-
-6. Start battle:
-   > battle
-   Shows boss stats and begins combat
-
-7. Use skills in battle:
-   > use fireball
-   > use shield
-   > use snowstorm
-
-8. Win battle, gain talent points, repeat from step 4
-*/
-
 var TestCases = map[string]func(){
-	"player":     testValidPlayer,
-	"player2":    testValidPlayer2,
-	"player3":    testValidPlayer3,
-	"playerf":    testInvalidPlayer,
-	"skill":      testValidSkill,
-	"skill2":     testValidSkill2,
-	"skill3":     testValidSkill3,
-	"skill4":     testValidSkill4,
-	"skill5":     testValidSkill5,
-	"skillf":     testInvalidSkill,
-	"playerfail": testInvalidPlayerStats,
-	"skillfail":  testInvalidSkillDuration,
+	"player":   testPlayer,
+	"player2":  testPlayer2,
+	"player3":  testPlayer3,
+	"player4":  testPlayerEmpty,
+	"player5":  testPlayerNoName,
+	"player6":  testPlayerInvalidDiff,
+	"player7":  testPlayerNegativeHP,
+	"player8":  testPlayerNegativePWR,
+	"player9":  testPlayerNegativeSPD,
+	"player10": testPlayerZeroStats,
+	"player11": testPlayerTooManyTP,
+	"player12": testPlayerSpecialChar,
+
+	"skill":   testSkillImmediate,
+	"skill2":  testSkillImmediateMulti,
+	"skill3":  testSkillImmediateEmpty,
+	"skill4":  testSkillImmediateNoArg,
+	"skill5":  testSkillImmediateInvalidEffect,
+	"skill6":  testSkillImmediateNegMulti,
+	"skill7":  testSkillImmediateHighMulti,
+	"skill8":  testSkillImmediateEffectMismatch,
+	"skill9":  testSkillImmediateNoPlayer,
+	"skill10": testSkillImmediateSpecialChar,
+
+	"skill20": testSkillDuration,
+	"skill21": testSkillDurationMulti,
+	"skill22": testSkillDurationNegDur,
+	"skill23": testSkillDurationZeroDur,
+	"skill24": testSkillDurationHighDur,
+	"skill25": testSkillDurationEffectMismatch,
+
+	"skill40": testSkillPassive,
+	"skill41": testSkillPassiveMulti,
+	"skill42": testSkillPassiveEffectMismatch,
+	"skill43": testSkillPassiveEffectDMGMulti,
+	"skill44": testSkillPassiveEffectDMGMultiDuration,
+
+	"battle1": testBattleStart,
+	"battle2": testBattleNoSkills,
+	"battle3": testBattleUseSkill,
+
+	"seq":  testValidSkillTypesSequence,
+	"seq2": testInvalidSkillTypesSequence,
+	"seq3": testFullGameSequence,
 }
 
 func RunTest(testCase string) {
@@ -66,97 +65,284 @@ func ExecuteTest(testInput string) {
 	newCommand(strings.Fields(strings.ToLower(testInput)))
 }
 
-func testValidPlayer() {
-	testInput := "new player John normal 250 150 80"
+// ----------------------------------------------------------------
+// Player creation tests
+// ----------------------------------------------------------------
+
+func testPlayer() {
+	testInput := "new player John normal 25 15 8"
 	ExecuteTest(testInput)
 }
 
-func testValidPlayer2() {
+func testPlayer2() {
 	testInput := "new player Sammy hard 10 5 7"
 	ExecuteTest(testInput)
 }
 
-func testValidPlayer3() {
+func testPlayer3() {
 	testInput := "new player Luna torment 1 1 1"
 	ExecuteTest(testInput)
 }
 
-func testValidSkill() {
-	//new0 skill1 <skilltype2> <name3> <dmgmulti4> <duration5> [effect effect effect6...]
-	testInput := "new skill duration Fire 1.5 6 dot stun"
-	ExecuteTest(testInput)
-}
-
-func testValidSkill2() {
-	testInput := "new skill duration poison 5 2 blockdebuffs healovertime"
-	ExecuteTest(testInput)
-}
-
-func testValidSkill3() {
-	testInput := "new skill passive hardening reducebuffs dispel"
-	ExecuteTest(testInput)
-}
-
-func testValidSkill4() {
-	testInput := "new skill immediate 3 blockdebuffs"
-	ExecuteTest(testInput)
-}
-
-func testValidSkill5() {
-	testInput := "new skill empty immediate"
-	ExecuteTest(testInput)
-}
-
-func testInvalidPlayer() {
+func testPlayerEmpty() {
 	testInput := "new player"
 	ExecuteTest(testInput)
 }
 
-func testInvalidSkill() {
-	testInput := "new skill Fireball -1.5 dot 3"
+func testPlayerNoName() {
+	testInput := "new player \"\" normal 10 10 10"
 	ExecuteTest(testInput)
 }
 
-func testInvalidPlayerStats() {
-	testInput := "new player John normal 1000 1000 1000"
+func testPlayerInvalidDiff() {
+	testInput := "new player Bob impossible 10 10 10"
 	ExecuteTest(testInput)
 }
 
-func testInvalidSkillDuration() {
-	testInput := "new skill Fireball 1.5 dot 0"
+func testPlayerNegativeHP() {
+	testInput := "new player Evil normal -50 10 10"
 	ExecuteTest(testInput)
 }
 
-/* Additional test cases that could be implemented:
+func testPlayerNegativePWR() {
+	testInput := "new player Weak normal 50 -10 10"
+	ExecuteTest(testInput)
+}
 
-1. Player Creation Edge Cases:
-   - Empty name
-   - Invalid difficulty levels
-   - Negative stat values
-   - Zero stat values
-   - Special characters in name
+func testPlayerNegativeSPD() {
+	testInput := "new player Slow normal 50 10 -5"
+	ExecuteTest(testInput)
+}
 
-2. Skill Creation Edge Cases:
-   - Empty skill name
-   - Invalid effect types
-   - Extremely high multipliers
-   - Very long durations
-   - Special characters in skill name
+func testPlayerZeroStats() {
+	testInput := "new player Zero normal 0 0 0"
+	ExecuteTest(testInput)
+}
 
-3. Battle System Tests:
-   - Starting battle without skills
-   - Starting battle with low health
-   - Using non-existent skills
-   - Using skills on cooldown
+func testPlayerTooManyTP() {
+	testInput := "new player Greedy normal 1000 1000 1000"
+	ExecuteTest(testInput)
+}
 
-4. State Management Tests:
-   - Transitioning between states
-   - Death state handling
-   - Victory state handling
-   - State persistence
+func testPlayerSpecialChar() {
+	testInput := "new player Test!@#$% normal 10 10 10"
+	ExecuteTest(testInput)
+}
 
-5. Resource Management Tests:
-   - Talent point calculations
-   - Skill cost validations
-   - Health/damage calculations
-*/
+// ----------------------------------------------------------------
+// Immediate skill tests
+// ----------------------------------------------------------------
+
+func testSkillImmediate() {
+	testInput := "new skill immediate Fireball 1.5 directdamage"
+	ExecuteTest(testInput)
+}
+
+func testSkillImmediateMulti() {
+	testInput := "new skill immediate MegaBlast 2.0 directdamage pierce finisher"
+	ExecuteTest(testInput)
+}
+
+func testSkillImmediateEmpty() {
+	testInput := "new skill immediate \"\" 1.0 directdamage"
+	ExecuteTest(testInput)
+}
+
+func testSkillImmediateNoArg() {
+	testInput := "new skill immediate"
+	ExecuteTest(testInput)
+}
+
+func testSkillImmediateInvalidEffect() {
+	testInput := "new skill immediate Sparkle 1.0 madeupeffect"
+	ExecuteTest(testInput)
+}
+
+func testSkillImmediateNegMulti() {
+	testInput := "new skill immediate WeakAttack -0.5 directdamage"
+	ExecuteTest(testInput)
+}
+
+func testSkillImmediateHighMulti() {
+	testInput := "new skill immediate SuperNova 100.0 directdamage"
+	ExecuteTest(testInput)
+}
+
+func testSkillImmediateEffectMismatch() {
+	testInput := "new skill immediate WrongType 1.0 stun" // stun is for duration skills
+	ExecuteTest(testInput)
+}
+
+func testSkillImmediateNoPlayer() {
+	// Reset current player to test no player state
+	oldPlayer := current_player
+	current_player = Player{}
+
+	testInput := "new skill immediate NoPlayerSkill 1.0 directdamage"
+	ExecuteTest(testInput)
+
+	// Restore player after test
+	current_player = oldPlayer
+}
+
+func testSkillImmediateSpecialChar() {
+	testInput := "new skill immediate Skill!@#$ 1.0 directdamage"
+	ExecuteTest(testInput)
+}
+
+// ----------------------------------------------------------------
+// Duration skill tests
+// ----------------------------------------------------------------
+
+func testSkillDuration() {
+	testInput := "new skill duration Poison 0.7 3 dot"
+	ExecuteTest(testInput)
+}
+
+func testSkillDurationMulti() {
+	testInput := "new skill duration Nightmare 1.2 4 dot stun"
+	ExecuteTest(testInput)
+}
+
+func testSkillDurationNegDur() {
+	testInput := "new skill duration NegativeDur 1.0 -3 dot"
+	ExecuteTest(testInput)
+}
+
+func testSkillDurationZeroDur() {
+	testInput := "new skill duration ZeroDur 1.0 0 dot"
+	ExecuteTest(testInput)
+}
+
+func testSkillDurationHighDur() {
+	testInput := "new skill duration LongEffect 0.5 100 dot"
+	ExecuteTest(testInput)
+}
+
+func testSkillDurationEffectMismatch() {
+	testInput := "new skill duration WrongType 1.0 3 pierce" // pierce is for immediate skills
+	ExecuteTest(testInput)
+}
+
+// ----------------------------------------------------------------
+// Passive skill tests
+// ----------------------------------------------------------------
+
+func testSkillPassive() {
+	testInput := "new skill passive Protection shield"
+	ExecuteTest(testInput)
+}
+
+func testSkillPassiveMulti() {
+	testInput := "new skill passive MegaDefense shield blockdebuffs damagereduction"
+	ExecuteTest(testInput)
+}
+
+func testSkillPassiveEffectMismatch() {
+	testInput := "new skill passive BadPassive dot" // dot is for duration skills
+	ExecuteTest(testInput)
+}
+
+func testSkillPassiveEffectDMGMulti() {
+	testInput := "new skill passive PassiveDuration 1 shield"
+	ExecuteTest(testInput)
+}
+
+func testSkillPassiveEffectDMGMultiDuration() {
+	testInput := "new skill passive PassiveDuration 1 1 shield"
+	ExecuteTest(testInput)
+}
+
+// ----------------------------------------------------------------
+// Battle tests
+// ----------------------------------------------------------------
+
+func testBattleStart() {
+	// First create a player if none exists
+	if current_player.name == "" {
+		ExecuteTest("new player TestWarrior normal 100 50 20")
+	}
+
+	// Then start battle
+	ExecuteTest("battle")
+}
+
+func testBattleNoSkills() {
+	// Create new player with no skills
+	ExecuteTest("new player NoSkillsGuy normal 100 50 20")
+
+	// Start battle without creating any skills
+	ExecuteTest("battle")
+}
+
+func testBattleUseSkill() {
+	// Create player
+	ExecuteTest("new player SkillUser normal 100 50 20")
+
+	// Create a skill
+	ExecuteTest("new skill immediate QuickAttack 1.5 directdamage")
+
+	// Start battle
+	ExecuteTest("battle")
+
+	// Use the skill
+	ExecuteTest("use skill QuickAttack")
+}
+
+// ----------------------------------------------------------------
+// Sequence tests
+// ----------------------------------------------------------------
+
+func testFullGameSequence() {
+	// Create player
+	ExecuteTest("new player Adventurer normal 100 50 30")
+
+	// Check status
+	ExecuteTest("status")
+
+	// Create skills
+	ExecuteTest("new skill immediate Slash 1.2 directdamage")
+	ExecuteTest("new skill duration Bleed 0.8 3 dot")
+	ExecuteTest("new skill passive Toughness blockdebuffs")
+
+	// Check status again
+	ExecuteTest("status")
+
+	// Start battle
+	ExecuteTest("battle")
+
+	// Use skills in battle
+	ExecuteTest("use skill Slash")
+}
+
+func testValidSkillTypesSequence() {
+	// Create player
+	testPlayer()
+
+	// Create one valid skill of each type
+	testSkillImmediateMulti()
+	testSkillDurationMulti()
+	testSkillPassiveMulti()
+
+	// Check status with created skills
+	statusCommand([]string{"status"})
+}
+
+func testInvalidSkillTypesSequence() {
+	// Create player
+	testPlayer()
+
+	// Create two invalid immediate skills
+	testSkillImmediateEmpty()
+	testSkillImmediateEffectMismatch()
+
+	// Create two invalid duration skills
+	testSkillDurationZeroDur()
+	testSkillDurationEffectMismatch()
+
+	// Create two invalid passive skills
+	testSkillPassiveEffectMismatch()
+	testSkillPassiveEffectDMGMulti()
+	testSkillPassiveEffectDMGMultiDuration()
+
+}

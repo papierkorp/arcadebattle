@@ -87,7 +87,7 @@ func CreateNewDurationSkill(args []string) (error, *DurationSkill) {
 		return fmt.Errorf("%s", durationPositiveMsg), nil
 	}
 
-	err, effectList := createEffectList(args, 6)
+	err, effectList := createEffectList(args, "duration", 6)
 	if err != nil {
 		return err, nil
 	}
@@ -139,11 +139,14 @@ func (ds *DurationSkill) GetDamageMultiplier() float32 {
 	return ds.dmgmulti
 }
 
-func (ds *DurationSkill) Use(user *Player, target *Boss) error {
+func (ds *DurationSkill) Use() error {
 	// todo rework
 	// ---------------------------------------------------------------------------------
 	// --------------------- EXAMPLE IMPLEMENTATION OF AI - REWORK ---------------------
 	// ---------------------------------------------------------------------------------
+
+	user := current_player
+	target := current_boss
 
 	// Calculate base damage using power and damage multiplier
 	baseDamage := int(float32(user.stats.power) * ds.dmgmulti)
