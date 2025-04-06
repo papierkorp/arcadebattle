@@ -1,3 +1,4 @@
+// Package internal comment
 package internal
 
 import (
@@ -30,7 +31,7 @@ func getTalentpoints(d difficulty) int {
 	}
 }
 
-func getEffectCost(effectName string) (error, int) {
+func getEffectCost(effectName string) (int, error) {
 	effectCosts := costList{
 		"directdamage":          5,
 		"pierce":                5,
@@ -58,49 +59,43 @@ func getEffectCost(effectName string) (error, int) {
 		"blockbuffs":            5,
 		"grievouswounds":        5,
 	}
-
 	cost, exists := effectCosts[effectName]
 	if !exists {
 		internalErrorMsg := GetGameTextError("internal")
 		invalidEffectMsg := GetGameTextError("invalideffect")
-		return fmt.Errorf("%s: %s (%s)", internalErrorMsg, invalidEffectMsg, effectName), 0
+		return 0, fmt.Errorf("%s: %s (%s)", internalErrorMsg, invalidEffectMsg, effectName)
 	}
-
-	return nil, cost
+	return cost, nil
 }
 
-func getSkillCost(skillPart string) (error, int, costList) {
-	var skillCostsList costList = costList{
+func getSkillCost(skillPart string) (int, costList, error) {
+	var skillCostsList = costList{
 		"dmgmulti":     1,  // 1 per 0.1 increase
 		"duration":     5,  // 5 per 1 Turn
 		"passivemulti": 10, // if type == passive, effect cost * 10
 	}
-
 	cost, exists := skillCostsList[skillPart]
 	if !exists {
 		internalErrorMsg := GetGameTextError("internal")
 		invalidskillcostMsg := GetGameTextError("invalidskillcost")
-		return fmt.Errorf("%s: %s (%s)", internalErrorMsg, invalidskillcostMsg, skillPart), 0, skillCostsList
+		return 0, skillCostsList, fmt.Errorf("%s: %s (%s)", internalErrorMsg, invalidskillcostMsg, skillPart)
 	}
-
-	return nil, cost, skillCostsList
+	return cost, skillCostsList, nil
 }
 
-func getStatsCost(statName string) (error, int, costList) {
-	var statCostList costList = costList{
+func getStatsCost(statName string) (int, costList, error) {
+	var statCostList = costList{
 		"hp_cost":    1, // cost per 1 HP
 		"power_cost": 1, // cost per 1 Power
 		"speed_cost": 2, // cost per 1 speed
 	}
-
 	cost, exists := statCostList[statName]
 	if !exists {
 		internalErrorMsg := GetGameTextError("internal")
 		invalidStatMsg := GetGameTextError("invalidstat")
-		return fmt.Errorf("%s: %s (%s)", internalErrorMsg, invalidStatMsg, statName), 0, statCostList
+		return 0, statCostList, fmt.Errorf("%s: %s (%s)", internalErrorMsg, invalidStatMsg, statName)
 	}
-
-	return nil, cost, statCostList
+	return cost, statCostList, nil
 }
 
 // ---------------------------------------------------------------
@@ -199,32 +194,35 @@ func getStatsCost(statName string) (error, int, costList) {
 // }
 
 func calculateDurationSkillCost(ds *DurationSkill) int {
+	fmt.Println(ds)
 	return 0
 }
 
 func calculateImmediateSkillCost(is *ImmediateSkill) int {
+	fmt.Println(is)
 	return 0
 }
 
 func calculatePassiveSkillCost(ps *PassiveSkill) int {
+	fmt.Println(ps)
 	return 0
 }
 
-func calculateStatsCost(stats stats) int {
+func calculateStatsCost(stats Stats) int {
 	hpStats := stats.health
-	err, hpCost, _ := getStatsCost("hp_cost")
+	hpCost, _, err := getStatsCost("hp_cost")
 	if err != nil {
 		fmt.Println(err)
 	}
 
 	powerStats := stats.power
-	err, powerCost, _ := getStatsCost("power_cost")
+	powerCost, _, err := getStatsCost("power_cost")
 	if err != nil {
 		fmt.Println(err)
 	}
 
 	speedStats := stats.speed
-	err, speedCost, _ := getStatsCost("speed_cost")
+	speedCost, _, err := getStatsCost("speed_cost")
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -256,7 +254,7 @@ func calculateStatsCost(stats stats) int {
 }
 
 func changeTalentpoints(cost int) error {
-	currentTalentpoints := current_player.talentpoints_remaining
+	currentTalentpoints := current_player.talentpointsRemaining
 
 	if cost > currentTalentpoints {
 		exceededMsg := GetGameTextError("exceededtalentpoints")
@@ -272,7 +270,7 @@ func changeTalentpoints(cost int) error {
 			cost)                // used value
 	}
 
-	current_player.talentpoints_remaining = currentTalentpoints - cost
+	current_player.talentpointsRemaining = currentTalentpoints - cost
 
 	return nil
 }

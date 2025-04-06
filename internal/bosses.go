@@ -1,3 +1,4 @@
+// Package internal comment
 package internal
 
 import (
@@ -9,14 +10,15 @@ import (
 // -------------------------------define boss------------------------------
 // -------------------------------------------------------------------------
 
+// Boss comment
 type Boss struct {
 	name        string
-	stats       stats
+	stats       Stats
 	skilllist   []Skill
 	battlestate BattleState
 }
 
-func createBoss(oldstats stats) (*Boss, error) {
+func createBoss(oldstats Stats) (*Boss, error) {
 	currentBossNumber := current_player.bosses + 1
 	if currentBossNumber > 9 {
 		return nil, fmt.Errorf("game completed - all bosses defeated")
@@ -66,7 +68,7 @@ func createBoss(oldstats stats) (*Boss, error) {
 	bossPower := int(float64(basePower) * powerMultiplier)
 	bossSpeed := int(float64(baseSpeed) * speedMultiplier)
 
-	newStats := stats{
+	newStats := Stats{
 		health: bossHealth,
 		power:  bossPower,
 		speed:  bossSpeed,
@@ -82,12 +84,32 @@ func createBoss(oldstats stats) (*Boss, error) {
 	return boss, nil
 }
 
+// GetStats comment
+func (b *Boss) GetStats() Stats {
+	return b.stats
+}
+
+// SetStats comment
+func (b *Boss) SetStats(s Stats) {
+	b.stats = s
+}
+
+// GetBattleState comment
+func (b *Boss) GetBattleState() *BattleState {
+	return &b.battlestate
+}
+
+// GetName comment
+func (b *Boss) GetName() string {
+	return b.name
+}
+
 // -------------------------------------------------------------------------
 // -------------------------------handle state------------------------------
 // -------------------------------------------------------------------------
 
 func checkCurrentBoss() error {
-	stats := stats{
+	stats := Stats{
 		health: 0,
 		power:  0.0,
 		speed:  0,
@@ -112,7 +134,7 @@ func handleBossDefeat() {
 	current_player.bosses++
 
 	rewardTalentPoints := 10 + (5 * current_player.bosses)
-	current_player.talentpoints_remaining += rewardTalentPoints
+	current_player.talentpointsRemaining += rewardTalentPoints
 
 	fmt.Printf("%s: %d\n", newtalentpointsMsg, rewardTalentPoints)
 
@@ -132,7 +154,7 @@ func leaveBattle() {
 // -------------------------------boss ai------------------------------
 // -------------------------------------------------------------------------
 
-func bossAction() {
+func bossTurn() {
 	fmt.Print("boss turn - ")
 	fmt.Printf("%s\n", turn_order)
 

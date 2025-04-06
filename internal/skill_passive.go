@@ -1,3 +1,4 @@
+// Package internal comment
 package internal
 
 import (
@@ -5,6 +6,7 @@ import (
 	"strings"
 )
 
+// PassiveSkill comment
 type PassiveSkill struct {
 	id                    int
 	name                  string
@@ -12,68 +14,65 @@ type PassiveSkill struct {
 	talentpointcoststotal int
 }
 
-func CreateNewPassiveSkill(args []string) (error, *PassiveSkill) {
+// CreateNewPassiveSkill comment
+func CreateNewPassiveSkill(args []string) (*PassiveSkill, error) {
 	// Minimum args: new0 skill1 passive2 <name3> [effect effect effect4...]
-
 	if current_player.name == "" {
 		noPlayerMsg := GetGameTextError("noplayer")
-		return fmt.Errorf("%s", noPlayerMsg), nil
+		return nil, fmt.Errorf("%s", noPlayerMsg)
 	}
-
 	if len(args) < 4 {
 		invalidArgsMsg := GetGameTextError("invalidargs")
 		newpassiveskillMsg := GetGameTextCommand("newpassiveskill")
-		return fmt.Errorf(invalidArgsMsg+" %s", newpassiveskillMsg.Usage), nil
+		return nil, fmt.Errorf(invalidArgsMsg+" %s", newpassiveskillMsg.Usage)
 	}
-
 	skillName := args[3]
 	if skillName == "" {
 		emptySkillNameMsg := GetGameTextError("emtpyskillname")
-		return fmt.Errorf("%s", emptySkillNameMsg), nil
+		return nil, fmt.Errorf("%s", emptySkillNameMsg)
 	}
-
-	err, effectList := createEffectList(args, "passive", 4)
+	effectList, err := createEffectList(args, "passive", 4)
 	if err != nil {
-		return err, nil
+		return nil, err
 	}
-
 	skill := &PassiveSkill{
 		id:                    tempSkillCounter,
 		name:                  skillName,
 		effectList:            effectList,
 		talentpointcoststotal: 0,
 	}
-
 	usedTalentpoints := calculatePassiveSkillCost(skill)
-	err2 := changeTalentpoints(usedTalentpoints)
-	if err2 != nil {
-		return err2, nil
+	err = changeTalentpoints(usedTalentpoints)
+	if err != nil {
+		return nil, err
 	}
-
 	skill.talentpointcoststotal = usedTalentpoints
-
 	current_player.skilllist = append(current_player.skilllist, skill)
-
 	tempSkillCounter++
-	return nil, skill
+	return skill, nil
 }
 
+// GetID comment
 func (ps *PassiveSkill) GetID() int {
 	return ps.id
 }
 
+// GetName comment
 func (ps *PassiveSkill) GetName() string {
 	return ps.name
 }
 
+// GetEffectList comment
 func (ps *PassiveSkill) GetEffectList() []SkillEffect {
 	return ps.effectList
 }
 
+// GetTalentPointCostsTotal comment
 func (ps *PassiveSkill) GetTalentPointCostsTotal() int {
 	return ps.talentpointcoststotal
 }
 
+// String comment
 func (ps PassiveSkill) String() string {
 	effectsList := make([]string, 0, len(ps.effectList))
 	for _, effect := range ps.effectList {
@@ -101,15 +100,18 @@ func (ps PassiveSkill) String() string {
 		ps.talentpointcoststotal)
 }
 
+// GetSkillType comment
 func (ps *PassiveSkill) GetSkillType() string {
 	return "passive"
 }
 
+// GetDamageMultiplier comment
 func (ps *PassiveSkill) GetDamageMultiplier() float32 {
 	return 0
 }
 
-func (ps *PassiveSkill) Use() error {
+// Use comment
+func (ps *PassiveSkill) Use(s string) error {
 	// todo rework
 	// ---------------------------------------------------------------------------------
 	// --------------------- EXAMPLE IMPLEMENTATION OF AI - REWORK ---------------------

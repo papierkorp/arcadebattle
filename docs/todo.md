@@ -2,15 +2,35 @@
 
 ## battle / skill usage
 
-**turn.start**
-- use effect if necessary
+**how battle works**
 
-**skill.use**
-- apply dmgmulti
-- add effect
+in checkCurrentTurn sets either `battleLoopPlayerTurn()` or `bossAction()`
+in PlayerTurn i have to call player.battleState.currentBattlePhase = turn.start
+
+
+**turn.start**
+- on player
+    - check all effects of player/boss (battleState)
+- on skill
+- on effect
+    - use effect if necessary
+
+**turn.mid**
+- on player
+    - add/delete effect
+- on skill
+    - use skill
+    - apply dmgmulti
+- on effect
+    - check if effect can be applied (isBlockedBy)
 
 **turn.end**
-- check duration of effects
+- on player
+    - check duration of effects
+    - reduce duration of effects
+    - delete effect from player/boss
+- on skill
+- on effect
 
 # ToDo AI
 

@@ -31,8 +31,8 @@ func statusPlayer() {
 			}
 		}
 
-		fmt.Printf("%s: %d\n", playerStatus.Talentpoints_Total, current_player.talentpoints_total)
-		fmt.Printf("%s: %d\n", playerStatus.Talentpoints_Remaining, current_player.talentpoints_remaining)
+		fmt.Printf("%s: %d\n", playerStatus.Talentpoints_Total, current_player.talentpointsTotal)
+		fmt.Printf("%s: %d\n", playerStatus.Talentpoints_Remaining, current_player.talentpointsRemaining)
 		fmt.Printf("%s: %s\n", playerStatus.Difficulty, current_player.difficulty.String())
 		fmt.Printf("%s: %d\n", playerStatus.Bosses, current_player.bosses)
 		fmt.Printf("%s: %v\n", playerStatus.Alive, alive)

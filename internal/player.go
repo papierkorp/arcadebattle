@@ -1,3 +1,4 @@
+// Package internal comment
 package internal
 
 import (
@@ -6,19 +7,22 @@ import (
 )
 
 // todo talentpoints_total, talentpoints_remaining
+
+// Player comment
 type Player struct {
-	name                   string
-	stats                  stats
-	talentpoints_total     int
-	talentpoints_remaining int
-	state                  state
-	difficulty             difficulty
-	bosses                 int
-	skilllist              []Skill
-	battlestate            BattleState
+	name                  string
+	stats                 Stats
+	talentpointsTotal     int
+	talentpointsRemaining int
+	state                 state
+	difficulty            difficulty
+	bosses                int
+	skilllist             []Skill
+	battlestate           BattleState
 }
 
-type stats struct {
+// Stats comment
+type Stats struct {
 	health int
 	power  int
 	speed  int
@@ -57,7 +61,7 @@ func createPlayer(args []string) (*Player, error) {
 		return nil, fmt.Errorf(invalidSpeedMsg, err)
 	}
 
-	stats := stats{
+	stats := Stats{
 		health: health,
 		power:  power,
 		speed:  speed,
@@ -77,27 +81,47 @@ func createPlayer(args []string) (*Player, error) {
 			separatorMsg,        //  |
 			usedMsg,             // Used:
 			usedTalentpoints)    // used value
-	} else {
-		beforeMsg := GetGameTextGameMessage("talentpointsbefore")
-		afterMsg := GetGameTextGameMessage("talentpointsafter")
-		usedMsg := GetGameTextGameMessage("talentpointsused")
-		remainingTalentpoints := initialTalentpoints - usedTalentpoints
-
-		fmt.Printf("\n%s: %d\n%s: %d\n%s: %d\n\n",
-			beforeMsg, initialTalentpoints,
-			usedMsg, usedTalentpoints,
-			afterMsg, remainingTalentpoints)
 	}
 
+	beforeMsg := GetGameTextGameMessage("talentpointsbefore")
+	afterMsg := GetGameTextGameMessage("talentpointsafter")
+	usedMsg := GetGameTextGameMessage("talentpointsused")
+	remainingTalentpoints := initialTalentpoints - usedTalentpoints
+
+	fmt.Printf("\n%s: %d\n%s: %d\n%s: %d\n\n",
+		beforeMsg, initialTalentpoints,
+		usedMsg, usedTalentpoints,
+		afterMsg, remainingTalentpoints)
+
 	player := &Player{
-		name:                   args[2],
-		stats:                  stats,
-		talentpoints_total:     initialTalentpoints,
-		talentpoints_remaining: initialTalentpoints - usedTalentpoints,
-		state:                  idle,
-		difficulty:             diff,
-		bosses:                 0,
+		name:                  args[2],
+		stats:                 stats,
+		talentpointsTotal:     initialTalentpoints,
+		talentpointsRemaining: initialTalentpoints - usedTalentpoints,
+		state:                 idle,
+		difficulty:            diff,
+		bosses:                0,
 	}
 
 	return player, nil
+}
+
+// GetStats comment
+func (p *Player) GetStats() Stats {
+	return p.stats
+}
+
+// SetStats comment
+func (p *Player) SetStats(s Stats) {
+	p.stats = s
+}
+
+// GetBattleState comment
+func (p *Player) GetBattleState() *BattleState {
+	return &p.battlestate
+}
+
+// GetName comment
+func (p *Player) GetName() string {
+	return p.name
 }

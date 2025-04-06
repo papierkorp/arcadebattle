@@ -1,3 +1,4 @@
+// Package internal comment
 package internal
 
 import (
@@ -6,6 +7,7 @@ import (
 	"strings"
 )
 
+// ImmediateSkill comment
 type ImmediateSkill struct {
 	id                    int
 	name                  string
@@ -14,38 +16,33 @@ type ImmediateSkill struct {
 	talentpointcoststotal int
 }
 
-func CreateNewImmediateSkill(args []string) (error, *ImmediateSkill) {
+// CreateNewImmediateSkill comment
+func CreateNewImmediateSkill(args []string) (*ImmediateSkill, error) {
 	// Minimum args: new0 skill1 immediate2 <name3> <dmgmulti4> [effect effect effect5...]
-
 	if current_player.name == "" {
 		noPlayerMsg := GetGameTextError("noplayer")
-		return fmt.Errorf("%s", noPlayerMsg), nil
+		return nil, fmt.Errorf("%s", noPlayerMsg)
 	}
-
 	if len(args) < 5 {
 		invalidArgsMsg := GetGameTextError("invalidargs")
 		newimmediateskillMsg := GetGameTextCommand("newimmediateskill")
-		return fmt.Errorf(invalidArgsMsg+" %s", newimmediateskillMsg.Usage), nil
+		return nil, fmt.Errorf(invalidArgsMsg+" %s", newimmediateskillMsg.Usage)
 	}
-
 	skillName := args[3]
 	if skillName == "" {
 		emptySkillNameMsg := GetGameTextError("emtpyskillname")
-		return fmt.Errorf("%s", emptySkillNameMsg), nil
+		return nil, fmt.Errorf("%s", emptySkillNameMsg)
 	}
-
 	dmgMulti, err := strconv.ParseFloat(args[4], 32)
 	if err != nil {
 		invalidDmgMultiMsg := GetGameTextError("invaliddmgmulti")
-		return fmt.Errorf("%s: %v", invalidDmgMultiMsg, err), nil
+		return nil, fmt.Errorf("%s: %v", invalidDmgMultiMsg, err)
 	}
 	dmgMultiFloat32 := float32(dmgMulti)
-
-	err, effectList := createEffectList(args, "immediate", 5)
+	effectList, err := createEffectList(args, "immediate", 5)
 	if err != nil {
-		return err, nil
+		return nil, err
 	}
-
 	skill := &ImmediateSkill{
 		id:                    tempSkillCounter,
 		name:                  skillName,
@@ -53,37 +50,38 @@ func CreateNewImmediateSkill(args []string) (error, *ImmediateSkill) {
 		effectList:            effectList,
 		talentpointcoststotal: 0,
 	}
-
 	usedTalentpoints := calculateImmediateSkillCost(skill)
-	err2 := changeTalentpoints(usedTalentpoints)
-	if err2 != nil {
-		return err2, nil
+	err = changeTalentpoints(usedTalentpoints)
+	if err != nil {
+		return nil, err
 	}
-
 	skill.talentpointcoststotal = usedTalentpoints
-
 	current_player.skilllist = append(current_player.skilllist, skill)
-
 	tempSkillCounter++
-	return nil, skill
+	return skill, nil
 }
 
+// GetID comment
 func (is *ImmediateSkill) GetID() int {
 	return is.id
 }
 
+// GetName comment
 func (is *ImmediateSkill) GetName() string {
 	return is.name
 }
 
+// GetEffectList comment
 func (is *ImmediateSkill) GetEffectList() []SkillEffect {
 	return is.effectList
 }
 
+// GetTalentPointCostsTotal comment
 func (is *ImmediateSkill) GetTalentPointCostsTotal() int {
 	return is.talentpointcoststotal
 }
 
+// String comment
 func (is ImmediateSkill) String() string {
 	effectsList := make([]string, 0, len(is.effectList))
 	for _, effect := range is.effectList {
@@ -115,15 +113,18 @@ func (is ImmediateSkill) String() string {
 		is.talentpointcoststotal)
 }
 
+// GetSkillType comment
 func (is *ImmediateSkill) GetSkillType() string {
 	return "immediate"
 }
 
+// GetDamageMultiplier comment
 func (is *ImmediateSkill) GetDamageMultiplier() float32 {
 	return is.dmgmulti
 }
 
-func (is *ImmediateSkill) Use() error {
+// Use comment
+func (is *ImmediateSkill) Use(source string) error {
 	// todo rework
 	// ---------------------------------------------------------------------------------
 	// --------------------- EXAMPLE IMPLEMENTATION OF AI - REWORK ---------------------

@@ -1,3 +1,4 @@
+// Package internal comment
 package internal
 
 import (
@@ -7,6 +8,7 @@ import (
 	"github.com/chzyer/readline"
 )
 
+// Start comment
 func Start() {
 	err := initGametext()
 

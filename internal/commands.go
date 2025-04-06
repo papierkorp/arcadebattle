@@ -1,3 +1,4 @@
+// Package internal comment
 package internal
 
 import "fmt"
@@ -25,11 +26,11 @@ func newCommand(commandArgs []string) {
 
 		switch skilltype {
 		case "duration":
-			err, skill = CreateNewDurationSkill(commandArgs)
+			skill, err = CreateNewDurationSkill(commandArgs)
 		case "immediate":
-			err, skill = CreateNewImmediateSkill(commandArgs)
+			skill, err = CreateNewImmediateSkill(commandArgs)
 		case "passive":
-			err, skill = CreateNewPassiveSkill(commandArgs)
+			skill, err = CreateNewPassiveSkill(commandArgs)
 		default:
 			invalidskilltypeMsg := GetGameTextError("invalidskilltype")
 			fmt.Println(invalidskillcreationMsg + " - " + invalidskilltypeMsg + "\n")

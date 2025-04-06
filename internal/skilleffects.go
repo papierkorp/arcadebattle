@@ -1,3 +1,4 @@
+// Package internal comment
 package internal
 
 import (
@@ -6,16 +7,19 @@ import (
 	"strings"
 )
 
+// SkillEffect comment
 type SkillEffect struct {
 	name            string
 	description     string
 	cost            int
 	usage           func()
 	usageTiming     EffectTiming
-	removalTiming   EffectTiming
+	isBlockedby     []SkillEffect
+	selfTarget      bool //if false target=enemy
 	validSkillTypes []string
 }
 
+// EffectTiming comment
 type EffectTiming int
 
 const (
@@ -27,13 +31,12 @@ const (
 
 type effectFunctions map[string]func()
 
-func newSkillEffect(skillType string, effectName string) (error, SkillEffect) {
+func newSkillEffect(skillType string, effectName string) (SkillEffect, error) {
 	//todo use this function to create the docs while also passing the skilltype
 
 	type partSkillEffect struct {
 		usage           func()
 		usageTiming     EffectTiming
-		removalTiming   EffectTiming
 		validSkillTypes []string
 	}
 
@@ -42,31 +45,26 @@ func newSkillEffect(skillType string, effectName string) (error, SkillEffect) {
 		"directdamage": {
 			usage:           effectUseDirectDamage,
 			usageTiming:     OnSkillUse,
-			removalTiming:   OnSkillUse,
 			validSkillTypes: []string{"immediate", "duration"},
 		},
 		"pierce": {
 			usage:           effectUsePierce,
 			usageTiming:     OnSkillUse,
-			removalTiming:   OnSkillUse,
 			validSkillTypes: []string{"immediate"},
 		},
 		"finisher": {
 			usage:           effectUseFinisher,
 			usageTiming:     OnSkillUse,
-			removalTiming:   OnSkillUse,
 			validSkillTypes: []string{"immediate"},
 		},
 		"buffturnbonusdamage": {
 			usage:           effectUseBuffTurnBonusDamage,
 			usageTiming:     OnSkillUse,
-			removalTiming:   OnSkillUse,
 			validSkillTypes: []string{"immediate"},
 		},
 		"debuffturnbonusdamage": {
 			usage:           effectUseDebuffTurnBonusDamage,
 			usageTiming:     OnSkillUse,
-			removalTiming:   OnSkillUse,
 			validSkillTypes: []string{"immediate"},
 		},
 
@@ -74,49 +72,40 @@ func newSkillEffect(skillType string, effectName string) (error, SkillEffect) {
 		"directheal": {
 			usage:           effectUseDirectHeal,
 			usageTiming:     OnSkillUse,
-			removalTiming:   OnSkillUse,
 			validSkillTypes: []string{"immediate"},
 		},
 		"lifeleech": {
 			usage:           effectUseLifeleech,
 			usageTiming:     OnSkillUse,
-			removalTiming:   OnSkillUse,
 			validSkillTypes: []string{"immediate"},
 		},
 		"cleanse": {
 			usage:           effectUseCleanse,
 			usageTiming:     OnSkillUse,
-			removalTiming:   OnSkillUse,
 			validSkillTypes: []string{"immediate"},
 		},
 		"dispel": {
 			usage:           effectUseDispel,
 			usageTiming:     OnSkillUse,
-			removalTiming:   OnSkillUse,
 			validSkillTypes: []string{"immediate"},
 		},
 		"extendbuffs": {
 			usage:           effectUseExtendBuffs,
 			usageTiming:     OnSkillUse,
-			removalTiming:   OnSkillUse,
 			validSkillTypes: []string{"duration", "passive"},
 		},
 		"extenddebuffs": {
 			usage:           effectUseExtendDebuffs,
-			usageTiming:     OnSkillUse,
-			removalTiming:   OnSkillUse,
 			validSkillTypes: []string{"duration", "passive"},
 		},
 		"reducedebuffs": {
 			usage:           effectUseReduceDebuffs,
 			usageTiming:     OnSkillUse,
-			removalTiming:   OnSkillUse,
 			validSkillTypes: []string{"duration", "passive"},
 		},
 		"reducebuffs": {
 			usage:           effectUseReduceBuffs,
 			usageTiming:     OnSkillUse,
-			removalTiming:   OnSkillUse,
 			validSkillTypes: []string{"duration", "passive"},
 		},
 
@@ -124,43 +113,36 @@ func newSkillEffect(skillType string, effectName string) (error, SkillEffect) {
 		"blockdebuffs": {
 			usage:           effectUseBlockDebuffs,
 			usageTiming:     OnTurnStart,
-			removalTiming:   OnDurationEnd,
 			validSkillTypes: []string{"duration", "passive"},
 		},
 		"healovertime": {
 			usage:           effectUseHealOverTime,
 			usageTiming:     OnTurnStart,
-			removalTiming:   OnDurationEnd,
 			validSkillTypes: []string{"duration"},
 		},
 		"incpower": {
 			usage:           effectUseIncPower,
 			usageTiming:     OnTurnStart,
-			removalTiming:   OnDurationEnd,
 			validSkillTypes: []string{"duration", "passive"},
 		},
 		"shield": {
 			usage:           effectUseShield,
 			usageTiming:     OnTurnStart,
-			removalTiming:   OnDurationEnd,
 			validSkillTypes: []string{"duration", "passive"},
 		},
 		"reflectdamage": {
 			usage:           effectUseReflectDamage,
 			usageTiming:     OnTurnStart,
-			removalTiming:   OnDurationEnd,
 			validSkillTypes: []string{"duration", "passive"},
 		},
 		"evasion": {
 			usage:           effectUseEvasion,
 			usageTiming:     OnTurnStart,
-			removalTiming:   OnDurationEnd,
 			validSkillTypes: []string{"duration", "passive"},
 		},
 		"criticalstrike": {
 			usage:           effectUseCriticalRate,
 			usageTiming:     OnTurnStart,
-			removalTiming:   OnDurationEnd,
 			validSkillTypes: []string{"duration", "passive"},
 		},
 
@@ -168,31 +150,26 @@ func newSkillEffect(skillType string, effectName string) (error, SkillEffect) {
 		"dot": {
 			usage:           effectUseDOT,
 			usageTiming:     OnTurnStart,
-			removalTiming:   OnDurationEnd,
 			validSkillTypes: []string{"duration"},
 		},
 		"stun": {
 			usage:           effectUseStun,
 			usageTiming:     OnTurnStart,
-			removalTiming:   OnDurationEnd,
 			validSkillTypes: []string{"duration"},
 		},
 		"damagereduction": {
 			usage:           effectUseDamageReduction,
 			usageTiming:     OnTurnStart,
-			removalTiming:   OnDurationEnd,
 			validSkillTypes: []string{"duration", "passive"},
 		},
 		"blockbuffs": {
 			usage:           effectUseBlockBuffs,
 			usageTiming:     OnTurnStart,
-			removalTiming:   OnDurationEnd,
 			validSkillTypes: []string{"duration"},
 		},
 		"grievouswounds": {
 			usage:           effectUseGrievousWounds,
 			usageTiming:     OnTurnStart,
-			removalTiming:   OnDurationEnd,
 			validSkillTypes: []string{"duration"},
 		},
 	}
@@ -203,7 +180,7 @@ func newSkillEffect(skillType string, effectName string) (error, SkillEffect) {
 	effectConfig, exists := partSkillEffectMap[effectName]
 	if !exists {
 		invalidEffectMsg := GetGameTextError("invalideffect")
-		return fmt.Errorf("%s: %s", invalidEffectMsg, effectName), SkillEffect{}
+		return SkillEffect{}, fmt.Errorf("%s: %s", invalidEffectMsg, effectName)
 	}
 
 	isValidType := slices.Contains(effectConfig.validSkillTypes, skillType)
@@ -217,12 +194,12 @@ func newSkillEffect(skillType string, effectName string) (error, SkillEffect) {
 
 	if !isValidType {
 		invalidskilltypeeffect := GetGameTextError("invalidskilltypeeffect")
-		return fmt.Errorf("%s: %s (%s)", invalidskilltypeeffect, skillType, effectName), SkillEffect{}
+		return SkillEffect{}, fmt.Errorf("%s: %s (%s)", invalidskilltypeeffect, skillType, effectName)
 	}
 
-	err, effectCost := getEffectCost(effectName)
+	effectCost, err := getEffectCost(effectName)
 	if err != nil {
-		return err, SkillEffect{}
+		return SkillEffect{}, err
 	}
 
 	gameTextEffectMsg := GetGameTextEffect(effectName)
@@ -233,18 +210,17 @@ func newSkillEffect(skillType string, effectName string) (error, SkillEffect) {
 		cost:            effectCost,
 		usage:           effectConfig.usage,
 		usageTiming:     effectConfig.usageTiming,
-		removalTiming:   effectConfig.removalTiming,
 		validSkillTypes: effectConfig.validSkillTypes,
 	}
 
-	return nil, skillEffect
+	return skillEffect, nil
 }
 
-func upgradeSkillEffect(effectName SkillEffect) (error, SkillEffect) {
+func upgradeSkillEffect(effectName SkillEffect) (SkillEffect, error) {
 	//todo implement
-	err, effectCost := getEffectCost(effectName.name)
+	effectCost, err := getEffectCost(effectName.name)
 	if err != nil {
-		return err, SkillEffect{}
+		return SkillEffect{}, err
 	}
 
 	updatedEffect := SkillEffect{
@@ -253,7 +229,7 @@ func upgradeSkillEffect(effectName SkillEffect) (error, SkillEffect) {
 		cost:        effectCost,
 	}
 
-	return nil, updatedEffect
+	return updatedEffect, nil
 }
 
 // -------------------------------------------------------------------------

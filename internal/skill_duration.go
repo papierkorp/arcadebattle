@@ -1,3 +1,4 @@
+// Package internal comment
 package internal
 
 import (
@@ -6,6 +7,7 @@ import (
 	"strings"
 )
 
+// DurationSkill comment
 type DurationSkill struct {
 	id                    int
 	name                  string
@@ -16,6 +18,7 @@ type DurationSkill struct {
 	upgrade               func()
 }
 
+// String comment
 func (ds DurationSkill) String() string {
 	effectsWithDuration := make([]string, 0, len(ds.effectList))
 	for _, effect := range ds.effectList {
@@ -48,50 +51,42 @@ func (ds DurationSkill) String() string {
 		ds.talentpointcoststotal)
 }
 
-func CreateNewDurationSkill(args []string) (error, *DurationSkill) {
+// CreateNewDurationSkill comment
+func CreateNewDurationSkill(args []string) (*DurationSkill, error) {
 	// Minimum args: new0 skill1 <skilltype2> <name3> <dmgmulti4> <duration5> [effect effect effect6...]
-
 	if current_player.name == "" {
 		noPlayerMsg := GetGameTextError("noplayer")
-		return fmt.Errorf("%s", noPlayerMsg), nil
+		return nil, fmt.Errorf("%s", noPlayerMsg)
 	}
-
 	if len(args) < 7 {
 		invalidArgsMsg := GetGameTextError("invalidargs")
 		newdurationskillMsg := GetGameTextCommand("newdurationskill")
-		return fmt.Errorf(invalidArgsMsg+" %s", newdurationskillMsg.Usage), nil
+		return nil, fmt.Errorf(invalidArgsMsg+" %s", newdurationskillMsg.Usage)
 	}
-
 	skillName := args[3]
 	if skillName == "" {
 		emptySkillNameMsg := GetGameTextError("emtpyskillname")
-		return fmt.Errorf("%s", emptySkillNameMsg), nil
+		return nil, fmt.Errorf("%s", emptySkillNameMsg)
 	}
-
 	dmgMulti, err := strconv.ParseFloat(args[4], 32)
 	if err != nil {
 		invalidDmgMultiMsg := GetGameTextError("invaliddmgmulti")
-		return fmt.Errorf("%s: %v", invalidDmgMultiMsg, err), nil
+		return nil, fmt.Errorf("%s: %v", invalidDmgMultiMsg, err)
 	}
 	dmgMultiFloat32 := float32(dmgMulti)
-
 	duration, err := strconv.Atoi(args[5])
-
 	if err != nil {
 		invalidDurationMsg := GetGameTextError("invalidduration")
-		return fmt.Errorf(invalidDurationMsg), nil
+		return nil, fmt.Errorf(invalidDurationMsg)
 	}
-
 	if duration <= 0 {
 		durationPositiveMsg := GetGameTextError("durationpositive")
-		return fmt.Errorf("%s", durationPositiveMsg), nil
+		return nil, fmt.Errorf("%s", durationPositiveMsg)
 	}
-
-	err, effectList := createEffectList(args, "duration", 6)
+	effectList, err := createEffectList(args, "duration", 6)
 	if err != nil {
-		return err, nil
+		return nil, err
 	}
-
 	skill := &DurationSkill{
 		id:                    tempSkillCounter,
 		name:                  skillName,
@@ -100,77 +95,101 @@ func CreateNewDurationSkill(args []string) (error, *DurationSkill) {
 		effectList:            effectList,
 		talentpointcoststotal: 0,
 	}
-
 	usedTalentpoints := calculateDurationSkillCost(skill)
-	err2 := changeTalentpoints(usedTalentpoints)
-	if err2 != nil {
-		return err2, nil
+	err = changeTalentpoints(usedTalentpoints)
+	if err != nil {
+		return nil, err
 	}
-
 	skill.talentpointcoststotal = usedTalentpoints
-
 	current_player.skilllist = append(current_player.skilllist, skill)
-
 	tempSkillCounter++
-	return nil, skill
+	return skill, nil
 }
 
+// GetID comment
 func (ds *DurationSkill) GetID() int {
 	return ds.id
 }
 
+// GetName comment
 func (ds *DurationSkill) GetName() string {
 	return ds.name
 }
 
+// GetEffectList comment
 func (ds *DurationSkill) GetEffectList() []SkillEffect {
 	return ds.effectList
 }
 
+// GetTalentPointCostsTotal comment
 func (ds *DurationSkill) GetTalentPointCostsTotal() int {
 	return ds.talentpointcoststotal
 }
 
+// GetSkillType comment
 func (ds *DurationSkill) GetSkillType() string {
 	return "duration"
 }
 
+// GetDamageMultiplier comment
 func (ds *DurationSkill) GetDamageMultiplier() float32 {
 	return ds.dmgmulti
 }
 
-func (ds *DurationSkill) Use() error {
+// Use comment
+func (ds *DurationSkill) Use(s string) error {
 	// todo rework
+	var source Entity
+	var target Entity
+
+	switch s {
+	case "player":
+		source = &current_player
+		target = &current_boss
+	case "boss":
+		source = &current_boss
+		target = &current_player
+	default:
+		invalidEntityMsg := GetGameTextError("invalidentity")
+		internalErrorMsg := GetGameTextError("internal")
+		return fmt.Errorf("%s - %s", internalErrorMsg, invalidEntityMsg)
+	}
+
+	baseDamageSource := int(float32(source.GetStats().power) * ds.dmgmulti)
+	fmt.Println(target)
+
+	fmt.Println("baseDamage: ", baseDamageSource)
+
 	// ---------------------------------------------------------------------------------
 	// --------------------- EXAMPLE IMPLEMENTATION OF AI - REWORK ---------------------
 	// ---------------------------------------------------------------------------------
 
-	user := current_player
-	target := current_boss
-
-	// Calculate base damage using power and damage multiplier
-	baseDamage := int(float32(user.stats.power) * ds.dmgmulti)
-
-	// Apply damage to target
-	target.stats.health -= baseDamage
-
-	// Log damage dealt
-	damagedealtMsg := GetGameTextBattle("damagedealt")
-	damageMsg := GetGameTextBattle("damage")
-	fmt.Printf("%s %d %s\n", damagedealtMsg, baseDamage, damageMsg)
-
-	// Apply effects (simplified)
-	for _, effect := range ds.effectList {
-		// Create an active effect in target's battlestate
-		activeEffect := ActiveEffect{
-			skill_effect: effect,
-			total_power:  float32(user.stats.power) * ds.dmgmulti,
-			turns_left:   ds.duration,
-		}
-
-		// Add to target's active effects
-		target.battlestate.active_effects_list = append(target.battlestate.active_effects_list, activeEffect)
-	}
+	// user := current_player
+	// target := current_boss
+	//
+	// // Calculate base damage using power and damage multiplier
+	// baseDamage := int(float32(user.stats.power) * ds.dmgmulti)
+	//
+	// // Apply damage to target
+	// target.stats.health -= baseDamage
+	//
+	// // Log damage dealt
+	// damagedealtMsg := GetGameTextBattle("damagedealt")
+	// damageMsg := GetGameTextBattle("damage")
+	// fmt.Printf("%s %d %s\n", damagedealtMsg, baseDamage, damageMsg)
+	//
+	// // Apply effects (simplified)
+	// for _, effect := range ds.effectList {
+	// 	// Create an active effect in target's battlestate
+	// 	activeEffect := ActiveEffect{
+	// 		skillEffect: effect,
+	// 		totalPower:  float32(user.stats.power) * ds.dmgmulti,
+	// 		turnsLeft:   ds.duration,
+	// 	}
+	//
+	// 	// Add to target's active effects
+	// 	target.battlestate.activeEffectsList = append(target.battlestate.activeEffectsList, activeEffect)
+	// }
 
 	return nil
 }

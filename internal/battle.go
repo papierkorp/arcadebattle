@@ -1,3 +1,4 @@
+// Package internal comment
 package internal
 
 import (
@@ -5,18 +6,30 @@ import (
 	"strings"
 )
 
+// BattleState comment
 type BattleState struct {
-	current_health      int
-	total_turns_buffs   int
-	total_turns_debuff  int
-	is_stunned          bool
-	active_effects_list []ActiveEffect
+	currentHealth      int
+	totalTurnsBuffs    int
+	totalTurnsDebuff   int
+	isStunned          bool
+	activeEffectsList  []ActiveEffect
+	currentBattlePhase BattlePhase
 }
 
+// BattlePhase comment
+type BattlePhase int
+
+const (
+	turnStart EffectTiming = iota
+	turnAction
+	turnEnd
+)
+
+// ActiveEffect comment
 type ActiveEffect struct {
-	skill_effect SkillEffect
-	total_power  float32 //power*dmgmultiplier
-	turns_left   int
+	skillEffect SkillEffect
+	totalPower  float32 //power*dmgmultiplier
+	turnsLeft   int
 }
 
 // -------------------------------------------------------------------------
@@ -39,7 +52,7 @@ func startBattle() {
 	checkCurrentTurn()
 }
 
-func battleLoopPlayerTurn() {
+func playerTurn() {
 	invalidCommandMsg := GetGameTextError("invalidcommand")
 	gamestarthelpMsg := GetGameTextGameMessage("gamestarthelp")
 	battlepromptMsg := GetGameTextBattle("battleprompt")
@@ -104,30 +117,31 @@ func battleLoopPlayerTurn() {
 // -------------------------------Battle State------------------------------
 // -------------------------------------------------------------------------
 
+// TurnOrder comment
 type TurnOrder struct {
-	current_loop_turn int
-	turns_before_loop int
-	turn_sequence     []string
-	current_turn      int
+	currentLoopTurn int
+	turnsBeforeLoop int
+	turnSequence    []string
+	currentTurn     int
 }
 
-func (bs TurnOrder) String() string {
+func (to TurnOrder) String() string {
 	return fmt.Sprintf("TurnOrder {current_turn: %d, current_loop_turn: %d, turns_before_loop: %d,turn_sequence: %s}",
-		bs.current_turn, bs.current_loop_turn, bs.turns_before_loop, bs.turn_sequence)
+		to.currentTurn, to.currentLoopTurn, to.turnsBeforeLoop, to.turnSequence)
 }
 
 func initBattle() TurnOrder {
-	bs := TurnOrder{
-		current_loop_turn: 1,
-		turns_before_loop: 0,
-		turn_sequence:     make([]string, 0),
-		current_turn:      1,
+	to := TurnOrder{
+		currentLoopTurn: 1,
+		turnsBeforeLoop: 0,
+		turnSequence:    make([]string, 0),
+		currentTurn:     1,
 	}
-	return bs
+	return to
 }
 
 func updateTurnOrderCurrentTurn() {
-	turn_order.current_turn += 1
+	turn_order.currentTurn++
 }
 
 // -------------------------------------------------------------------------
@@ -135,10 +149,10 @@ func updateTurnOrderCurrentTurn() {
 // -------------------------------------------------------------------------
 
 func getAllTurnsBeforeLoop(playerSpeed, bossSpeed int) {
-	turn_order.current_loop_turn = 1
+	turn_order.currentLoopTurn = 1
 	lcm := LCM(playerSpeed, bossSpeed)
-	turn_order.turns_before_loop = (lcm / playerSpeed) + (lcm / bossSpeed)
-	turn_order.turn_sequence = make([]string, 0, turn_order.turns_before_loop)
+	turn_order.turnsBeforeLoop = (lcm / playerSpeed) + (lcm / bossSpeed)
+	turn_order.turnSequence = make([]string, 0, turn_order.turnsBeforeLoop)
 
 	playerTurnCounter := bossSpeed
 	bossTurnCounter := playerSpeed
@@ -146,31 +160,31 @@ func getAllTurnsBeforeLoop(playerSpeed, bossSpeed int) {
 	fmt.Println("Player Speed:", playerSpeed)
 	fmt.Println("Boss Speed:", bossSpeed)
 
-	for i := 0; i < turn_order.turns_before_loop; i++ {
+	for i := 0; i < turn_order.turnsBeforeLoop; i++ {
 		if playerSpeed == bossSpeed { // if equal player starts
 			if i%2 == 0 {
-				turn_order.turn_sequence = append(turn_order.turn_sequence, "player")
+				turn_order.turnSequence = append(turn_order.turnSequence, "player")
 			} else {
-				turn_order.turn_sequence = append(turn_order.turn_sequence, "boss")
+				turn_order.turnSequence = append(turn_order.turnSequence, "boss")
 			}
 		} else {
 			if bossTurnCounter < playerTurnCounter {
-				turn_order.turn_sequence = append(turn_order.turn_sequence, "boss")
+				turn_order.turnSequence = append(turn_order.turnSequence, "boss")
 				bossTurnCounter += playerSpeed
 			} else if playerTurnCounter < bossTurnCounter {
-				turn_order.turn_sequence = append(turn_order.turn_sequence, "player")
+				turn_order.turnSequence = append(turn_order.turnSequence, "player")
 				playerTurnCounter += bossSpeed
 			} else { // if equal
 				if bossSpeed > playerSpeed {
-					turn_order.turn_sequence = append(turn_order.turn_sequence, "boss")
+					turn_order.turnSequence = append(turn_order.turnSequence, "boss")
 					bossTurnCounter = playerSpeed
-					turn_order.turn_sequence = append(turn_order.turn_sequence, "player")
+					turn_order.turnSequence = append(turn_order.turnSequence, "player")
 					playerTurnCounter = bossSpeed
 					i++ // 2 turns
 				} else {
-					turn_order.turn_sequence = append(turn_order.turn_sequence, "player")
+					turn_order.turnSequence = append(turn_order.turnSequence, "player")
 					playerTurnCounter = bossSpeed
-					turn_order.turn_sequence = append(turn_order.turn_sequence, "boss")
+					turn_order.turnSequence = append(turn_order.turnSequence, "boss")
 					bossTurnCounter = playerSpeed
 					i++ // 2 turns
 				}
@@ -182,26 +196,26 @@ func getAllTurnsBeforeLoop(playerSpeed, bossSpeed int) {
 }
 
 func checkCurrentTurn() {
-	turnIndex := (turn_order.current_loop_turn - 1) % turn_order.turns_before_loop
+	turnIndex := (turn_order.currentLoopTurn - 1) % turn_order.turnsBeforeLoop
 
-	if turnIndex < len(turn_order.turn_sequence) {
-		turnType := turn_order.turn_sequence[turnIndex]
+	if turnIndex < len(turn_order.turnSequence) {
+		turnType := turn_order.turnSequence[turnIndex]
 
-		turn_order.current_loop_turn++
+		turn_order.currentLoopTurn++
 
-		if turn_order.current_loop_turn > turn_order.turns_before_loop {
-			turn_order.current_loop_turn = 1
+		if turn_order.currentLoopTurn > turn_order.turnsBeforeLoop {
+			turn_order.currentLoopTurn = 1
 		}
 
 		if turnType == "player" {
-			battleLoopPlayerTurn() // => playerAction
+			playerTurn()
 		} else {
-			bossAction()
+			bossTurn()
 		}
 	} else {
 		internal := GetGameTextError("internal")
 		internalturnoutofbounds := GetGameTextError("internalturnoutofbounds")
-		fmt.Errorf("%s: %s", internal, internalturnoutofbounds)
+		fmt.Printf("%s: %s", internal, internalturnoutofbounds)
 	}
 }
 
@@ -214,7 +228,7 @@ func printTurnOrderSequence() {
 	fmt.Print("\n" + separator2Msg + "\n")
 	fmt.Printf("\n%s: \n", turnOrdnerMsg)
 
-	for i, turn := range turn_order.turn_sequence {
+	for i, turn := range turn_order.turnSequence {
 		fmt.Printf("  %s %d: %s\n", turnMsg, i+1, turn)
 	}
 
@@ -223,7 +237,7 @@ func printTurnOrderSequence() {
 	fmt.Print("\n" + separator2Msg + "\n\n")
 }
 
-// greatest common divisor (GCD) via Euclidean algorithm
+// GCD greatest common divisor (GCD) via Euclidean algorithm
 func GCD(a, b int) int {
 	for b != 0 {
 		t := b
@@ -233,7 +247,7 @@ func GCD(a, b int) int {
 	return a
 }
 
-// find Least Common Multiple (LCM) via GCD
+// LCM find Least Common Multiple (LCM) via GCD
 func LCM(a, b int, integers ...int) int {
 	result := a * b / GCD(a, b)
 

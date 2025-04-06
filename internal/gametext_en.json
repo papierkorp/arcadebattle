@@ -28,7 +28,8 @@
         "invalidskillcost": "Invalid skillcost",
         "missingdmgmulti": "missing damage multiplier for non-passive skill",
         "notavailable": "Not available",
-        "invalidskilltypeeffect": "Invalid effect: cant be used with this skilltype"
+        "invalidskilltypeeffect": "Invalid effect: cant be used with this skilltype",
+        "invalidentity": "Invalid entity"
     },
     "status": {
         "player": {

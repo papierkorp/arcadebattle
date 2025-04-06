@@ -1,3 +1,4 @@
+// Package internal comment
 package internal
 
 import (
@@ -9,6 +10,7 @@ import (
 // -------------------------------define skill------------------------------
 // -------------------------------------------------------------------------
 
+// Skill comment
 type Skill interface {
 	GetID() int
 	GetName() string
@@ -16,74 +18,71 @@ type Skill interface {
 	GetTalentPointCostsTotal() int
 	GetSkillType() string
 	GetDamageMultiplier() float32
-	Use() error
+	Use(source string) error
 	String() string
 }
 
-func createEffectList(args []string, skilltype string, startIndex int) (error, []SkillEffect) {
+func createEffectList(args []string, skilltype string, startIndex int) ([]SkillEffect, error) {
 	effectList := []SkillEffect{}
 
 	if len(args) <= startIndex {
 		// maybe add a message that no effects were selected? idk
-		return nil, effectList
+		return effectList, nil
 	}
 
 	for i := startIndex; i < len(args); i++ {
 		effectName := strings.ToLower(args[i])
 
-		err, effect := newSkillEffect(skilltype, effectName)
+		effect, err := newSkillEffect(skilltype, effectName)
 		if err != nil {
-			return err, nil
+			return nil, err
 		}
 
 		effectList = append(effectList, effect)
 	}
 
-	return nil, effectList
+	return effectList, nil
 }
 
 func useCommand(commandArgs []string) bool {
-	if commandArgs[1] == "skill" && len(commandArgs) > 1 {
-		skillName := commandArgs[2]
-
-		useSkill(skillName)
-
-	} else {
+	if len(commandArgs) < 3 || commandArgs[1] != "skill" {
 		invalidargsMsg := GetGameTextError("invalidargs")
-		useSkillCommand := GetGameTextCommand("useskill")
-
+		useSkillMsg := GetGameTextCommand("useskill")
 		fmt.Println(invalidargsMsg)
-		fmt.Println(useSkillCommand)
+		fmt.Println(useSkillMsg.Usage)
 		return false
 	}
 
-	return true
-}
-
-func useSkill(skillName string) error {
-	//todo implement skill usage
-	searchName := strings.ToLower(skillName)
-	skillNameValid := false
+	skillName := strings.ToLower(commandArgs[2])
+	var foundSkill Skill
+	skillFound := false
 
 	for _, skill := range current_player.skilllist {
-		if strings.ToLower(skill.GetName()) == searchName {
-			skillNameValid = true
-			// Here you would call the skill's usage function
-			// This will depend on your implementation of skill effects
+		if strings.ToLower(skill.GetName()) == skillName {
+			skillFound = true
+			foundSkill = skill
+			break
 		}
 	}
 
-	if !skillNameValid {
-		invalidskillnameMsg := GetGameTextError("invalidskillname")
-		return fmt.Errorf(invalidskillnameMsg)
+	if !skillFound {
+		invalidSkillNameMsg := GetGameTextError("invalidskillname")
+		fmt.Println(invalidSkillNameMsg)
+		return false
 	}
 
 	useskillMsg := GetGameTextBattle("useskill")
-	fmt.Printf("%s: %s\n", useskillMsg, skillName)
+	fmt.Printf("%s: %s\n", useskillMsg, foundSkill.GetName())
+
+	err := foundSkill.Use("player")
+	if err != nil {
+		fmt.Println(err)
+		return false
+	}
 
 	if current_boss.stats.health <= 0 {
 		handleBossDefeat()
 	}
 
-	return nil
+	return true
 }
