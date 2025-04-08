@@ -207,6 +207,15 @@ func checkCurrentTurn() {
 			turn_order.currentLoopTurn = 1
 		}
 
+		if current_player.state != battle {
+			return
+		}
+
+		if current_boss.CheckDefeat() {
+			current_boss.HandleDefeat()
+			return
+		}
+
 		if turnType == "player" {
 			playerTurn()
 		} else {

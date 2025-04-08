@@ -8,6 +8,10 @@ import (
 
 // todo talentpoints_total, talentpoints_remaining
 
+// -------------------------------------------------------------------------
+// -------------------------------define player------------------------------
+// -------------------------------------------------------------------------
+
 // Player comment
 type Player struct {
 	name                  string
@@ -111,9 +115,19 @@ func (p *Player) GetStats() Stats {
 	return p.stats
 }
 
-// SetStats comment
-func (p *Player) SetStats(s Stats) {
-	p.stats = s
+// SetHealth set the health stat for the player
+func (p *Player) SetHealth(hp int) {
+	p.stats.health = hp
+}
+
+// SetPower sets the power stat for the player
+func (p *Player) SetPower(power int) {
+	p.stats.power = power
+}
+
+// SetSpeed sets the speed stat for the player
+func (p *Player) SetSpeed(speed int) {
+	p.stats.speed = speed
 }
 
 // GetBattleState comment
@@ -125,3 +139,30 @@ func (p *Player) GetBattleState() *BattleState {
 func (p *Player) GetName() string {
 	return p.name
 }
+
+// CheckDefeat checks if the player is defeated
+func (p *Player) CheckDefeat() bool {
+	if p.stats.health <= 0 {
+		p.state = dead
+		return true
+	}
+	return false
+}
+
+// HandleDefeat comment
+func (p *Player) HandleDefeat() {
+	// todo add statistics, e.g. defeated bosses..
+	// todo show statistic summary
+
+	current_player.state = dead
+
+	StateDead()
+
+	current_player.state = idle
+
+	StateIdle()
+}
+
+// -------------------------------------------------------------------------
+// -------------------------------handle state------------------------------
+// -------------------------------------------------------------------------

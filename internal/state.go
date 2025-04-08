@@ -1,3 +1,4 @@
+// Package internal comment
 package internal
 
 import "fmt"
@@ -28,16 +29,17 @@ func (s state) EnumStateIndex() int {
 	return int(s)
 }
 
-func check_current_state(s state) {
+// CheckCurrentState comment
+func CheckCurrentState(s state) {
 	switch s {
 	case idle:
-		state_idle()
+		StateIdle()
 	case battle:
-		state_battle()
+		StateBattle()
 	case dead:
-		state_dead()
+		StateDead()
 	default:
-		state_idle()
+		StateIdle()
 	}
 
 	err := checkCurrentBoss()
@@ -46,18 +48,21 @@ func check_current_state(s state) {
 	}
 }
 
-func state_idle() {
+// StateIdle comment
+func StateIdle() {
 	msg := GetGameTextState()
 	fmt.Println("\n" + msg.Idle.Message + "\n")
 
 }
 
-func state_battle() {
+// StateBattle comment
+func StateBattle() {
 	msg := GetGameTextState()
 	fmt.Println("\n" + msg.Battle.Message + "\n")
 }
 
-func state_dead() {
+// StateDead comment
+func StateDead() {
 	msg := GetGameTextState()
 	fmt.Println("\n" + msg.Dead.Message + "\n")
 }

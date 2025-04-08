@@ -155,10 +155,22 @@ func (ds *DurationSkill) Use(s string) error {
 		return fmt.Errorf("%s - %s", internalErrorMsg, invalidEntityMsg)
 	}
 
-	baseDamageSource := int(float32(source.GetStats().power) * ds.dmgmulti)
-	fmt.Println(target)
+	//-------------- Handle Damage --------------
 
-	fmt.Println("baseDamage: ", baseDamageSource)
+	fmt.Printf("baseDamage: power * skillmutli: %d * %.1fx", source.GetStats().power, ds.dmgmulti)
+	baseDamageSource := int(float32(source.GetStats().power) * ds.dmgmulti)
+
+	currentHealth := target.GetStats().health
+	newHealth := currentHealth - baseDamageSource
+	if newHealth < 0 {
+		newHealth = 0
+	}
+
+	damagedealtMsg := GetGameTextBattle("damagedealt")
+	damageMsg := GetGameTextBattle("damage")
+	fmt.Printf("%s %d %s\n", damagedealtMsg, baseDamageSource, damageMsg)
+
+	target.SetHealth(newHealth)
 
 	// ---------------------------------------------------------------------------------
 	// --------------------- EXAMPLE IMPLEMENTATION OF AI - REWORK ---------------------

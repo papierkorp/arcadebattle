@@ -83,6 +83,6 @@ func gameLoop() {
 			fmt.Println(gamestarthelpMsg)
 		}
 
-		check_current_state(current_player.state)
+		CheckCurrentState(current_player.state)
 	}
 }

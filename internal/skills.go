@@ -80,9 +80,5 @@ func useCommand(commandArgs []string) bool {
 		return false
 	}
 
-	if current_boss.stats.health <= 0 {
-		handleBossDefeat()
-	}
-
 	return true
 }

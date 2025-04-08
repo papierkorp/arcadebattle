@@ -31,7 +31,7 @@ func createBoss(oldstats Stats) (*Boss, error) {
 		baseHealth = oldstats.health
 	}
 
-	var basePower int = 25
+	var basePower = 25
 	if oldstats.power > 0.0 {
 		basePower = oldstats.power
 	}
@@ -89,9 +89,19 @@ func (b *Boss) GetStats() Stats {
 	return b.stats
 }
 
-// SetStats comment
-func (b *Boss) SetStats(s Stats) {
-	b.stats = s
+// SetHealth sets the health stat for the boss
+func (b *Boss) SetHealth(hp int) {
+	b.stats.health = hp
+}
+
+// SetPower sets the power stat for the boss
+func (b *Boss) SetPower(power int) {
+	b.stats.power = power
+}
+
+// SetSpeed sets the speed stat for the boss
+func (b *Boss) SetSpeed(speed int) {
+	b.stats.speed = speed
 }
 
 // GetBattleState comment
@@ -102,6 +112,31 @@ func (b *Boss) GetBattleState() *BattleState {
 // GetName comment
 func (b *Boss) GetName() string {
 	return b.name
+}
+
+// CheckDefeat checks if the boss is defeated and returns true/false
+func (b *Boss) CheckDefeat() bool {
+	if b.stats.health <= 0 {
+		return true
+	}
+	return false
+}
+
+// HandleDefeat comment
+func (b *Boss) HandleDefeat() {
+	bossdefeatedMsg := GetGameTextBattle("bossdefeated")
+	newtalentpointsMsg := GetGameTextGameMessage("newtalentpoints")
+
+	fmt.Printf("%s: %s!\n", bossdefeatedMsg, b.name)
+
+	current_player.bosses++
+	// todo add to balancing file
+	rewardTalentPoints := 10 + (5 * current_player.bosses)
+	current_player.talentpointsRemaining += rewardTalentPoints
+
+	fmt.Printf("%s: %d\n", newtalentpointsMsg, rewardTalentPoints)
+
+	current_player.state = idle
 }
 
 // -------------------------------------------------------------------------
@@ -123,22 +158,6 @@ func checkCurrentBoss() error {
 
 	current_boss = *boss
 	return nil
-}
-
-func handleBossDefeat() {
-	bossdefeatedMsg := GetGameTextBattle("bossdefeated")
-	newtalentpointsMsg := GetGameTextGameMessage("newtalentpoints")
-
-	fmt.Printf("%s: %s!\n", bossdefeatedMsg, current_boss.name)
-
-	current_player.bosses++
-
-	rewardTalentPoints := 10 + (5 * current_player.bosses)
-	current_player.talentpointsRemaining += rewardTalentPoints
-
-	fmt.Printf("%s: %d\n", newtalentpointsMsg, rewardTalentPoints)
-
-	current_player.state = idle
 }
 
 func leaveBattle() {
