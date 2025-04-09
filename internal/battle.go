@@ -28,7 +28,7 @@ const (
 // ActiveEffect comment
 type ActiveEffect struct {
 	skillEffect SkillEffect
-	totalPower  float32 //power*dmgmultiplier
+	totalPower  int //power*dmgmultiplier
 	turnsLeft   int
 }
 
@@ -208,6 +208,11 @@ func checkCurrentTurn() {
 		}
 
 		if current_player.state != battle {
+			return
+		}
+
+		if current_player.state == dead {
+			current_player.HandleDefeat()
 			return
 		}
 

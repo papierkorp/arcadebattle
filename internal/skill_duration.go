@@ -161,16 +161,53 @@ func (ds *DurationSkill) Use(s string) error {
 	baseDamageSource := int(float32(source.GetStats().power) * ds.dmgmulti)
 
 	currentHealth := target.GetStats().health
-	newHealth := currentHealth - baseDamageSource
-	if newHealth < 0 {
-		newHealth = 0
-	}
+	newHealth := max(currentHealth-baseDamageSource, 0)
 
 	damagedealtMsg := GetGameTextBattle("damagedealt")
 	damageMsg := GetGameTextBattle("damage")
 	fmt.Printf("%s %d %s\n", damagedealtMsg, baseDamageSource, damageMsg)
 
 	target.SetHealth(newHealth)
+
+	//-------------- Apply Effect --------------
+
+	for _, effect := range ds.effectList {
+		var effectTarget Entity
+		if effect.selfTarget {
+			effectTarget = source
+		} else {
+			effectTarget = target
+		}
+
+		isBlocked := false
+		for _, activeEffect := range effectTarget.GetBattleState().activeEffectsList {
+			for _, blockedBy := range activeEffect.skillEffect.isBlockedBy {
+				if effect.name == blockedBy.name {
+					isBlocked = true
+
+					effectBlockedMsg := GetGameTextBattle("effectblocked")
+					fmt.Printf("%s (%s, %s)\n", effectBlockedMsg,
+						effect.name, blockedBy.name)
+					break
+				}
+			}
+			if isBlocked {
+				break
+			}
+		}
+
+		if !isBlocked {
+			// apply effect
+			newEffect := ActiveEffect{
+				skillEffect: effect,
+				totalPower:  baseDamageSource,
+				turnsLeft:   ds.duration,
+			}
+
+			// todo SetBattleState
+			// effectTarget.Se
+		}
+	}
 
 	// ---------------------------------------------------------------------------------
 	// --------------------- EXAMPLE IMPLEMENTATION OF AI - REWORK ---------------------

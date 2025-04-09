@@ -99,7 +99,8 @@
         "bossdefeated": "You defeated the boss:",
         "useskill": "Using skill",
         "damagedealt": "You dealt",
-        "damage": "damage"
+        "damage": "damage",
+        "effectblocked": "Effect was blocked"
     },
     "gamemessage": {
         "availablecommands": "Available Commands:",

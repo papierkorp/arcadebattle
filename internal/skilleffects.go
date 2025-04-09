@@ -14,7 +14,7 @@ type SkillEffect struct {
 	cost            int
 	usage           func()
 	usageTiming     EffectTiming
-	isBlockedby     []SkillEffect
+	isBlockedBy     []SkillEffect
 	selfTarget      bool //if false target=enemy
 	validSkillTypes []string
 }
