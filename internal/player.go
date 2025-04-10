@@ -130,9 +130,44 @@ func (p *Player) SetSpeed(speed int) {
 	p.stats.speed = speed
 }
 
-// GetBattleState comment
+// GetBattleState returns the player's battle state
 func (p *Player) GetBattleState() *BattleState {
 	return &p.battlestate
+}
+
+// SetCurrentHealth sets the current health in battle state
+func (p *Player) SetCurrentHealth(health int) {
+	p.battlestate.currentHealth = health
+}
+
+// SetTotalTurnsBuffs sets the total turns for buffs in battle state
+func (p *Player) SetTotalTurnsBuffs(turns int) {
+	p.battlestate.totalTurnsBuffs = turns
+}
+
+// SetTotalTurnsDebuff sets the total turns for debuffs in battle state
+func (p *Player) SetTotalTurnsDebuff(turns int) {
+	p.battlestate.totalTurnsDebuff = turns
+}
+
+// AddActiveEffect adds an effect to the active effects list
+func (p *Player) AddActiveEffect(effect ActiveEffect) {
+	p.battlestate.activeEffectsList = append(p.battlestate.activeEffectsList, effect)
+}
+
+// RemoveActiveEffect removes an effect from the active effects list
+func (p *Player) RemoveActiveEffect(effect SkillEffect) {
+	// todo: implement effect removal logic
+}
+
+// ClearActiveEffects removes all active effects
+func (p *Player) ClearActiveEffects() {
+	p.battlestate.activeEffectsList = []ActiveEffect{}
+}
+
+// SetBattlePhase sets the current battle phase
+func (p *Player) SetBattlePhase(phase BattlePhase) {
+	p.battlestate.currentBattlePhase = phase
 }
 
 // GetName comment
@@ -151,8 +186,8 @@ func (p *Player) CheckDefeat() bool {
 
 // HandleDefeat comment
 func (p *Player) HandleDefeat() {
-	// todo add statistics, e.g. defeated bosses..
-	// todo show statistic summary
+	// todo: add statistics, e.g. defeated bosses..
+	// todo: show statistic summary
 
 	current_player.state = dead
 
@@ -161,6 +196,48 @@ func (p *Player) HandleDefeat() {
 	current_player.state = idle
 
 	StateIdle()
+}
+
+// ResetBattleState resets the battle state to initial values
+func (p *Player) ResetBattleState() {
+	p.battlestate = BattleState{
+		currentHealth:      p.stats.health,
+		totalTurnsBuffs:    0,
+		totalTurnsDebuff:   0,
+		activeEffectsList:  []ActiveEffect{},
+		currentBattlePhase: turnStart,
+	}
+}
+
+// ApplyDamage applies damage to the player
+func (p *Player) ApplyDamage(amount int) {
+	// todo: implement damage application logic with shields and effects
+
+	currentHealth := p.battlestate.currentHealth
+	newHealth := max(currentHealth-amount, 0)
+
+	damagedealtMsg := GetGameTextBattle("damagedealt")
+	damageMsg := GetGameTextBattle("damage")
+	fmt.Printf("%s %d %s\n", damagedealtMsg, amount, damageMsg)
+	p.battlestate.currentHealth = newHealth
+}
+
+// ApplyHealing applies healing to the player
+func (p *Player) ApplyHealing(amount int) {
+	// todo: implement healing logic with grievous wounds check
+	currentHealth := p.battlestate.currentHealth
+	maxHealth := p.stats.health
+	newHealth := currentHealth + amount
+	if newHealth > maxHealth {
+		newHealth = maxHealth
+	}
+	p.battlestate.currentHealth = newHealth
+}
+
+// HasActiveEffect checks if the player has a specific active effect
+func (p *Player) HasActiveEffect(effectType string) bool {
+	// todo: implement effect checking logic
+	return false
 }
 
 // -------------------------------------------------------------------------

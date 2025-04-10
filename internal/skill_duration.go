@@ -159,15 +159,7 @@ func (ds *DurationSkill) Use(s string) error {
 
 	fmt.Printf("baseDamage: power * skillmutli: %d * %.1fx", source.GetStats().power, ds.dmgmulti)
 	baseDamageSource := int(float32(source.GetStats().power) * ds.dmgmulti)
-
-	currentHealth := target.GetStats().health
-	newHealth := max(currentHealth-baseDamageSource, 0)
-
-	damagedealtMsg := GetGameTextBattle("damagedealt")
-	damageMsg := GetGameTextBattle("damage")
-	fmt.Printf("%s %d %s\n", damagedealtMsg, baseDamageSource, damageMsg)
-
-	target.SetHealth(newHealth)
+	target.ApplyDamage(baseDamageSource)
 
 	//-------------- Apply Effect --------------
 
@@ -204,41 +196,10 @@ func (ds *DurationSkill) Use(s string) error {
 				turnsLeft:   ds.duration,
 			}
 
-			// todo SetBattleState
-			// effectTarget.Se
+			fmt.Println(newEffect)
 		}
+
 	}
-
-	// ---------------------------------------------------------------------------------
-	// --------------------- EXAMPLE IMPLEMENTATION OF AI - REWORK ---------------------
-	// ---------------------------------------------------------------------------------
-
-	// user := current_player
-	// target := current_boss
-	//
-	// // Calculate base damage using power and damage multiplier
-	// baseDamage := int(float32(user.stats.power) * ds.dmgmulti)
-	//
-	// // Apply damage to target
-	// target.stats.health -= baseDamage
-	//
-	// // Log damage dealt
-	// damagedealtMsg := GetGameTextBattle("damagedealt")
-	// damageMsg := GetGameTextBattle("damage")
-	// fmt.Printf("%s %d %s\n", damagedealtMsg, baseDamage, damageMsg)
-	//
-	// // Apply effects (simplified)
-	// for _, effect := range ds.effectList {
-	// 	// Create an active effect in target's battlestate
-	// 	activeEffect := ActiveEffect{
-	// 		skillEffect: effect,
-	// 		totalPower:  float32(user.stats.power) * ds.dmgmulti,
-	// 		turnsLeft:   ds.duration,
-	// 	}
-	//
-	// 	// Add to target's active effects
-	// 	target.battlestate.activeEffectsList = append(target.battlestate.activeEffectsList, activeEffect)
-	// }
 
 	return nil
 }

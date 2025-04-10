@@ -11,7 +11,6 @@ type BattleState struct {
 	currentHealth      int
 	totalTurnsBuffs    int
 	totalTurnsDebuff   int
-	isStunned          bool
 	activeEffectsList  []ActiveEffect
 	currentBattlePhase BattlePhase
 }
@@ -20,7 +19,7 @@ type BattleState struct {
 type BattlePhase int
 
 const (
-	turnStart EffectTiming = iota
+	turnStart BattlePhase = iota
 	turnAction
 	turnEnd
 )
