@@ -12,11 +12,26 @@ type SkillEffect struct {
 	name            string
 	description     string
 	cost            int
-	usage           func()
+	usage           func(ae ActiveEffect)
 	usageTiming     EffectTiming
 	isBlockedBy     []SkillEffect
 	selfTarget      bool //if false target=enemy
 	validSkillTypes []string
+}
+
+// ActiveEffect comment
+type ActiveEffect struct {
+	skillEffect SkillEffect
+	totalPower  int
+	turnsLeft   int
+	source      Entity
+	target      Entity
+}
+
+func (ae ActiveEffect) String() string {
+
+	return fmt.Sprintf("Effectname: %s | Power: %d | Duration: %d",
+		ae.skillEffect.name, ae.totalPower, ae.turnsLeft)
 }
 
 // EffectTiming comment
@@ -35,8 +50,10 @@ func newSkillEffect(skillType string, effectName string) (SkillEffect, error) {
 	//todo use this function to create the docs while also passing the skilltype
 
 	type partSkillEffect struct {
-		usage           func()
+		usage           func(ae ActiveEffect)
 		usageTiming     EffectTiming
+		isBlockedBy     []SkillEffect
+		selfTarget      bool //if false target=enemy
 		validSkillTypes []string
 	}
 
@@ -45,131 +62,179 @@ func newSkillEffect(skillType string, effectName string) (SkillEffect, error) {
 		"directdamage": {
 			usage:           effectUseDirectDamage,
 			usageTiming:     OnSkillUse,
+			isBlockedBy:     []SkillEffect{},
+			selfTarget:      false,
 			validSkillTypes: []string{"immediate", "duration"},
 		},
 		"pierce": {
 			usage:           effectUsePierce,
 			usageTiming:     OnSkillUse,
+			isBlockedBy:     []SkillEffect{},
+			selfTarget:      false,
 			validSkillTypes: []string{"immediate"},
 		},
 		"finisher": {
 			usage:           effectUseFinisher,
 			usageTiming:     OnSkillUse,
+			isBlockedBy:     []SkillEffect{},
+			selfTarget:      false,
 			validSkillTypes: []string{"immediate"},
 		},
 		"buffturnbonusdamage": {
 			usage:           effectUseBuffTurnBonusDamage,
 			usageTiming:     OnSkillUse,
+			isBlockedBy:     []SkillEffect{},
+			selfTarget:      false,
 			validSkillTypes: []string{"immediate"},
 		},
 		"debuffturnbonusdamage": {
 			usage:           effectUseDebuffTurnBonusDamage,
 			usageTiming:     OnSkillUse,
+			isBlockedBy:     []SkillEffect{},
+			selfTarget:      false,
 			validSkillTypes: []string{"immediate"},
 		},
-
 		// Support Effects
 		"directheal": {
 			usage:           effectUseDirectHeal,
 			usageTiming:     OnSkillUse,
+			isBlockedBy:     []SkillEffect{},
+			selfTarget:      true,
 			validSkillTypes: []string{"immediate"},
 		},
 		"lifeleech": {
 			usage:           effectUseLifeleech,
 			usageTiming:     OnSkillUse,
+			isBlockedBy:     []SkillEffect{},
+			selfTarget:      true,
 			validSkillTypes: []string{"immediate"},
 		},
 		"cleanse": {
 			usage:           effectUseCleanse,
 			usageTiming:     OnSkillUse,
+			isBlockedBy:     []SkillEffect{},
+			selfTarget:      true,
 			validSkillTypes: []string{"immediate"},
 		},
 		"dispel": {
 			usage:           effectUseDispel,
 			usageTiming:     OnSkillUse,
+			isBlockedBy:     []SkillEffect{},
+			selfTarget:      false,
 			validSkillTypes: []string{"immediate"},
 		},
 		"extendbuffs": {
 			usage:           effectUseExtendBuffs,
 			usageTiming:     OnSkillUse,
+			isBlockedBy:     []SkillEffect{},
+			selfTarget:      true,
 			validSkillTypes: []string{"duration", "passive"},
 		},
 		"extenddebuffs": {
 			usage:           effectUseExtendDebuffs,
+			usageTiming:     OnSkillUse,
+			isBlockedBy:     []SkillEffect{},
+			selfTarget:      false,
 			validSkillTypes: []string{"duration", "passive"},
 		},
 		"reducedebuffs": {
 			usage:           effectUseReduceDebuffs,
 			usageTiming:     OnSkillUse,
+			isBlockedBy:     []SkillEffect{},
+			selfTarget:      true,
 			validSkillTypes: []string{"duration", "passive"},
 		},
 		"reducebuffs": {
 			usage:           effectUseReduceBuffs,
 			usageTiming:     OnSkillUse,
+			isBlockedBy:     []SkillEffect{},
+			selfTarget:      false,
 			validSkillTypes: []string{"duration", "passive"},
 		},
-
 		// Over Time - Buff Effects
 		"blockdebuffs": {
 			usage:           effectUseBlockDebuffs,
 			usageTiming:     OnTurnStart,
+			isBlockedBy:     []SkillEffect{},
+			selfTarget:      true,
 			validSkillTypes: []string{"duration", "passive"},
 		},
 		"healovertime": {
 			usage:           effectUseHealOverTime,
 			usageTiming:     OnTurnStart,
+			isBlockedBy:     []SkillEffect{},
+			selfTarget:      true,
 			validSkillTypes: []string{"duration"},
 		},
 		"incpower": {
 			usage:           effectUseIncPower,
 			usageTiming:     OnTurnStart,
+			isBlockedBy:     []SkillEffect{},
+			selfTarget:      true,
 			validSkillTypes: []string{"duration", "passive"},
 		},
 		"shield": {
 			usage:           effectUseShield,
 			usageTiming:     OnTurnStart,
+			isBlockedBy:     []SkillEffect{},
+			selfTarget:      true,
 			validSkillTypes: []string{"duration", "passive"},
 		},
 		"reflectdamage": {
 			usage:           effectUseReflectDamage,
 			usageTiming:     OnTurnStart,
+			isBlockedBy:     []SkillEffect{},
+			selfTarget:      true,
 			validSkillTypes: []string{"duration", "passive"},
 		},
 		"evasion": {
 			usage:           effectUseEvasion,
 			usageTiming:     OnTurnStart,
+			isBlockedBy:     []SkillEffect{},
+			selfTarget:      true,
 			validSkillTypes: []string{"duration", "passive"},
 		},
 		"criticalstrike": {
 			usage:           effectUseCriticalRate,
 			usageTiming:     OnTurnStart,
+			isBlockedBy:     []SkillEffect{},
+			selfTarget:      true,
 			validSkillTypes: []string{"duration", "passive"},
 		},
-
 		// Over Time - Debuff Effects
 		"dot": {
 			usage:           effectUseDOT,
 			usageTiming:     OnTurnStart,
+			isBlockedBy:     []SkillEffect{},
+			selfTarget:      false,
 			validSkillTypes: []string{"duration"},
 		},
 		"stun": {
 			usage:           effectUseStun,
 			usageTiming:     OnTurnStart,
+			isBlockedBy:     []SkillEffect{},
+			selfTarget:      false,
 			validSkillTypes: []string{"duration"},
 		},
 		"damagereduction": {
 			usage:           effectUseDamageReduction,
 			usageTiming:     OnTurnStart,
+			isBlockedBy:     []SkillEffect{},
+			selfTarget:      false,
 			validSkillTypes: []string{"duration", "passive"},
 		},
 		"blockbuffs": {
 			usage:           effectUseBlockBuffs,
 			usageTiming:     OnTurnStart,
+			isBlockedBy:     []SkillEffect{},
+			selfTarget:      false,
 			validSkillTypes: []string{"duration"},
 		},
 		"grievouswounds": {
 			usage:           effectUseGrievousWounds,
 			usageTiming:     OnTurnStart,
+			isBlockedBy:     []SkillEffect{},
+			selfTarget:      false,
 			validSkillTypes: []string{"duration"},
 		},
 	}
@@ -235,115 +300,115 @@ func upgradeSkillEffect(effectName SkillEffect) (SkillEffect, error) {
 // -------------------------------------------------------------------------
 // -------------------------------direct damage------------------------------
 // -------------------------------------------------------------------------
-
-func effectUseDirectDamage() {
-	fmt.Println("asdf")
+func effectUseDirectDamage(ae ActiveEffect) {
+	fmt.Println("Direct damage effect used")
 }
 
-func effectUsePierce() {
-	fmt.Println("asdf")
+func effectUsePierce(ae ActiveEffect) {
+	fmt.Println("Pierce effect used")
 }
 
-func effectUseFinisher() {
-	fmt.Println("asdf")
+func effectUseFinisher(ae ActiveEffect) {
+	fmt.Println("Finisher effect used")
 }
 
-func effectUseBuffTurnBonusDamage() {
-	fmt.Println("asdf")
+func effectUseBuffTurnBonusDamage(ae ActiveEffect) {
+	fmt.Println("Buff turn bonus damage effect used")
 }
 
-func effectUseDebuffTurnBonusDamage() {
-	fmt.Println("asdf")
+func effectUseDebuffTurnBonusDamage(ae ActiveEffect) {
+	fmt.Println("Debuff turn bonus damage effect used")
 }
 
 // -------------------------------------------------------------------------
 // ------------------------------direct support-----------------------------
 // -------------------------------------------------------------------------
 
-func effectUseDirectHeal() {
-	fmt.Println("asdf")
+func effectUseDirectHeal(ae ActiveEffect) {
+	fmt.Println("Direct heal effect used")
 }
 
-func effectUseLifeleech() {
-	fmt.Println("asdf")
+func effectUseLifeleech(ae ActiveEffect) {
+	fmt.Println("Life leech effect used")
 }
 
-func effectUseCleanse() {
-	fmt.Println("asdf")
+func effectUseCleanse(ae ActiveEffect) {
+	fmt.Println("Cleanse effect used")
 }
 
-func effectUseDispel() {
-	fmt.Println("asdf")
+func effectUseDispel(ae ActiveEffect) {
+	fmt.Println("Dispel effect used")
 }
 
-func effectUseExtendBuffs() {
-	fmt.Println("asdf")
+func effectUseExtendBuffs(ae ActiveEffect) {
+	fmt.Println("Extend buffs effect used")
 }
 
-func effectUseExtendDebuffs() {
-	fmt.Println("asdf")
+func effectUseExtendDebuffs(ae ActiveEffect) {
+	fmt.Println("Extend debuffs effect used")
 }
 
-func effectUseReduceDebuffs() {
-	fmt.Println("asdf")
+func effectUseReduceDebuffs(ae ActiveEffect) {
+	fmt.Println("Reduce debuffs effect used")
 }
 
-func effectUseReduceBuffs() {
-	fmt.Println("asdf")
+func effectUseReduceBuffs(ae ActiveEffect) {
+	fmt.Println("Reduce buffs effect used")
 }
 
 // -------------------------------------------------------------------------
 // ------------------------------over time buffs-----------------------------
 // -------------------------------------------------------------------------
 
-func effectUseBlockDebuffs() {
-	fmt.Println("asdf")
+func effectUseBlockDebuffs(ae ActiveEffect) {
+	fmt.Println("Block debuffs effect used")
 }
 
-func effectUseHealOverTime() {
-	fmt.Println("asdf")
+func effectUseHealOverTime(ae ActiveEffect) {
+	fmt.Println("Heal over time effect used")
 }
 
-func effectUseIncPower() {
-	fmt.Println("asdf")
+func effectUseIncPower(ae ActiveEffect) {
+	fmt.Println("Increase power effect used")
 }
 
-func effectUseShield() {
-	fmt.Println("asdf")
+func effectUseShield(ae ActiveEffect) {
+	fmt.Println("Shield effect used")
 }
 
-func effectUseReflectDamage() {
-	fmt.Println("asdf")
+func effectUseReflectDamage(ae ActiveEffect) {
+	fmt.Println("Reflect damage effect used")
 }
 
-func effectUseEvasion() {
-	fmt.Println("asdf")
+func effectUseEvasion(ae ActiveEffect) {
+	fmt.Println("Evasion effect used")
 }
 
-func effectUseCriticalRate() {
-	fmt.Println("asdf")
+func effectUseCriticalRate(ae ActiveEffect) {
+	fmt.Println("Critical rate effect used")
 }
 
 // -------------------------------------------------------------------------
 // ------------------------------overtime debuffs-----------------------------
 // -------------------------------------------------------------------------
 
-func effectUseDOT() {
-	fmt.Println("asdf")
+func effectUseDOT(ae ActiveEffect) {
+	fmt.Println("DOT effect used")
+	ae.target.ApplyDamage(int(float64(ae.totalPower) * 0.25))
 }
 
-func effectUseStun() {
-	fmt.Println("asdf")
+func effectUseStun(ae ActiveEffect) {
+	fmt.Println("Stun effect used")
 }
 
-func effectUseDamageReduction() {
-	fmt.Println("asdf")
+func effectUseDamageReduction(ae ActiveEffect) {
+	fmt.Println("Damage reduction effect used")
 }
 
-func effectUseBlockBuffs() {
-	fmt.Println("asdf")
+func effectUseBlockBuffs(ae ActiveEffect) {
+	fmt.Println("Block buffs effect used")
 }
 
-func effectUseGrievousWounds() {
-	fmt.Println("asdf")
+func effectUseGrievousWounds(ae ActiveEffect) {
+	fmt.Println("Grievous wounds effect used")
 }

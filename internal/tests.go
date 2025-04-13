@@ -175,14 +175,14 @@ func testSkillImmediateEffectMismatch() {
 
 func testSkillImmediateNoPlayer() {
 	// Reset current player to test no player state
-	oldPlayer := current_player
-	current_player = Player{}
+	oldPlayer := currentPlayer
+	currentPlayer = Player{}
 
 	testInput := "new skill immediate NoPlayerSkill 1.0 directdamage"
 	ExecuteTest(testInput)
 
 	// Restore player after test
-	current_player = oldPlayer
+	currentPlayer = oldPlayer
 }
 
 func testSkillImmediateSpecialChar() {
@@ -259,7 +259,7 @@ func testSkillPassiveEffectDMGMultiDuration() {
 
 func testBattleStart() {
 	// First create a player if none exists
-	if current_player.name == "" {
+	if currentPlayer.name == "" {
 		ExecuteTest("new player TestWarrior normal 100 50 20")
 	}
 

@@ -2,7 +2,6 @@
 package internal
 
 import (
-	"fmt"
 	"strings"
 )
 
@@ -42,43 +41,4 @@ func createEffectList(args []string, skilltype string, startIndex int) ([]SkillE
 	}
 
 	return effectList, nil
-}
-
-func useCommand(commandArgs []string) bool {
-	if len(commandArgs) < 3 || commandArgs[1] != "skill" {
-		invalidargsMsg := GetGameTextError("invalidargs")
-		useSkillMsg := GetGameTextCommand("useskill")
-		fmt.Println(invalidargsMsg)
-		fmt.Println(useSkillMsg.Usage)
-		return false
-	}
-
-	skillName := strings.ToLower(commandArgs[2])
-	var foundSkill Skill
-	skillFound := false
-
-	for _, skill := range current_player.skilllist {
-		if strings.ToLower(skill.GetName()) == skillName {
-			skillFound = true
-			foundSkill = skill
-			break
-		}
-	}
-
-	if !skillFound {
-		invalidSkillNameMsg := GetGameTextError("invalidskillname")
-		fmt.Println(invalidSkillNameMsg)
-		return false
-	}
-
-	useskillMsg := GetGameTextBattle("useskill")
-	fmt.Printf("%s: %s\n", useskillMsg, foundSkill.GetName())
-
-	err := foundSkill.Use("player")
-	if err != nil {
-		fmt.Println(err)
-		return false
-	}
-
-	return true
 }

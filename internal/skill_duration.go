@@ -54,7 +54,7 @@ func (ds DurationSkill) String() string {
 // CreateNewDurationSkill comment
 func CreateNewDurationSkill(args []string) (*DurationSkill, error) {
 	// Minimum args: new0 skill1 <skilltype2> <name3> <dmgmulti4> <duration5> [effect effect effect6...]
-	if current_player.name == "" {
+	if currentPlayer.name == "" {
 		noPlayerMsg := GetGameTextError("noplayer")
 		return nil, fmt.Errorf("%s", noPlayerMsg)
 	}
@@ -101,7 +101,7 @@ func CreateNewDurationSkill(args []string) (*DurationSkill, error) {
 		return nil, err
 	}
 	skill.talentpointcoststotal = usedTalentpoints
-	current_player.skilllist = append(current_player.skilllist, skill)
+	currentPlayer.skilllist = append(currentPlayer.skilllist, skill)
 	tempSkillCounter++
 	return skill, nil
 }
@@ -138,17 +138,16 @@ func (ds *DurationSkill) GetDamageMultiplier() float32 {
 
 // Use comment
 func (ds *DurationSkill) Use(s string) error {
-	// todo rework
 	var source Entity
 	var target Entity
 
 	switch s {
 	case "player":
-		source = &current_player
-		target = &current_boss
+		source = GetEntity(PlayerEntity)
+		target = GetEntity(BossEntity)
 	case "boss":
-		source = &current_boss
-		target = &current_player
+		source = GetEntity(BossEntity)
+		target = GetEntity(PlayerEntity)
 	default:
 		invalidEntityMsg := GetGameTextError("invalidentity")
 		internalErrorMsg := GetGameTextError("internal")
@@ -157,7 +156,6 @@ func (ds *DurationSkill) Use(s string) error {
 
 	//-------------- Handle Damage --------------
 
-	fmt.Printf("baseDamage: power * skillmutli: %d * %.1fx", source.GetStats().power, ds.dmgmulti)
 	baseDamageSource := int(float32(source.GetStats().power) * ds.dmgmulti)
 	target.ApplyDamage(baseDamageSource)
 
@@ -189,14 +187,15 @@ func (ds *DurationSkill) Use(s string) error {
 		}
 
 		if !isBlocked {
-			// apply effect
 			newEffect := ActiveEffect{
 				skillEffect: effect,
 				totalPower:  baseDamageSource,
 				turnsLeft:   ds.duration,
+				source:      source,
+				target:      target,
 			}
 
-			fmt.Println(newEffect)
+			target.AddActiveEffect(newEffect)
 		}
 
 	}

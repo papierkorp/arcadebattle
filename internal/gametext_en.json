@@ -18,6 +18,7 @@
         "invalidduration": "Invalid duration value",
         "durationpositive": "Duration must be positive",
         "noskill": "No skills created yet",
+        "noactiveeffect": "No active effects",
         "internal": "internal error",
         "invalidboss": "Couldnt create Boss.",
         "internalturnoutofbounds": "Turn index out of bounds!",
@@ -29,7 +30,8 @@
         "missingdmgmulti": "missing damage multiplier for non-passive skill",
         "notavailable": "Not available",
         "invalidskilltypeeffect": "Invalid effect: cant be used with this skilltype",
-        "invalidentity": "Invalid entity"
+        "invalidentity": "Invalid entity",
+        "noskillusage": "You can only use the skill command during battle."
     },
     "status": {
         "player": {
@@ -43,14 +45,16 @@
             "difficulty": "Difficulty",
             "bosses": "Defeated Bosses",
             "alive": "Alive",
-            "state": "State"
+            "state": "State",
+            "activeeffectlist": "Active Effects"
         },
         "boss": {
             "name": "Name",
             "health": "HP",
             "power": "Power",
             "speed": "Speed",
-            "skilllist": "Skilllist"
+            "skilllist": "Skilllist",
+            "activeeffectlist": "Active Effects"
         }
     },
     "state": {
@@ -100,7 +104,8 @@
         "useskill": "Using skill",
         "damagedealt": "You dealt",
         "damage": "damage",
-        "effectblocked": "Effect was blocked"
+        "effectblocked": "Effect was blocked",
+        "newhealth": "New health"
     },
     "gamemessage": {
         "availablecommands": "Available Commands:",
@@ -137,7 +142,8 @@
         "costper01multi": "Cost per 0.1 Multi",
         "durationskill": "Durationskill",
         "immediateskill": "Immediateskill",
-        "passiveskill": "Passiveskill"
+        "passiveskill": "Passiveskill",
+        "boss": "Boss"
     },
     "help": {
         "header": "==================",

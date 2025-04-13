@@ -3,7 +3,6 @@ package internal
 
 import (
 	"fmt"
-	"strings"
 )
 
 // BattleState comment
@@ -24,22 +23,17 @@ const (
 	turnEnd
 )
 
-// ActiveEffect comment
-type ActiveEffect struct {
-	skillEffect SkillEffect
-	totalPower  int //power*dmgmultiplier
-	turnsLeft   int
-}
-
 // -------------------------------------------------------------------------
 // -------------------------------battle loop------------------------------
 // -------------------------------------------------------------------------
 
 func startBattle() {
-	current_player.state = battle
-	turn_order = initBattle()
+	currentPlayer.ResetBattleState()
+	currentBoss.ResetBattleState()
+	currentPlayer.state = battle
+	turnOrder = initBattle()
 
-	getAllTurnsBeforeLoop(current_player.stats.speed, current_boss.stats.speed)
+	getAllTurnsBeforeLoop(currentPlayer.stats.speed, currentBoss.stats.speed)
 
 	battleStartedMsg := GetGameTextBattle("start")
 	currentEnemyMsg := GetGameTextBattle("currentenemy")
@@ -51,65 +45,42 @@ func startBattle() {
 	checkCurrentTurn()
 }
 
-func playerTurn() {
-	invalidCommandMsg := GetGameTextError("invalidcommand")
-	gamestarthelpMsg := GetGameTextGameMessage("gamestarthelp")
-	battlepromptMsg := GetGameTextBattle("battleprompt")
+func checkCurrentTurn() {
+	turnIndex := (turnOrder.currentLoopTurn - 1) % turnOrder.turnsBeforeLoop
 
-	fmt.Print("player turn - ")
-	fmt.Printf("%s\n", turn_order)
+	if turnIndex < len(turnOrder.turnSequence) {
+		turnType := turnOrder.turnSequence[turnIndex]
 
-	for {
-		rl.SetPrompt(battlepromptMsg)
+		turnOrder.currentLoopTurn++
 
-		input, err := rl.Readline()
-		if err != nil {
-			break
+		if turnOrder.currentLoopTurn > turnOrder.turnsBeforeLoop {
+			turnOrder.currentLoopTurn = 1
 		}
 
-		commandArgs := strings.Fields(strings.ToLower(input))
-
-		if len(commandArgs) == 0 {
-			continue
-		}
-
-		command := commandArgs[0]
-		validCommand := true
-
-		switch command {
-		case "help", "?":
-			if len(commandArgs) > 1 {
-				helpSpecificCommand(commandArgs[1])
-			} else {
-				helpCommand()
-			}
-
-			validCommand = false
-		case "status":
-			statusCommand(commandArgs)
-
-			validCommand = false
-		case "quit", "exit":
-			leaveBattle()
+		if currentPlayer.state != battle {
 			return
-		case "use":
-			validCommand = useCommand(commandArgs)
-
-		default:
-			fmt.Println(invalidCommandMsg)
-			fmt.Println(gamestarthelpMsg)
-			validCommand = false
 		}
 
-		if validCommand {
-			break
+		if currentPlayer.state == dead {
+			currentPlayer.HandleDefeat()
+			return
 		}
+
+		if currentBoss.CheckDefeat() {
+			currentBoss.HandleDefeat()
+			return
+		}
+
+		if turnType == "player" {
+			playerTurn()
+		} else {
+			bossTurn()
+		}
+	} else {
+		internal := GetGameTextError("internal")
+		internalturnoutofbounds := GetGameTextError("internalturnoutofbounds")
+		fmt.Printf("%s: %s", internal, internalturnoutofbounds)
 	}
-
-	updateTurnOrderCurrentTurn()
-	promptMsg := GetGameTextGameMessage("prompt")
-	rl.SetPrompt(promptMsg)
-	checkCurrentTurn()
 }
 
 // -------------------------------------------------------------------------
@@ -140,7 +111,7 @@ func initBattle() TurnOrder {
 }
 
 func updateTurnOrderCurrentTurn() {
-	turn_order.currentTurn++
+	turnOrder.currentTurn++
 }
 
 // -------------------------------------------------------------------------
@@ -148,87 +119,44 @@ func updateTurnOrderCurrentTurn() {
 // -------------------------------------------------------------------------
 
 func getAllTurnsBeforeLoop(playerSpeed, bossSpeed int) {
-	turn_order.currentLoopTurn = 1
+	turnOrder.currentLoopTurn = 1
 	lcm := LCM(playerSpeed, bossSpeed)
-	turn_order.turnsBeforeLoop = (lcm / playerSpeed) + (lcm / bossSpeed)
-	turn_order.turnSequence = make([]string, 0, turn_order.turnsBeforeLoop)
+	turnOrder.turnsBeforeLoop = (lcm / playerSpeed) + (lcm / bossSpeed)
+	turnOrder.turnSequence = make([]string, 0, turnOrder.turnsBeforeLoop)
 
 	playerTurnCounter := bossSpeed
 	bossTurnCounter := playerSpeed
 
-	fmt.Println("Player Speed:", playerSpeed)
-	fmt.Println("Boss Speed:", bossSpeed)
-
-	for i := 0; i < turn_order.turnsBeforeLoop; i++ {
+	for i := 0; i < turnOrder.turnsBeforeLoop; i++ {
 		if playerSpeed == bossSpeed { // if equal player starts
 			if i%2 == 0 {
-				turn_order.turnSequence = append(turn_order.turnSequence, "player")
+				turnOrder.turnSequence = append(turnOrder.turnSequence, "player")
 			} else {
-				turn_order.turnSequence = append(turn_order.turnSequence, "boss")
+				turnOrder.turnSequence = append(turnOrder.turnSequence, "boss")
 			}
 		} else {
 			if bossTurnCounter < playerTurnCounter {
-				turn_order.turnSequence = append(turn_order.turnSequence, "boss")
+				turnOrder.turnSequence = append(turnOrder.turnSequence, "boss")
 				bossTurnCounter += playerSpeed
 			} else if playerTurnCounter < bossTurnCounter {
-				turn_order.turnSequence = append(turn_order.turnSequence, "player")
+				turnOrder.turnSequence = append(turnOrder.turnSequence, "player")
 				playerTurnCounter += bossSpeed
 			} else { // if equal
 				if bossSpeed > playerSpeed {
-					turn_order.turnSequence = append(turn_order.turnSequence, "boss")
+					turnOrder.turnSequence = append(turnOrder.turnSequence, "boss")
 					bossTurnCounter = playerSpeed
-					turn_order.turnSequence = append(turn_order.turnSequence, "player")
+					turnOrder.turnSequence = append(turnOrder.turnSequence, "player")
 					playerTurnCounter = bossSpeed
 					i++ // 2 turns
 				} else {
-					turn_order.turnSequence = append(turn_order.turnSequence, "player")
+					turnOrder.turnSequence = append(turnOrder.turnSequence, "player")
 					playerTurnCounter = bossSpeed
-					turn_order.turnSequence = append(turn_order.turnSequence, "boss")
+					turnOrder.turnSequence = append(turnOrder.turnSequence, "boss")
 					bossTurnCounter = playerSpeed
 					i++ // 2 turns
 				}
 			}
 		}
-	}
-
-	fmt.Printf("Initial Battle State: %s\n", turn_order)
-}
-
-func checkCurrentTurn() {
-	turnIndex := (turn_order.currentLoopTurn - 1) % turn_order.turnsBeforeLoop
-
-	if turnIndex < len(turn_order.turnSequence) {
-		turnType := turn_order.turnSequence[turnIndex]
-
-		turn_order.currentLoopTurn++
-
-		if turn_order.currentLoopTurn > turn_order.turnsBeforeLoop {
-			turn_order.currentLoopTurn = 1
-		}
-
-		if current_player.state != battle {
-			return
-		}
-
-		if current_player.state == dead {
-			current_player.HandleDefeat()
-			return
-		}
-
-		if current_boss.CheckDefeat() {
-			current_boss.HandleDefeat()
-			return
-		}
-
-		if turnType == "player" {
-			playerTurn()
-		} else {
-			bossTurn()
-		}
-	} else {
-		internal := GetGameTextError("internal")
-		internalturnoutofbounds := GetGameTextError("internalturnoutofbounds")
-		fmt.Printf("%s: %s", internal, internalturnoutofbounds)
 	}
 }
 
@@ -241,7 +169,7 @@ func printTurnOrderSequence() {
 	fmt.Print("\n" + separator2Msg + "\n")
 	fmt.Printf("\n%s: \n", turnOrdnerMsg)
 
-	for i, turn := range turn_order.turnSequence {
+	for i, turn := range turnOrder.turnSequence {
 		fmt.Printf("  %s %d: %s\n", turnMsg, i+1, turn)
 	}
 

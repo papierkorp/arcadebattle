@@ -19,7 +19,7 @@ type ImmediateSkill struct {
 // CreateNewImmediateSkill comment
 func CreateNewImmediateSkill(args []string) (*ImmediateSkill, error) {
 	// Minimum args: new0 skill1 immediate2 <name3> <dmgmulti4> [effect effect effect5...]
-	if current_player.name == "" {
+	if currentPlayer.name == "" {
 		noPlayerMsg := GetGameTextError("noplayer")
 		return nil, fmt.Errorf("%s", noPlayerMsg)
 	}
@@ -56,7 +56,7 @@ func CreateNewImmediateSkill(args []string) (*ImmediateSkill, error) {
 		return nil, err
 	}
 	skill.talentpointcoststotal = usedTalentpoints
-	current_player.skilllist = append(current_player.skilllist, skill)
+	currentPlayer.skilllist = append(currentPlayer.skilllist, skill)
 	tempSkillCounter++
 	return skill, nil
 }
@@ -125,30 +125,6 @@ func (is *ImmediateSkill) GetDamageMultiplier() float32 {
 
 // Use comment
 func (is *ImmediateSkill) Use(source string) error {
-	// todo rework
-	// ---------------------------------------------------------------------------------
-	// --------------------- EXAMPLE IMPLEMENTATION OF AI - REWORK ---------------------
-	// ---------------------------------------------------------------------------------
-
-	user := current_player
-	target := current_boss
-
-	// Calculate damage
-	baseDamage := int(float32(user.stats.power) * is.dmgmulti)
-
-	// Apply damage to target
-	target.stats.health -= baseDamage
-
-	// Log damage dealt
-	damagedealtMsg := GetGameTextBattle("damagedealt")
-	damageMsg := GetGameTextBattle("damage")
-	fmt.Printf("%s %d %s\n", damagedealtMsg, baseDamage, damageMsg)
-
-	// Apply immediate effects (simplified)
-	for _, effect := range is.effectList {
-		// Just call the effect's usage function
-		effect.usage()
-	}
 
 	return nil
 }

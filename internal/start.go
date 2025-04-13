@@ -43,6 +43,16 @@ func gameLoop() {
 	gamestarthelpMsg := GetGameTextGameMessage("gamestarthelp")
 
 	for {
+		if currentPlayer.state == battle {
+			battlepromptMsg := GetGameTextBattle("battleprompt")
+			rl.SetPrompt(battlepromptMsg)
+		}
+
+		if currentPlayer.state == idle || currentPlayer.state == dead {
+			promptMsg := GetGameTextGameMessage("prompt")
+			rl.SetPrompt(promptMsg)
+		}
+
 		input, err := rl.Readline()
 		if err != nil {
 			break
@@ -61,28 +71,34 @@ func gameLoop() {
 			} else {
 				helpCommand()
 			}
+
 		case "new":
 			newCommand(commandArgs)
+
 		case "upgrade":
 			upgradeCommand(commandArgs)
+
 		case "status":
 			statusCommand(commandArgs)
+
 		case "quit", "exit":
 			fmt.Println(goodbyeMsg)
 			return
 		case "battle":
 			startBattle()
+
 		case "test":
 			if len(commandArgs) > 1 {
 				RunTest(commandArgs[1])
 			} else {
 				fmt.Println("Please specify a test case")
 			}
+
 		default:
 			fmt.Println(invalidCommandMsg)
 			fmt.Println(gamestarthelpMsg)
 		}
 
-		CheckCurrentState(current_player.state)
+		CheckCurrentState(currentPlayer.state)
 	}
 }

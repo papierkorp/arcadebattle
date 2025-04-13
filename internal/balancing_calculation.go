@@ -254,7 +254,7 @@ func calculateStatsCost(stats Stats) int {
 }
 
 func changeTalentpoints(cost int) error {
-	currentTalentpoints := current_player.talentpointsRemaining
+	currentTalentpoints := currentPlayer.talentpointsRemaining
 
 	if cost > currentTalentpoints {
 		exceededMsg := GetGameTextError("exceededtalentpoints")
@@ -270,7 +270,7 @@ func changeTalentpoints(cost int) error {
 			cost)                // used value
 	}
 
-	current_player.talentpointsRemaining = currentTalentpoints - cost
+	currentPlayer.talentpointsRemaining = currentTalentpoints - cost
 
 	return nil
 }

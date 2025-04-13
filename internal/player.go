@@ -3,7 +3,9 @@ package internal
 
 import (
 	"fmt"
+	"slices"
 	"strconv"
+	"strings"
 )
 
 // todo talentpoints_total, talentpoints_remaining
@@ -107,6 +109,8 @@ func createPlayer(args []string) (*Player, error) {
 		bosses:                0,
 	}
 
+	player.ResetBattleState()
+
 	return player, nil
 }
 
@@ -157,7 +161,9 @@ func (p *Player) AddActiveEffect(effect ActiveEffect) {
 
 // RemoveActiveEffect removes an effect from the active effects list
 func (p *Player) RemoveActiveEffect(effect SkillEffect) {
-	// todo: implement effect removal logic
+	p.battlestate.activeEffectsList = slices.DeleteFunc(p.battlestate.activeEffectsList, func(ae ActiveEffect) bool {
+		return ae.skillEffect.name == effect.name
+	})
 }
 
 // ClearActiveEffects removes all active effects
@@ -177,7 +183,7 @@ func (p *Player) GetName() string {
 
 // CheckDefeat checks if the player is defeated
 func (p *Player) CheckDefeat() bool {
-	if p.stats.health <= 0 {
+	if p.battlestate.currentHealth <= 0 {
 		p.state = dead
 		return true
 	}
@@ -189,11 +195,11 @@ func (p *Player) HandleDefeat() {
 	// todo: add statistics, e.g. defeated bosses..
 	// todo: show statistic summary
 
-	current_player.state = dead
+	currentPlayer.state = dead
 
 	StateDead()
 
-	current_player.state = idle
+	currentPlayer.state = idle
 
 	StateIdle()
 }
@@ -224,13 +230,10 @@ func (p *Player) ApplyDamage(amount int) {
 
 // ApplyHealing applies healing to the player
 func (p *Player) ApplyHealing(amount int) {
-	// todo: implement healing logic with grievous wounds check
+	// todo: implement healing logic with effects
 	currentHealth := p.battlestate.currentHealth
 	maxHealth := p.stats.health
-	newHealth := currentHealth + amount
-	if newHealth > maxHealth {
-		newHealth = maxHealth
-	}
+	newHealth := min(maxHealth, currentHealth+amount)
 	p.battlestate.currentHealth = newHealth
 }
 
@@ -243,3 +246,90 @@ func (p *Player) HasActiveEffect(effectType string) bool {
 // -------------------------------------------------------------------------
 // -------------------------------handle state------------------------------
 // -------------------------------------------------------------------------
+
+// -------------------------------------------------------------------------
+// -------------------------------battle------------------------------
+// -------------------------------------------------------------------------
+
+func playerTurn() {
+	fmt.Print("player turn\n")
+
+	// -----------------------turnStart-----------------------
+	currentPlayer.SetBattlePhase(turnStart)
+	var remainingEffects []ActiveEffect
+
+	for _, activeEffect := range currentPlayer.GetBattleState().activeEffectsList {
+		activeEffect.skillEffect.usage(activeEffect)
+
+		activeEffect.turnsLeft--
+
+		if activeEffect.turnsLeft > 0 {
+			remainingEffects = append(remainingEffects, activeEffect)
+		}
+	}
+
+	currentPlayer.GetBattleState().activeEffectsList = remainingEffects
+
+	// -----------------------turnAction-----------------------
+	currentPlayer.SetBattlePhase(turnAction)
+
+	// is handled in start.go in the useCommand
+
+	battlepromptMsg := GetGameTextBattle("battleprompt")
+
+	for {
+		rl.SetPrompt(battlepromptMsg)
+
+		input, err := rl.Readline()
+		if err != nil {
+			break
+		}
+
+		commandArgs := strings.Fields(strings.ToLower(input))
+
+		if len(commandArgs) == 0 {
+			continue
+		}
+
+		command := commandArgs[0]
+		validCommand := true
+
+		switch command {
+		case "help", "?":
+			if len(commandArgs) > 1 {
+				helpSpecificCommand(commandArgs[1])
+			} else {
+				helpCommand()
+			}
+
+			validCommand = false
+		case "status":
+			statusCommand(commandArgs)
+
+			validCommand = false
+		case "quit", "exit", "run":
+			leaveBattle()
+			return
+		case "use":
+			validCommand = useCommand(commandArgs)
+
+		default:
+			invalidCommandMsg := GetGameTextError("invalidcommand")
+			gamestarthelpMsg := GetGameTextGameMessage("gamestarthelp")
+			fmt.Println(invalidCommandMsg)
+			fmt.Println(gamestarthelpMsg)
+			validCommand = false
+		}
+
+		if validCommand {
+			break
+		}
+	}
+
+	promptMsg := GetGameTextGameMessage("prompt")
+	rl.SetPrompt(promptMsg)
+
+	// -----------------------turnEnd-----------------------
+
+	currentPlayer.SetBattlePhase(turnEnd)
+}

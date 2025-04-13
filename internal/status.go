@@ -1,42 +1,56 @@
+// Package internal comment
 package internal
 
 import "fmt"
 
 func statusPlayer() {
+	// todo: different status for differen states
+
 	alive := true
-	if current_player.stats.health <= 0 {
+	if currentPlayer.battlestate.currentHealth <= 0 {
 		alive = false
 	}
 
 	status := GetGameTextStatus()
 	playerStatus := status.Player
 
-	if current_player.name == "" {
+	if currentPlayer.name == "" {
 		noPlayerMsg := GetGameTextError("noplayer")
 		fmt.Println("\n" + noPlayerMsg)
-		fmt.Printf("%s: %s\n", playerStatus.State, current_player.state)
+		fmt.Printf("%s: %s\n", playerStatus.State, currentPlayer.state)
 	} else {
-		fmt.Printf("\n%s: %s\n", playerStatus.Name, current_player.name)
-		fmt.Printf("%s: %d\n", playerStatus.Health, current_player.stats.health)
-		fmt.Printf("%s: %d\n", playerStatus.Power, current_player.stats.power)
-		fmt.Printf("%s: %d\n", playerStatus.Speed, current_player.stats.speed)
+		fmt.Printf("\n%s: %s\n", playerStatus.Name, currentPlayer.name)
+		fmt.Printf("%s: %d\n", playerStatus.Health, currentPlayer.battlestate.currentHealth)
+		fmt.Printf("%s: %d\n", playerStatus.Power, currentPlayer.stats.power)
+		fmt.Printf("%s: %d\n", playerStatus.Speed, currentPlayer.stats.speed)
 
 		fmt.Printf("%s:\n", playerStatus.Skilllist)
-		if len(current_player.skilllist) == 0 {
+		if len(currentPlayer.skilllist) == 0 {
 			errMsg := GetGameTextError("noskill")
 			fmt.Printf("  %s\n", errMsg)
 		} else {
-			for _, skill := range current_player.skilllist {
+			for _, skill := range currentPlayer.skilllist {
 				fmt.Printf("  %s\n", skill)
 			}
 		}
 
-		fmt.Printf("%s: %d\n", playerStatus.Talentpoints_Total, current_player.talentpointsTotal)
-		fmt.Printf("%s: %d\n", playerStatus.Talentpoints_Remaining, current_player.talentpointsRemaining)
-		fmt.Printf("%s: %s\n", playerStatus.Difficulty, current_player.difficulty.String())
-		fmt.Printf("%s: %d\n", playerStatus.Bosses, current_player.bosses)
+		fmt.Printf("%s: %d\n", playerStatus.Talentpoints_Total, currentPlayer.talentpointsTotal)
+		fmt.Printf("%s: %d\n", playerStatus.Talentpoints_Remaining, currentPlayer.talentpointsRemaining)
+		fmt.Printf("%s: %s\n", playerStatus.Difficulty, currentPlayer.difficulty.String())
+		fmt.Printf("%s: %d\n", playerStatus.Bosses, currentPlayer.bosses)
 		fmt.Printf("%s: %v\n", playerStatus.Alive, alive)
-		fmt.Printf("%s: %v\n", playerStatus.State, current_player.state)
+		fmt.Printf("%s: %v\n", playerStatus.State, currentPlayer.state)
+
+		playerBattlestate := currentPlayer.battlestate
+		fmt.Printf("%s:\n", playerStatus.ActiveEffectList)
+		if len(playerBattlestate.activeEffectsList) == 0 {
+			errMsg := GetGameTextError("noactiveeffect")
+			fmt.Printf("  %s\n", errMsg)
+		} else {
+			for _, effect := range playerBattlestate.activeEffectsList {
+				fmt.Printf("  %s\n", effect)
+			}
+		}
 	}
 
 }
@@ -44,19 +58,30 @@ func statusPlayer() {
 func statusBoss() {
 	status := GetGameTextStatus()
 	bossStatus := status.Boss
+	bossBattlestate := currentBoss.battlestate
 
-	fmt.Printf("\n%s: %s\n", bossStatus.Name, current_boss.name)
-	fmt.Printf("%s: %d\n", bossStatus.Health, current_boss.stats.health)
-	fmt.Printf("%s: %d\n", bossStatus.Power, current_boss.stats.power)
-	fmt.Printf("%s: %d\n", bossStatus.Speed, current_boss.stats.speed)
+	fmt.Printf("\n%s: %s\n", bossStatus.Name, currentBoss.name)
+	fmt.Printf("%s: %d\n", bossStatus.Health, currentBoss.battlestate.currentHealth)
+	fmt.Printf("%s: %d\n", bossStatus.Power, currentBoss.stats.power)
+	fmt.Printf("%s: %d\n", bossStatus.Speed, currentBoss.stats.speed)
 
 	fmt.Printf("%s:\n", bossStatus.Skilllist)
-	if len(current_boss.skilllist) == 0 {
+	if len(currentBoss.skilllist) == 0 {
 		errMsg := GetGameTextError("noskill")
 		fmt.Printf("  %s\n", errMsg)
 	} else {
-		for _, skill := range current_boss.skilllist {
+		for _, skill := range currentBoss.skilllist {
 			fmt.Printf("  %s\n", skill)
+		}
+	}
+
+	fmt.Printf("%s:\n", bossStatus.ActiveEffectList)
+	if len(bossBattlestate.activeEffectsList) == 0 {
+		errMsg := GetGameTextError("noactiveeffect")
+		fmt.Printf("  %s\n", errMsg)
+	} else {
+		for _, effect := range bossBattlestate.activeEffectsList {
+			fmt.Printf("  %s\n", effect)
 		}
 	}
 }

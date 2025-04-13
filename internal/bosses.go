@@ -3,6 +3,7 @@ package internal
 
 import (
 	"fmt"
+	"slices"
 	"time"
 )
 
@@ -19,12 +20,12 @@ type Boss struct {
 }
 
 func createBoss(oldstats Stats) (*Boss, error) {
-	currentBossNumber := current_player.bosses + 1
+	currentBossNumber := currentPlayer.bosses + 1
 	if currentBossNumber > 9 {
 		return nil, fmt.Errorf("game completed - all bosses defeated")
 	}
 
-	difficulty := current_player.difficulty
+	difficulty := currentPlayer.difficulty
 
 	baseHealth := 100
 	if oldstats.health > 0 {
@@ -81,6 +82,8 @@ func createBoss(oldstats Stats) (*Boss, error) {
 		stats: newStats,
 	}
 
+	boss.ResetBattleState()
+
 	return boss, nil
 }
 
@@ -131,14 +134,9 @@ func (b *Boss) AddActiveEffect(effect ActiveEffect) {
 
 // RemoveActiveEffect removes an effect from the active effects list
 func (b *Boss) RemoveActiveEffect(effect SkillEffect) {
-	// Build a new slice excluding the effect to remove
-	newEffects := []ActiveEffect{}
-	for _, activeEffect := range b.battlestate.activeEffectsList {
-		if activeEffect.skillEffect.name != effect.name {
-			newEffects = append(newEffects, activeEffect)
-		}
-	}
-	b.battlestate.activeEffectsList = newEffects
+	b.battlestate.activeEffectsList = slices.DeleteFunc(b.battlestate.activeEffectsList, func(ae ActiveEffect) bool {
+		return ae.skillEffect.name == effect.name
+	})
 }
 
 // ClearActiveEffects removes all active effects
@@ -158,7 +156,7 @@ func (b *Boss) GetName() string {
 
 // CheckDefeat checks if the boss is defeated and returns true/false
 func (b *Boss) CheckDefeat() bool {
-	if b.stats.health <= 0 {
+	if b.battlestate.currentHealth <= 0 {
 		return true
 	}
 	return false
@@ -171,14 +169,14 @@ func (b *Boss) HandleDefeat() {
 
 	fmt.Printf("%s: %s!\n", bossdefeatedMsg, b.name)
 
-	current_player.bosses++
+	currentPlayer.bosses++
 	// todo add to balancing file
-	rewardTalentPoints := 10 + (5 * current_player.bosses)
-	current_player.talentpointsRemaining += rewardTalentPoints
+	rewardTalentPoints := 10 + (5 * currentPlayer.bosses)
+	currentPlayer.talentpointsRemaining += rewardTalentPoints
 
 	fmt.Printf("%s: %d\n", newtalentpointsMsg, rewardTalentPoints)
 
-	current_player.state = idle
+	currentPlayer.state = idle
 }
 
 // ResetBattleState resets the battle state to initial values
@@ -195,10 +193,14 @@ func (b *Boss) ResetBattleState() {
 // ApplyDamage applies damage to the boss
 func (b *Boss) ApplyDamage(amount int) {
 	currentHealth := b.battlestate.currentHealth
-	newHealth := currentHealth - amount
-	if newHealth < 0 {
-		newHealth = 0
-	}
+	newHealth := max(0, currentHealth-amount)
+
+	damagedealtMsg := GetGameTextBattle("damagedealt")
+	damageMsg := GetGameTextBattle("damage")
+	newhealthMsg := GetGameTextBattle("newhealth")
+	fmt.Printf("%s %d %s\n", damagedealtMsg, amount, damageMsg)
+	fmt.Printf("%s: %d\n", newhealthMsg, newHealth)
+
 	b.battlestate.currentHealth = newHealth
 }
 
@@ -206,10 +208,7 @@ func (b *Boss) ApplyDamage(amount int) {
 func (b *Boss) ApplyHealing(amount int) {
 	currentHealth := b.battlestate.currentHealth
 	maxHealth := b.stats.health
-	newHealth := currentHealth + amount
-	if newHealth > maxHealth {
-		newHealth = maxHealth
-	}
+	newHealth := min(maxHealth, currentHealth+amount)
 	b.battlestate.currentHealth = newHealth
 }
 
@@ -240,12 +239,12 @@ func checkCurrentBoss() error {
 		return fmt.Errorf(internalErrMsg + ": " + invalidBossMsg)
 	}
 
-	current_boss = *boss
+	currentBoss = *boss
 	return nil
 }
 
 func leaveBattle() {
-	current_player.state = idle
+	currentPlayer.state = idle
 	goodbyeMsg := GetGameTextGameMessage("goodbyebattle")
 	promptMsg := GetGameTextGameMessage("prompt")
 
@@ -258,8 +257,30 @@ func leaveBattle() {
 // -------------------------------------------------------------------------
 
 func bossTurn() {
-	fmt.Print("boss turn - ")
-	fmt.Printf("%s\n", turn_order)
+	fmt.Print("boss turn\n")
+
+	// -----------------------turnStart-----------------------
+	currentBoss.SetBattlePhase(turnStart)
+	var remainingEffects []ActiveEffect
+
+	for _, activeEffect := range currentBoss.GetBattleState().activeEffectsList {
+		activeEffect.skillEffect.usage(activeEffect)
+		activeEffect.turnsLeft--
+
+		if activeEffect.turnsLeft > 0 {
+			remainingEffects = append(remainingEffects, activeEffect)
+		}
+	}
+
+	currentBoss.GetBattleState().activeEffectsList = remainingEffects
+
+	// -----------------------turnAction-----------------------
+	currentBoss.SetBattlePhase(turnAction)
+
+	// todo: add use skills
+
+	// -----------------------turnEnd-----------------------
+	currentBoss.SetBattlePhase(turnEnd)
 
 	time.Sleep(1 * time.Second)
 	updateTurnOrderCurrentTurn()

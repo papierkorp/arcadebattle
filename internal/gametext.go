@@ -51,14 +51,16 @@ type GameTextStatusPlayer struct {
 	Bosses                 string `json:"bosses"`
 	Alive                  string `json:"alive"`
 	State                  string `json:"state"`
+	ActiveEffectList       string `json:"activeeffectlist"`
 }
 
 type GameTextStatusBoss struct {
-	Name      string `json:"name"`
-	Health    string `json:"health"`
-	Power     string `json:"power"`
-	Speed     string `json:"speed"`
-	Skilllist string `json:"skilllist"`
+	Name             string `json:"name"`
+	Health           string `json:"health"`
+	Power            string `json:"power"`
+	Speed            string `json:"speed"`
+	Skilllist        string `json:"skilllist"`
+	ActiveEffectList string `json:"activeeffectlist"`
 }
 
 type GameTextNamedMessage struct {
@@ -149,6 +151,10 @@ func GetGameTextStatus() GameTextStatus {
 
 func GetGameTextStatusPlayer() GameTextStatusPlayer {
 	return gameText.Status.Player
+}
+
+func GetGameTextStatusBoss() GameTextStatusBoss {
+	return gameText.Status.Boss
 }
 
 func GetAllGameTextCommands() map[string]GameTextCommand {

@@ -17,7 +17,7 @@ type PassiveSkill struct {
 // CreateNewPassiveSkill comment
 func CreateNewPassiveSkill(args []string) (*PassiveSkill, error) {
 	// Minimum args: new0 skill1 passive2 <name3> [effect effect effect4...]
-	if current_player.name == "" {
+	if currentPlayer.name == "" {
 		noPlayerMsg := GetGameTextError("noplayer")
 		return nil, fmt.Errorf("%s", noPlayerMsg)
 	}
@@ -47,7 +47,7 @@ func CreateNewPassiveSkill(args []string) (*PassiveSkill, error) {
 		return nil, err
 	}
 	skill.talentpointcoststotal = usedTalentpoints
-	current_player.skilllist = append(current_player.skilllist, skill)
+	currentPlayer.skilllist = append(currentPlayer.skilllist, skill)
 	tempSkillCounter++
 	return skill, nil
 }
