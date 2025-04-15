@@ -90,7 +90,6 @@ step by step:
 - DamageMultiplier: float
 - Effect: string (see list Effects)
 - Duration: int (turns for each effect)
-- Cooldown: int (turns)
 
 # Stats
 
@@ -119,68 +118,47 @@ _Dynamic_
 eacht stat should cost a certain amout of talentpoints
 each effect should cost a certain amount of talentpoints
 
-- Skills
-  - json template
-    - Name: string
-    - DamageMultiplier: float
-    - Effect: string (see list Effects)
-    - Duration: int (turns for each effect)
-    - Cooldown: int (turns)
-  - Effects
-    - Direct
-      - Damage
-        - Direct Damage: `Deals immediate damage based on power stat and multiplier`
-        - Pierce: `Ignores shield effects and deals partial damage directly to health`
-        - Finisher: `adds bonus damage if enemy is low`
-        - BuffTurnBonusDamage: `Bonus Damage to amount of all remaining Buff Turns`
-        - DebuffTurnBonusDamage: `Bonus Damage to Amount of all remaining Debuff Turns of Enemy`
-      - Support
-        - Direct Heal: `Immediately restores health based on power stat`
-        - Lifeleech: `Gain 50% of your Damage in Health`
-        - Cleanse: `Removes all negative effects from the target`
-        - Dispel: `Removes all positive effects from the target`
-        - ExtendBuffs: `+1 Turn for each 10 Total Power`
-        - ExtendDebuffs: `+1 Turn for each 10 Total Power`
-        - ReduceDebuffs: `-1 Turn for each 10 Total Power`
-        - ReduceBuffs: `-1 Turn for each 10 Total Power`
-    - Over Time
-      - Buff
-        - Block Debuffs: `Prevents new debuffs from being applied while active`
-        - Heal Over Time (HOT): `Restores health at the start of each turn`
-        - IncPower: `Increases damage output by 50%`
-        - Shield: `Creates a defensive barrier that blocks direct damage and some effects`
-        - reflect damage: `Reflect 50% of the damage you Receive`
-        - evasion: `50% Chance to dont get damage`
-        - critical strike: `50% Chance to doubl`
-      - Debuff
-        - Damage Over Time (DOT): `Applies a damaging effect that deals damage at the start of each turn`
-        - Stun: `Prevents the target from taking any actions`
-        - Damage Reduction: `Reduces target's damage output by 50%`
-        - Block Buffs: `Prevents the target from receiving buffs and healing effects`
-        - Grievous Wounds: `Reduces all healing received by 50%`
-      - ...
-        - taunt/provoke: `basic skill`
-        - Counterattack: `basic skill`
-        - silence: `basic skill`
-  
-Grouping:
+## Effects
 
-- Damage
-- Heal
-- Debuff
-- Buff
-- Special
-
-
-- Damage (DD, DOT, Pierce)
-- Healing (HOT, Direct Heal, Lifeleech)
-- Recovery (Cleanse, Block Debuffs)
-- Protection (Shield, Counterattack)
-- Enhancement (Buff, Damage Reduction)
-- Control (Stun, Block Buffs)
-- Disruption (Dispel, Grievous Wounds)
-- Special
-
+- Direct Damage
+    - Execution: `Immediately kill the enemy while below 10% health`
+    - Finisher: `adds bonus damage if enemy is low`
+    - BuffTurnBonusDamage: `Bonus Damage to amount of all remaining Buff Turns`
+    - DebuffTurnBonusDamage: `Bonus Damage to Amount of all remaining Debuff Turns of Enemy`
+    - Pierce: `ingore shield effects`
+- Recovery
+    - Heal: `Immediately restores health based on power stat`
+    - Heal Over Time (HOT): `Restores health at the start of each turn`
+    - Lifeleech: `Gain 50% of your Damage in Health`
+    - BuffHeal: `Stronger direct heal but remove one random buff`
+    - HealthCleanse: `Pay 10% of your current health to remove a random Debuff`
+- Status Management
+    - Cleanse: `Removes all negative effects from the target`
+    - Dispel: `Removes all positive effects from the target`
+    - ExtendBuffs: `+1 Turn for each 10 Total Power`
+    - ExtendDebuffs: `+1 Turn for each 10 Total Power`
+    - ReduceBuffs: `-1 Turn for each 10 Total Power`
+    - ReduceDebuffs: `-1 Turn for each 10 Total Power`
+- Defensive Buffs
+    - Block Debuffs: `Prevents new debuffs from being applied while active`
+    - evasion: `50% Chance to dont get damage`
+    - Shield: `Create a shield that absorbs damage equal to 25% of max health`
+    - Resistance: `50% Chance to block an incoming Debuff`
+    - Immunity: `Receive 50% less damage`
+    - Adapation: `Receive 10% less Damage from repeated sources`
+- Offensive Buffs
+    - critical strike: `50% Chance to double the damage`
+    - IncPower: `Increases damage output by 50%`
+    - Fury: `each attack increases damage of next attack`
+    - reflect damage: `Reflect 50% of the damage you Receive`
+- Debuffs
+    - Bleeding: `Applies a damaging effect that deals damage at the start of each turn`
+    - Weaken: `Reduces target's damage output by 50%`
+    - BlockBuffs: `Prevents the target from receiving buffs and healing effects`
+    - ReduceHealing: `Reduces all healing received by 50%`
+    - Vulnerability: `Receive 50% more damage`
+    - Confusion: `50% Chance to miss the skill`
+    - Distraction: `50% Chance to attack itself`
 
 # Statistics
 

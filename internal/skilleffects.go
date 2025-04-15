@@ -59,20 +59,6 @@ func newSkillEffect(skillType string, effectName string) (SkillEffect, error) {
 
 	partSkillEffectMap := map[string]partSkillEffect{
 		// Damage Effects
-		"directdamage": {
-			usage:           effectUseDirectDamage,
-			usageTiming:     OnSkillUse,
-			isBlockedBy:     []SkillEffect{},
-			selfTarget:      false,
-			validSkillTypes: []string{"immediate", "duration"},
-		},
-		"pierce": {
-			usage:           effectUsePierce,
-			usageTiming:     OnSkillUse,
-			isBlockedBy:     []SkillEffect{},
-			selfTarget:      false,
-			validSkillTypes: []string{"immediate"},
-		},
 		"finisher": {
 			usage:           effectUseFinisher,
 			usageTiming:     OnSkillUse,
@@ -107,7 +93,7 @@ func newSkillEffect(skillType string, effectName string) (SkillEffect, error) {
 			usageTiming:     OnSkillUse,
 			isBlockedBy:     []SkillEffect{},
 			selfTarget:      true,
-			validSkillTypes: []string{"immediate"},
+			validSkillTypes: []string{"duration", "immediate", "passive"},
 		},
 		"cleanse": {
 			usage:           effectUseCleanse,
@@ -128,28 +114,28 @@ func newSkillEffect(skillType string, effectName string) (SkillEffect, error) {
 			usageTiming:     OnSkillUse,
 			isBlockedBy:     []SkillEffect{},
 			selfTarget:      true,
-			validSkillTypes: []string{"duration", "passive"},
+			validSkillTypes: []string{"immediate"},
 		},
 		"extenddebuffs": {
 			usage:           effectUseExtendDebuffs,
 			usageTiming:     OnSkillUse,
 			isBlockedBy:     []SkillEffect{},
 			selfTarget:      false,
-			validSkillTypes: []string{"duration", "passive"},
+			validSkillTypes: []string{"immediate"},
 		},
 		"reducedebuffs": {
 			usage:           effectUseReduceDebuffs,
 			usageTiming:     OnSkillUse,
 			isBlockedBy:     []SkillEffect{},
 			selfTarget:      true,
-			validSkillTypes: []string{"duration", "passive"},
+			validSkillTypes: []string{"immediate"},
 		},
 		"reducebuffs": {
 			usage:           effectUseReduceBuffs,
 			usageTiming:     OnSkillUse,
 			isBlockedBy:     []SkillEffect{},
 			selfTarget:      false,
-			validSkillTypes: []string{"duration", "passive"},
+			validSkillTypes: []string{"immediate"},
 		},
 		// Over Time - Buff Effects
 		"blockdebuffs": {
@@ -157,7 +143,7 @@ func newSkillEffect(skillType string, effectName string) (SkillEffect, error) {
 			usageTiming:     OnTurnStart,
 			isBlockedBy:     []SkillEffect{},
 			selfTarget:      true,
-			validSkillTypes: []string{"duration", "passive"},
+			validSkillTypes: []string{"duration"},
 		},
 		"healovertime": {
 			usage:           effectUseHealOverTime,
@@ -168,13 +154,6 @@ func newSkillEffect(skillType string, effectName string) (SkillEffect, error) {
 		},
 		"incpower": {
 			usage:           effectUseIncPower,
-			usageTiming:     OnTurnStart,
-			isBlockedBy:     []SkillEffect{},
-			selfTarget:      true,
-			validSkillTypes: []string{"duration", "passive"},
-		},
-		"shield": {
-			usage:           effectUseShield,
 			usageTiming:     OnTurnStart,
 			isBlockedBy:     []SkillEffect{},
 			selfTarget:      true,
@@ -209,13 +188,6 @@ func newSkillEffect(skillType string, effectName string) (SkillEffect, error) {
 			selfTarget:      false,
 			validSkillTypes: []string{"duration"},
 		},
-		"stun": {
-			usage:           effectUseStun,
-			usageTiming:     OnTurnStart,
-			isBlockedBy:     []SkillEffect{},
-			selfTarget:      false,
-			validSkillTypes: []string{"duration"},
-		},
 		"damagereduction": {
 			usage:           effectUseDamageReduction,
 			usageTiming:     OnTurnStart,
@@ -230,8 +202,8 @@ func newSkillEffect(skillType string, effectName string) (SkillEffect, error) {
 			selfTarget:      false,
 			validSkillTypes: []string{"duration"},
 		},
-		"grievouswounds": {
-			usage:           effectUseGrievousWounds,
+		"reducehealing": {
+			usage:           effectUseReduceHealing,
 			usageTiming:     OnTurnStart,
 			isBlockedBy:     []SkillEffect{},
 			selfTarget:      false,
@@ -249,13 +221,6 @@ func newSkillEffect(skillType string, effectName string) (SkillEffect, error) {
 	}
 
 	isValidType := slices.Contains(effectConfig.validSkillTypes, skillType)
-	// isValidType := false
-	// for _, validType := range effectConfig.validSkillTypes {
-	// 	if validType == skillType {
-	// 		isValidType = true
-	// 		break
-	// 	}
-	// }
 
 	if !isValidType {
 		invalidskilltypeeffect := GetGameTextError("invalidskilltypeeffect")
@@ -300,14 +265,6 @@ func upgradeSkillEffect(effectName SkillEffect) (SkillEffect, error) {
 // -------------------------------------------------------------------------
 // -------------------------------direct damage------------------------------
 // -------------------------------------------------------------------------
-func effectUseDirectDamage(ae ActiveEffect) {
-	fmt.Println("Direct damage effect used")
-}
-
-func effectUsePierce(ae ActiveEffect) {
-	fmt.Println("Pierce effect used")
-}
-
 func effectUseFinisher(ae ActiveEffect) {
 	fmt.Println("Finisher effect used")
 }
@@ -372,10 +329,6 @@ func effectUseIncPower(ae ActiveEffect) {
 	fmt.Println("Increase power effect used")
 }
 
-func effectUseShield(ae ActiveEffect) {
-	fmt.Println("Shield effect used")
-}
-
 func effectUseReflectDamage(ae ActiveEffect) {
 	fmt.Println("Reflect damage effect used")
 }
@@ -409,6 +362,6 @@ func effectUseBlockBuffs(ae ActiveEffect) {
 	fmt.Println("Block buffs effect used")
 }
 
-func effectUseGrievousWounds(ae ActiveEffect) {
+func effectUseReduceHealing(ae ActiveEffect) {
 	fmt.Println("Grievous wounds effect used")
 }
