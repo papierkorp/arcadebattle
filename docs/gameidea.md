@@ -3,7 +3,8 @@
 This game should be a Textbased Game which completly works in the Console with Commands written in pure GOlang.
 
 At the beginning the player has to create his own Character. Depending on the difficulty he gets a different amount of Talentpoints.
-The Talentpoints are used to: upgrade Player stats (e.g. health, power) and create skills (each skill has stats and effects). The Player can create as many skills as he wants/has Talentpoints.
+The Talentpoints are used to: upgrade Player stats (e.g. health, power, speed) and create skills (each skill has stats and effects). The Player can create as many skills as he wants/has Talentpoints.
+The game is based on the effects which should enable strategic depth and a paper, rock, scissors system.
 After winning against a boss he gets new Talentpoints.
 The Game has 9 bosses, after beating the last boss you won the game. If you loose one fight your Character is dead and you have to create new one.
 
@@ -120,50 +121,7 @@ each effect should cost a certain amount of talentpoints
 
 ## Effects
 
-
-- Immediate
-    - Direct Damage
-        - Execution: `Immediately kill the enemy while below 10% health`
-        - Finisher: `adds bonus damage if enemy is low`
-        - BuffTurnBonusDamage: `Bonus Damage to amount of all remaining Buff Turns`
-        - DebuffTurnBonusDamage: `Bonus Damage to Amount of all remaining Debuff Turns of Enemy`
-        - Pierce: `ingore shield effects`
-    - Recovery
-        - Heal Over Time (HOT): `Restores health at the start of each turn`
-        - BuffHeal: `Stronger direct heal but remove one random buff`
-        - BuffHeal2: `Heal based on the number of Buffs`
-        - DebuffCleanse: `Remove the same number of Debuffs as the enemy currently has`
-        - HealthCleanse: `Pay 10% of your current health to remove a random Debuff`
-    - Status Management
-        - Cleanse: `Removes all negative effects from the target`
-        - Dispel: `Removes all positive effects from the target`
-        - ExtendBuffs: `+1 Turn for each 10 Total Power`
-        - ExtendDebuffs: `+1 Turn for each 10 Total Power`
-        - ReduceBuffs: `-1 Turn for each 10 Total Power`
-        - ReduceDebuffs: `-1 Turn for each 10 Total Power`
-- Duration
-    - Defensive Buffs
-        - Heal Over Time (HOT): `Restores health at the start of each turn`
-        - Lifeleech: `Gain 50% of your Damage in Health`
-        - Block Debuffs: `Prevents new debuffs from being applied while active`
-        - evasion: `50% Chance to dont get damage`
-        - Shield: `Create a shield that absorbs damage equal to 25% of max health`
-        - Resistance: `50% Chance to block an incoming Debuff`
-        - Immunity: `Receive 50% less damage`
-        - Adapation: `Receive 10% less Damage from repeated sources`
-    - Offensive Buffs
-        - critical strike: `50% Chance to double the damage`
-        - IncPower: `Increases damage output by 50%`
-        - Fury: `each attack increases damage of next attack`
-        - reflect damage: `Reflect 50% of the damage you Receive`
-    - Debuffs
-        - DOT: `Applies a damaging effect that deals damage at the start of each turn`
-        - Weaken: `Reduces target's damage output by 50%`
-        - BlockBuffs: `Prevents the target from receiving buffs and healing effects`
-        - ReduceHealing: `Reduces all healing received by 50%`
-        - Vulnerability: `Receive 50% more damage`
-        - Confusion: `50% Chance to miss the skill`
-        - Distraction: `50% Chance to attack itself`
+see [gameidea_effects](#gameide_effects)
 
 # Statistics
 
