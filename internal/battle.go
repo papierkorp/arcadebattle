@@ -8,8 +8,9 @@ import (
 // BattleState comment
 type BattleState struct {
 	currentHealth      int
-	totalTurnsBuffs    int
-	totalTurnsDebuff   int
+	currentPower       int
+	totalEffectsCount  int //todo: totalEffectsSelf/Enemy?
+	totalTurnsCount    int //todo: totalEffectsSelf/Enemy?
 	activeEffectsList  []ActiveEffect
 	currentBattlePhase BattlePhase
 }

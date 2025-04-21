@@ -12,12 +12,63 @@ type SkillEffect struct {
 	name            string
 	description     string
 	cost            int
-	usage           func(ae ActiveEffect)
 	usageTiming     EffectTiming
 	isBlockedBy     []SkillEffect
-	selfTarget      bool //if false target=enemy
+	target          EffectTarget
 	validSkillTypes []string
+	modifier        int
+	probability     float32
+	affectedStat    EffectModifiableStats
+	costType        EffectCostType
+	costValue       int
+	primaryFunction EffectFunction
+	category        EffectCategory
 }
+
+// EffectTarget comment
+type EffectTarget int
+
+const (
+	Self EffectTarget = iota
+	Enemy
+)
+
+// EffectFunction comment
+type EffectFunction int
+
+const (
+	Increase EffectFunction = iota
+	Decrease
+	Block
+)
+
+// EffectCategory which stats can be modified with effects
+type EffectCategory int
+
+const (
+	Buff EffectCategory = iota
+	Debuff
+	Damage
+)
+
+// EffectModifiableStats which stats can be modified with effects
+type EffectModifiableStats int
+
+const (
+	Health EffectModifiableStats = iota
+	Power
+	BuffTurn
+	DebuffTurn
+)
+
+// EffectCostType comment
+type EffectCostType int
+
+const (
+	Health EffectCostType = iota
+	ReamainingTurnCount
+	TotalEffectsCount
+)
 
 // ActiveEffect comment
 type ActiveEffect struct {
@@ -262,106 +313,25 @@ func upgradeSkillEffect(effectName SkillEffect) (SkillEffect, error) {
 	return updatedEffect, nil
 }
 
-// -------------------------------------------------------------------------
-// -------------------------------direct damage------------------------------
-// -------------------------------------------------------------------------
-func effectUseFinisher(ae ActiveEffect) {
-	fmt.Println("Finisher effect used")
-}
+func handleEffect(ae ActiveEffect) {
+	primaryFunction := ae.skillEffect.primaryFunction
+	costType := ae.skillEffect.costType
 
-func effectUseBuffTurnBonusDamage(ae ActiveEffect) {
-	fmt.Println("Buff turn bonus damage effect used")
-}
+	switch primaryFunction {
+	case Increase:
+	case Decrease:
+	case Block:
+	default:
+		internalErrMsg := GetGameTextError("internal")
+		fmt.Printf("%s - %s doest not exist", internalErrMsg, primaryFunction)
+	}
 
-func effectUseDebuffTurnBonusDamage(ae ActiveEffect) {
-	fmt.Println("Debuff turn bonus damage effect used")
-}
-
-// -------------------------------------------------------------------------
-// ------------------------------direct support-----------------------------
-// -------------------------------------------------------------------------
-
-func effectUseDirectHeal(ae ActiveEffect) {
-	fmt.Println("Direct heal effect used")
-}
-
-func effectUseLifeleech(ae ActiveEffect) {
-	fmt.Println("Life leech effect used")
-}
-
-func effectUseCleanse(ae ActiveEffect) {
-	fmt.Println("Cleanse effect used")
-}
-
-func effectUseDispel(ae ActiveEffect) {
-	fmt.Println("Dispel effect used")
-}
-
-func effectUseExtendBuffs(ae ActiveEffect) {
-	fmt.Println("Extend buffs effect used")
-}
-
-func effectUseExtendDebuffs(ae ActiveEffect) {
-	fmt.Println("Extend debuffs effect used")
-}
-
-func effectUseReduceDebuffs(ae ActiveEffect) {
-	fmt.Println("Reduce debuffs effect used")
-}
-
-func effectUseReduceBuffs(ae ActiveEffect) {
-	fmt.Println("Reduce buffs effect used")
-}
-
-// -------------------------------------------------------------------------
-// ------------------------------over time buffs-----------------------------
-// -------------------------------------------------------------------------
-
-func effectUseBlockDebuffs(ae ActiveEffect) {
-	fmt.Println("Block debuffs effect used")
-}
-
-func effectUseHealOverTime(ae ActiveEffect) {
-	fmt.Println("Heal over time effect used")
-}
-
-func effectUseIncPower(ae ActiveEffect) {
-	fmt.Println("Increase power effect used")
-}
-
-func effectUseReflectDamage(ae ActiveEffect) {
-	fmt.Println("Reflect damage effect used")
-}
-
-func effectUseEvasion(ae ActiveEffect) {
-	fmt.Println("Evasion effect used")
-}
-
-func effectUseCriticalRate(ae ActiveEffect) {
-	fmt.Println("Critical rate effect used")
-}
-
-// -------------------------------------------------------------------------
-// ------------------------------overtime debuffs-----------------------------
-// -------------------------------------------------------------------------
-
-func effectUseDOT(ae ActiveEffect) {
-	fmt.Println("DOT effect used")
-	ae.target.ApplyDamage(int(float64(ae.totalPower) * 0.25))
-}
-
-func effectUseStun(ae ActiveEffect) {
-	fmt.Println("Stun effect used")
-}
-
-func effectUseDamageReduction(ae ActiveEffect) {
-	fmt.Println("Damage reduction effect used")
-}
-
-func effectUseBlockBuffs(ae ActiveEffect) {
-	fmt.Println("Block buffs effect used")
-}
-
-func effectUseReduceHealing(ae ActiveEffect) {
-	fmt.Println("Grievous wounds effect used")
+	switch costType {
+	case Health:
+	case ReamainingTurnCount:
+	case TotalEffectsCount:
+	default:
+		internalErrMsg := GetGameTextError("internal")
+		fmt.Printf("%s - %s doest not exist", internalErrMsg, costType)
+	}
 }

@@ -1,57 +1,93 @@
-# Effects
+# Effects new grouping
 
-Primary Function:
+consists of:
 
-- increase
-  - power (for fight, max)
-  - current_health (for fight, max)
-  - damagedealt
-  - damagereceived
-  - self effect durations
-  - enemy effect durations
-- decrease
-  - power (for fight, max)
-  - current_health (for fight, max)
-  - damagedealt
-  - damagereceived
-  - self effect durations
-  - enemy effect durations
-- block
+- name
+- description
+- talentpointCosts
+- isBlockedBy (can the effect be blocked by another effect)
+- probability (if there is a probability involved else 100%)
+- affectedStat (see in PrimaryFunction which stats can be affected)
+    - power (for fight, max)
+    - current_health (for fight, max)
+    - damagedealt
+    - damagereceived
+    - self effect durations
+    - enemy effect durations
+    - effect (application)
+    - health (increase)
+    - power (increase)
+    - damage (increase)
+    - skill
+- damageBase (how is the damage calculated)
+  - power
+  - RemainingTurnsCount
+  - TotalEffectsCount
+  - enemyLowHealth
+  - ...
+- PrimaryFunctionValue (always a % value i think?)
+- PrimaryFunction (what is the effect doing)
+  - increase
+  - decrease
+  - block
+  - ???
+    - Shield + Pierce
+- Target (who to target)
+  - self
+  - enemy
+- Cost (does it cost something to activate, can be null)
+  - nothing (just cast the effect)
+  - remove a buff
+  - remove some health
+- CostValue (can be 0)
+- Category (to which category does it belong)
+  - buff
+  - debuff
   - damage
-  - application of effect
-  - increase of health
-  - increase of power
-  - skill
-- ???
-  - Shield + Pierce
+- EffectTiming (when is the effect applied) / (immediate, duration, passive)
+  - OnTurnStart
+  - OnSkillUse
+  - OnTurnEnd
+  - OnDurationEnd
 
-Targets:
+\pagebreak
 
-- self
-- enemy
+# Effects new grouping - table
 
-Each Effect can be placed as on of this 3:
+<br />
 
-- based on power\*Skillmulti
-- based on EffectCount (self/enemy)
-- based on Turnsleft for all Effects (self/enemy)
+|           Name           | TP |        IsBlockedBy        | Probability |      affectedStat      |       damageBase       | PrimaryFunction  | PrimaryFunctionValue | Target | CostType | CostValue | Category | EffectTiming |
+|--------------------------|----|---------------------------|-------------|------------------------|------------------------|------------------|----------------------|--------|----------|-----------|----------|--------------|
+| Direct Damage            |  5 | -                         | 100%        | damagedealt            | power                  | increase         | 100%                 | enemy  | -        | -         | damage   | OnSkillUse   |
+| Pierce                   |  5 | -                         | 100%        | damagedealt            | power                  | bypass           | 50%                  | enemy  | -        | -         | damage   | OnSkillUse   |
+| Finisher                 |  5 | -                         | 100%        | damagedealt            | power                  | increase         | 50%                  | enemy  | -        | -         | damage   | OnSkillUse   |
+| Buff Turn Bonus Damage   |  5 | -                         | 100%        | damagedealt            | self effect durations  | increase         | 5% per turn          | enemy  | -        | -         | damage   | OnSkillUse   |
+| Debuff Turn Bonus Damage |  5 | -                         | 100%        | damagedealt            | enemy effect durations | increase         | 5% per turn          | enemy  | -        | -         | damage   | OnSkillUse   |
+| Direct Heal              |  5 | BlockBuffs                | 100%        | current_health         | power                  | increase         | 50%                  | self   | -        | -         | buff     | OnSkillUse   |
+| Life Leech               |  5 | BlockBuffs, ReduceHealing | 100%        | current_health         | damagedealt            | increase         | 50%                  | self   | -        | -         | buff     | OnSkillUse   |
+| Cleanse                  |  5 | -                         | 100%        | effect                 | -                      | decrease(remove) | 100%                 | self   | -        | -         | buff     | OnSkillUse   |
+| Dispel                   |  5 | BlockDebuffs              | 100%        | effect                 | -                      | decrease(remove) | 100%                 | enemy  | -        | -         | debuff   | OnSkillUse   |
+| Extend Buffs             |  5 | -                         | 100%        | self effect durations  | power                  | increase         | 10%                  | self   | -        | -         | buff     | OnSkillUse   |
+| Extend Debuffs           |  5 | BlockDebuffs              | 100%        | enemy effect durations | power                  | increase         | 10%                  | enemy  | -        | -         | debuff   | OnSkillUse   |
+| Reduce Debuffs           |  5 | -                         | 100%        | self effect durations  | power                  | decrease         | 10%                  | self   | -        | -         | buff     | OnSkillUse   |
+| Reduce Buffs             |  5 | BlockDebuffs              | 100%        | enemy effect durations | power                  | decrease         | 10%                  | enemy  | -        | -         | debuff   | OnSkillUse   |
+| Block Debuffs            |  5 | Dispel                    | 100%        | effect                 | -                      | block            | 100%                 | self   | -        | -         | buff     | OnTurnStart  |
+| Heal Over Time           |  5 | BlockBuffs, ReduceHealing | 100%        | current_health         | power                  | increase         | 10%                  | self   | -        | -         | buff     | OnTurnStart  |
+| Increase Power           |  5 | Dispel                    | 100%        | power                  | power                  | increase         | 50%                  | self   | -        | -         | buff     | OnTurnStart  |
+| Shield                   |  5 | Pierce, Dispel            | 100%        | damagereceived         | power                  | absorb           | 25%                  | self   | -        | -         | buff     | OnTurnStart  |
+| Reflect Damage           |  5 | Dispel                    | 100%        | current_health         | damagereceived         | decrease         | 50%                  | enemy  | -        | -         | buff     | OnTurnStart  |
+| Evasion                  |  5 | Dispel                    | 50%         | damagereceived         | power                  | decrease         | 100%                 | self   | -        | -         | buff     | OnTurnStart  |
+| Critical Rate            |  5 | Dispel                    | 50%         | damagedealt            | power                  | increase         | 200%                 | self   | -        | -         | buff     | OnTurnStart  |
+| Damage Over Time         |  5 | BlockDebuffs, Cleanse     | 100%        | damagedealt            | power                  | decrease         | 25%                  | enemy  | -        | -         | debuff   | OnTurnStart  |
+| Stun                     |  5 | BlockDebuffs, Cleanse     | 100%        | skill                  | -                      | block            | 100%                 | enemy  | -        | -         | debuff   | OnTurnStart  |
+| Damage Reduction         |  5 | BlockDebuffs, Cleanse     | 100%        | damagedealt            | power                  | decrease         | 50%                  | enemy  | -        | -         | debuff   | OnTurnStart  |
+| Block Buffs              |  5 | BlockDebuffs, Cleanse     | 100%        | effect                 | -                      | block            | 100%                 | enemy  | -        | -         | debuff   | OnTurnStart  |
+| Grievous Wounds          |  5 | BlockDebuffs, Cleanse     | 100%        | current_health         | power                  | decrease         | 50%                  | enemy  | -        | -         | debuff   | OnTurnStart  |
 
-Category:
 
-- buff
-- debuff
+\pagebreak
 
-Battle Loop:
-
-- Start of Turn: apply effect
-- action: add effect to list
-- end of turn:
-
----
-
----
-
----
+# Effects old grouping
 
 - Immediate
   - Increase power/damage
@@ -101,3 +137,4 @@ Battle Loop:
     - ReduceHealing: `Reduces all healing received by 50%`
   - special
     - Distraction: `50% Chance to attack itself`
+
