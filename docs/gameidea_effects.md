@@ -1,35 +1,31 @@
 # Effects new grouping
 
-consists of:
-
 - name
 - description
 - talentpointCosts
 - isBlockedBy (can the effect be blocked by another effect)
 - probability (if there is a probability involved else 100%)
 - affectedStat (see in PrimaryFunction which stats can be affected)
-    - power (for fight, max)
-    - current_health (for fight, max)
     - damagedealt
+    - currentHealth
+    - activeEffect
+    - newActiveEffect
+    - currentPower
     - damagereceived
-    - self effect durations
-    - enemy effect durations
-    - effect (application)
-    - health (increase)
-    - power (increase)
-    - damage (increase)
     - skill
 - damageBase (how is the damage calculated)
-  - power
-  - RemainingTurnsCount
-  - TotalEffectsCount
-  - enemyLowHealth
-  - ...
-- PrimaryFunctionValue (always a % value i think?)
-- PrimaryFunction (what is the effect doing)
+  - currentPower
+  - totalBuffTurnsCount 
+  - totalBuffCount      
+  - totalDebuffTurnCount
+  - totalDebuffCount    
+  - damagereceived
+- PrimaryFunctionValue (always a % value)
+- PrimaryFunction
   - increase
   - decrease
   - block
+  - remove
   - ???
     - Shield + Pierce
 - Target (who to target)
@@ -56,34 +52,33 @@ consists of:
 
 <br />
 
-|           Name           | TP |        IsBlockedBy        | Probability |      affectedStat      |       damageBase       | PrimaryFunction  | PrimaryFunctionValue | Target | CostType | CostValue | Category | EffectTiming |
-|--------------------------|----|---------------------------|-------------|------------------------|------------------------|------------------|----------------------|--------|----------|-----------|----------|--------------|
-| Direct Damage            |  5 | -                         | 100%        | damagedealt            | power                  | increase         | 100%                 | enemy  | -        | -         | damage   | OnSkillUse   |
-| Pierce                   |  5 | -                         | 100%        | damagedealt            | power                  | bypass           | 50%                  | enemy  | -        | -         | damage   | OnSkillUse   |
-| Finisher                 |  5 | -                         | 100%        | damagedealt            | power                  | increase         | 50%                  | enemy  | -        | -         | damage   | OnSkillUse   |
-| Buff Turn Bonus Damage   |  5 | -                         | 100%        | damagedealt            | self effect durations  | increase         | 5% per turn          | enemy  | -        | -         | damage   | OnSkillUse   |
-| Debuff Turn Bonus Damage |  5 | -                         | 100%        | damagedealt            | enemy effect durations | increase         | 5% per turn          | enemy  | -        | -         | damage   | OnSkillUse   |
-| Direct Heal              |  5 | BlockBuffs                | 100%        | current_health         | power                  | increase         | 50%                  | self   | -        | -         | buff     | OnSkillUse   |
-| Life Leech               |  5 | BlockBuffs, ReduceHealing | 100%        | current_health         | damagedealt            | increase         | 50%                  | self   | -        | -         | buff     | OnSkillUse   |
-| Cleanse                  |  5 | -                         | 100%        | effect                 | -                      | decrease(remove) | 100%                 | self   | -        | -         | buff     | OnSkillUse   |
-| Dispel                   |  5 | BlockDebuffs              | 100%        | effect                 | -                      | decrease(remove) | 100%                 | enemy  | -        | -         | debuff   | OnSkillUse   |
-| Extend Buffs             |  5 | -                         | 100%        | self effect durations  | power                  | increase         | 10%                  | self   | -        | -         | buff     | OnSkillUse   |
-| Extend Debuffs           |  5 | BlockDebuffs              | 100%        | enemy effect durations | power                  | increase         | 10%                  | enemy  | -        | -         | debuff   | OnSkillUse   |
-| Reduce Debuffs           |  5 | -                         | 100%        | self effect durations  | power                  | decrease         | 10%                  | self   | -        | -         | buff     | OnSkillUse   |
-| Reduce Buffs             |  5 | BlockDebuffs              | 100%        | enemy effect durations | power                  | decrease         | 10%                  | enemy  | -        | -         | debuff   | OnSkillUse   |
-| Block Debuffs            |  5 | Dispel                    | 100%        | effect                 | -                      | block            | 100%                 | self   | -        | -         | buff     | OnTurnStart  |
-| Heal Over Time           |  5 | BlockBuffs, ReduceHealing | 100%        | current_health         | power                  | increase         | 10%                  | self   | -        | -         | buff     | OnTurnStart  |
-| Increase Power           |  5 | Dispel                    | 100%        | power                  | power                  | increase         | 50%                  | self   | -        | -         | buff     | OnTurnStart  |
-| Shield                   |  5 | Pierce, Dispel            | 100%        | damagereceived         | power                  | absorb           | 25%                  | self   | -        | -         | buff     | OnTurnStart  |
-| Reflect Damage           |  5 | Dispel                    | 100%        | current_health         | damagereceived         | decrease         | 50%                  | enemy  | -        | -         | buff     | OnTurnStart  |
-| Evasion                  |  5 | Dispel                    | 50%         | damagereceived         | power                  | decrease         | 100%                 | self   | -        | -         | buff     | OnTurnStart  |
-| Critical Rate            |  5 | Dispel                    | 50%         | damagedealt            | power                  | increase         | 200%                 | self   | -        | -         | buff     | OnTurnStart  |
-| Damage Over Time         |  5 | BlockDebuffs, Cleanse     | 100%        | damagedealt            | power                  | decrease         | 25%                  | enemy  | -        | -         | debuff   | OnTurnStart  |
-| Stun                     |  5 | BlockDebuffs, Cleanse     | 100%        | skill                  | -                      | block            | 100%                 | enemy  | -        | -         | debuff   | OnTurnStart  |
-| Damage Reduction         |  5 | BlockDebuffs, Cleanse     | 100%        | damagedealt            | power                  | decrease         | 50%                  | enemy  | -        | -         | debuff   | OnTurnStart  |
-| Block Buffs              |  5 | BlockDebuffs, Cleanse     | 100%        | effect                 | -                      | block            | 100%                 | enemy  | -        | -         | debuff   | OnTurnStart  |
-| Grievous Wounds          |  5 | BlockDebuffs, Cleanse     | 100%        | current_health         | power                  | decrease         | 50%                  | enemy  | -        | -         | debuff   | OnTurnStart  |
-
+|           Name           | TP |        IsBlockedBy        | Probability |   affectedStat  |      damageBase      | PrimaryFunction  | PrimaryFunctionValue | Target | CostType | CostValue | Category | EffectTiming |
+|--------------------------|----|---------------------------|-------------|-----------------|----------------------|------------------|----------------------|--------|----------|-----------|----------|--------------|
+| Direct Damage            |  5 | -                         | 100%        | damagedealt     | currentPower         | increase         | 100%                 | enemy  | -        | -         | damage   | OnSkillUse   |
+| Pierce                   |  5 | -                         | 100%        | damagedealt     | currentPower         | bypass           | 50%                  | enemy  | -        | -         | damage   | OnSkillUse   |
+| Finisher                 |  5 | -                         | 100%        | damagedealt     | currentPower         | increase         | 50%                  | enemy  | -        | -         | damage   | OnSkillUse   |
+| Buff Turn Bonus Damage   |  5 | -                         | 100%        | damagedealt     | totalBuffTurnsCount  | increase         | 5% per turn          | enemy  | -        | -         | damage   | OnSkillUse   |
+| Debuff Turn Bonus Damage |  5 | -                         | 100%        | damagedealt     | totalDebuffTurnCount | increase         | 5% per turn          | enemy  | -        | -         | damage   | OnSkillUse   |
+| Direct Heal              |  5 | BlockBuffs                | 100%        | currentHealth   | currentPower         | increase         | 50%                  | self   | -        | -         | buff     | OnSkillUse   |
+| Life Leech               |  5 | BlockBuffs, ReduceHealing | 100%        | currentHealth   | damagedealt          | increase         | 50%                  | self   | -        | -         | buff     | OnSkillUse   |
+| Cleanse                  |  5 | -                         | 100%        | activeEffect    | -                    | decrease(remove) | 100%                 | self   | -        | -         | buff     | OnSkillUse   |
+| Dispel                   |  5 | BlockDebuffs              | 100%        | activeEffect    | -                    | decrease(remove) | 100%                 | enemy  | -        | -         | debuff   | OnSkillUse   |
+| Extend Buffs             |  5 | -                         | 100%        | activeEffect    | currentPower         | increase         | 10%                  | self   | -        | -         | buff     | OnSkillUse   |
+| Extend Debuffs           |  5 | BlockDebuffs              | 100%        | activeEffect    | currentPower         | increase         | 10%                  | enemy  | -        | -         | debuff   | OnSkillUse   |
+| Reduce Debuffs           |  5 | -                         | 100%        | activeEffect    | currentPower         | decrease         | 10%                  | self   | -        | -         | buff     | OnSkillUse   |
+| Reduce Buffs             |  5 | BlockDebuffs              | 100%        | activeEffect    | currentPower         | decrease         | 10%                  | enemy  | -        | -         | debuff   | OnSkillUse   |
+| Block Debuffs            |  5 | Dispel                    | 100%        | newActiveEffect | -                    | block            | 100%                 | self   | -        | -         | buff     | OnTurnStart  |
+| Heal Over Time           |  5 | BlockBuffs, ReduceHealing | 100%        | currentHealth   | currentPower         | increase         | 10%                  | self   | -        | -         | buff     | OnTurnStart  |
+| Increase Power           |  5 | Dispel                    | 100%        | currentPower    | currentPower         | increase         | 50%                  | self   | -        | -         | buff     | OnTurnStart  |
+| Shield                   |  5 | Pierce, Dispel            | 100%        | damagereceived  | currentPower         | absorb           | 25%                  | self   | -        | -         | buff     | OnTurnStart  |
+| Reflect Damage           |  5 | Dispel                    | 100%        | currentHealth   | damagereceived       | decrease         | 50%                  | enemy  | -        | -         | buff     | OnTurnStart  |
+| Evasion                  |  5 | Dispel                    | 50%         | damagereceived  | currentPower         | decrease         | 100%                 | self   | -        | -         | buff     | OnTurnStart  |
+| Critical Rate            |  5 | Dispel                    | 50%         | damagedealt     | currentPower         | increase         | 200%                 | self   | -        | -         | buff     | OnTurnStart  |
+| Damage Over Time         |  5 | BlockDebuffs, Cleanse     | 100%        | damagedealt     | currentPower         | decrease         | 25%                  | enemy  | -        | -         | debuff   | OnTurnStart  |
+| Stun                     |  5 | BlockDebuffs, Cleanse     | 100%        | skill           | -                    | block            | 100%                 | enemy  | -        | -         | debuff   | OnTurnStart  |
+| Damage Reduction         |  5 | BlockDebuffs, Cleanse     | 100%        | damagedealt     | currentPower         | decrease         | 50%                  | enemy  | -        | -         | debuff   | OnTurnStart  |
+| Block Buffs              |  5 | BlockDebuffs, Cleanse     | 100%        | newActiveEffect | -                    | block            | 100%                 | enemy  | -        | -         | debuff   | OnTurnStart  |
+| Grievous Wounds          |  5 | BlockDebuffs, Cleanse     | 100%        | currentHealth   | currentPower         | decrease         | 50%                  | enemy  | -        | -         | debuff   | OnTurnStart  |
 
 \pagebreak
 
