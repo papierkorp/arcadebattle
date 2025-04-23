@@ -6,35 +6,33 @@
 - isBlockedBy (can the effect be blocked by another effect)
 - probability (if there is a probability involved else 100%)
 - affectedStat (see in PrimaryFunction which stats can be affected)
-    - damagedealt
+    - calculatedDamage
     - currentHealth
-    - activeEffect
-    - newActiveEffect
     - currentPower
-    - damagereceived
-    - skill
+    - activeEffect
+    - randomActiveEffect
+    - newActiveEffect
+    - randomSkill
 - damageBase (how is the damage calculated)
   - currentPower
-  - totalBuffTurnsCount 
+  - totalBuffTurnCount 
   - totalBuffCount      
   - totalDebuffTurnCount
   - totalDebuffCount    
-  - damagereceived
+  - calculatedDamage
 - PrimaryFunctionValue (always a % value)
 - PrimaryFunction
   - increase
   - decrease
   - block
   - remove
-  - ???
-    - Shield + Pierce
 - Target (who to target)
   - self
   - enemy
 - Cost (does it cost something to activate, can be null)
   - nothing (just cast the effect)
   - remove a buff
-  - remove some health
+  - decrease some health
 - CostValue (can be 0)
 - Category (to which category does it belong)
   - buff
@@ -58,12 +56,21 @@
 |----------------|----|-------------|-------------|--------------|--------------|-----------------|----------------------|--------|----------|-----------|----------|--------------|
 | Increase Power |  5 | Dispel      | 100%        | currentPower | currentPower | increase        | 50%                  | self   | -        | -         | buff     | OnTurnStart  |
 
-**damagereceived**
+**calculatedDamage**
 
-|   Name  | TP |  IsBlockedBy   | Probability |  affectedStat  |   damageBase   | PrimaryFunction | PrimaryFunctionValue | Target | CostType | CostValue | Category | EffectTiming |
-|---------|----|----------------|-------------|----------------|----------------|-----------------|----------------------|--------|----------|-----------|----------|--------------|
-| Shield  |  5 | Pierce, Dispel | 100%        | damagereceived | currentPower   | absorb          | 25%                  | self   | -        | -         | buff     | OnTurnStart  |
-| Evasion |  5 | Dispel         | 50%         | damagereceived | damagereceived | decrease        | 100%                 | self   | -        | -         | buff     | OnTurnStart  |
+|           Name           | TP |      IsBlockedBy      | Probability |   affectedStat   |      damageBase      | PrimaryFunction | PrimaryFunctionValue | Target | CostType | CostValue | Category | EffectTiming |
+|--------------------------|----|-----------------------|-------------|------------------|----------------------|-----------------|----------------------|--------|----------|-----------|----------|--------------|
+| Shield                   |  5 | Pierce, Dispel        | 100%        | calculatedDamage | currentPower         | absorb          | 25%                  | self   | -        | -         | buff     | OnTurnStart  |
+| Evasion                  |  5 | Dispel                | 50%         | calculatedDamage | damagereceived       | decrease        | 100%                 | self   | -        | -         | buff     | OnTurnStart  |
+| Direct Damage            |  5 | -                     | 100%        | calculatedDamage | currentPower         | increase        | 100%                 | enemy  | -        | -         | damage   | OnSkillUse   |
+| Finisher                 |  5 | -                     | 100%        | calculatedDamage | currentPower         | increase        | 50%                  | enemy  | -        | -         | damage   | OnSkillUse   |
+| Buff Turn Bonus Damage   |  5 | -                     | 100%        | calculatedDamage | totalBuffTurnsCount  | increase        | 5% per turn          | enemy  | -        | -         | damage   | OnSkillUse   |
+| Debuff Turn Bonus Damage |  5 | -                     | 100%        | calculatedDamage | totalDebuffTurnCount | increase        | 5% per turn          | enemy  | -        | -         | damage   | OnSkillUse   |
+| Critical Rate            |  5 | Dispel                | 50%         | calculatedDamage | currentPower         | increase        | 200%                 | self   | -        | -         | buff     | OnTurnStart  |
+| Damage Over Time         |  5 | BlockDebuffs, Cleanse | 100%        | calculatedDamage | currentPower         | decrease        | 25%                  | enemy  | -        | -         | debuff   | OnTurnStart  |
+| Damage Reduction         |  5 | BlockDebuffs, Cleanse | 100%        | calculatedDamage | currentPower         | decrease        | 50%                  | enemy  | -        | -         | debuff   | OnTurnStart  |
+| Pierce                   |  5 | -                     | 100%        | calculatedDamage | currentPower         | bypass          | 50%                  | enemy  | -        | -         | damage   | OnSkillUse   |
+
 
 **currentHealth**
 
@@ -86,18 +93,6 @@
 | Reduce Debuffs |  5 | -            | 100%        | activeEffect | currentPower | decrease         | 10%                  | self   | -        | -         | buff     | OnSkillUse   |
 | Reduce Buffs   |  5 | BlockDebuffs | 100%        | activeEffect | currentPower | decrease         | 10%                  | enemy  | -        | -         | debuff   | OnSkillUse   |
 
-**damagedealt**
-
-|           Name           | TP |      IsBlockedBy      | Probability | affectedStat |      damageBase      | PrimaryFunction | PrimaryFunctionValue | Target | CostType | CostValue | Category | EffectTiming |
-|--------------------------|----|-----------------------|-------------|--------------|----------------------|-----------------|----------------------|--------|----------|-----------|----------|--------------|
-| Direct Damage            |  5 | -                     | 100%        | damagedealt  | currentPower         | increase        | 100%                 | enemy  | -        | -         | damage   | OnSkillUse   |
-| Finisher                 |  5 | -                     | 100%        | damagedealt  | currentPower         | increase        | 50%                  | enemy  | -        | -         | damage   | OnSkillUse   |
-| Buff Turn Bonus Damage   |  5 | -                     | 100%        | damagedealt  | totalBuffTurnsCount  | increase        | 5% per turn          | enemy  | -        | -         | damage   | OnSkillUse   |
-| Debuff Turn Bonus Damage |  5 | -                     | 100%        | damagedealt  | totalDebuffTurnCount | increase        | 5% per turn          | enemy  | -        | -         | damage   | OnSkillUse   |
-| Critical Rate            |  5 | Dispel                | 50%         | damagedealt  | currentPower         | increase        | 200%                 | self   | -        | -         | buff     | OnTurnStart  |
-| Damage Over Time         |  5 | BlockDebuffs, Cleanse | 100%        | damagedealt  | currentPower         | decrease        | 25%                  | enemy  | -        | -         | debuff   | OnTurnStart  |
-| Damage Reduction         |  5 | BlockDebuffs, Cleanse | 100%        | damagedealt  | currentPower         | decrease        | 50%                  | enemy  | -        | -         | debuff   | OnTurnStart  |
-| Pierce                   |  5 | -                     | 100%        | damagedealt  | currentPower         | bypass          | 50%                  | enemy  | -        | -         | damage   | OnSkillUse   |
 
 **newActiveEffect**
 
