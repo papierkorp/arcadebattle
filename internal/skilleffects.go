@@ -9,65 +9,99 @@ import (
 
 // SkillEffect comment
 type SkillEffect struct {
-	name            string
-	description     string
-	cost            int
-	usageTiming     EffectTiming
-	isBlockedBy     []SkillEffect
-	target          EffectTarget
-	validSkillTypes []string
-	modifier        int
-	probability     float32
-	affectedStat    EffectModifiableStats
-	costType        EffectCostType
-	costValue       int
-	primaryFunction EffectFunction
-	category        EffectCategory
+	talentpointCosts     int
+	probability          float32
+	affectedStat         EffectModifiableStats
+	damageBase           EffectDamageBase
+	primaryFunction      EffectFunction
+	primaryFunctionValue float32
+	target               EffectTarget
+	costType             EffectCostType
+	costValue            int
+	category             EffectCategory
+	usageTiming          EffectTiming
 }
 
 // EffectTarget comment
 type EffectTarget int
 
 const (
-	Self EffectTarget = iota
-	Enemy
+	etSelf EffectTarget = iota
+	etEnemy
+)
+
+// EffectDamageBase comment
+type EffectDamageBase int
+
+const (
+	edbCurrentPower EffectDamageBase = iota
+	edbTotalBuffTurnCount
+	edbTotalBuffCount
+	edbTotalDebuffTurnCount
+	edbTotalDebuffCount
+	edbCalculatedDamage
 )
 
 // EffectFunction comment
 type EffectFunction int
 
 const (
-	Increase EffectFunction = iota
-	Decrease
-	Block
+	efIncrease EffectFunction = iota
+	efDecrease
+	efBlock
+	efRemove
 )
 
 // EffectCategory which stats can be modified with effects
 type EffectCategory int
 
 const (
-	Buff EffectCategory = iota
-	Debuff
-	Damage
+	ecBuff EffectCategory = iota
+	ecDebuff
+	ecDamage
 )
 
 // EffectModifiableStats which stats can be modified with effects
 type EffectModifiableStats int
 
 const (
-	Health EffectModifiableStats = iota
-	Power
-	BuffTurn
-	DebuffTurn
+	emsCalculatedDamage EffectModifiableStats = iota
+	emsCurrentHealth
+	emsCurrentPower
+	emsCurrentActiveEffect
+	emsRandomActiveEffect
+	emsNewActiveEffect
+	emsAllActiveEffects
+	emsRandomSkill
 )
 
 // EffectCostType comment
 type EffectCostType int
 
 const (
-	Health EffectCostType = iota
-	ReamainingTurnCount
-	TotalEffectsCount
+	ectNothing EffectCostType = iota
+	ectCurrentHealth
+	ectCurrentActiveEffectBuff
+)
+
+// EffectTiming comment
+type EffectTiming int
+
+const (
+	etOnTurnStart EffectTiming = iota
+	etOnSkillUse
+	etOnTurnEnd
+	etOnDurationEnd
+)
+
+// EffectBlockType defines what changes are blocked
+type EffectBlockType int
+
+const (
+	ebtNothing EffectBlockType = iota
+	ebtIncrease
+	ebtDecrease
+	ebtRemove
 )
 
 // ActiveEffect comment
@@ -84,18 +118,6 @@ func (ae ActiveEffect) String() string {
 	return fmt.Sprintf("Effectname: %s | Power: %d | Duration: %d",
 		ae.skillEffect.name, ae.totalPower, ae.turnsLeft)
 }
-
-// EffectTiming comment
-type EffectTiming int
-
-const (
-	OnTurnStart EffectTiming = iota
-	OnSkillUse
-	OnTurnEnd
-	OnDurationEnd
-)
-
-type effectFunctions map[string]func()
 
 func newSkillEffect(skillType string, effectName string) (SkillEffect, error) {
 	//todo use this function to create the docs while also passing the skilltype
