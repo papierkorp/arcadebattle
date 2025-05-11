@@ -3,7 +3,7 @@
 This game should be a Textbased Game which completly works in the Console with Commands written in pure GOlang.
 
 At the beginning the player has to create his own Character. Depending on the difficulty he gets a different amount of Talentpoints.
-The Talentpoints are used to: upgrade Player stats (e.g. health, power, speed) and create skills (each skill has stats and effects). The Player can create as many skills as he wants/has Talentpoints.
+The Talentpoints are used to: upgrade Player stats (e.g. health, power, speed), create skills (each skill has stats and effects) or buy talismans (one time use items). The Player can create as many skills as he wants/has Talentpoints.
 The game is based on the effects which should enable strategic depth and a paper, rock, scissors system.
 After winning against a boss he gets new Talentpoints.
 The Game has 9 bosses, after beating the last boss you won the game. If you loose one fight your Character is dead and you have to create new one.
@@ -17,12 +17,14 @@ The Game has 9 bosses, after beating the last boss you won the game. If you loos
   - exit => close game
 - rest state
   - create skill
+  - buy talisman
   - update skill
   - update stats
   - start battle => battle state
   - lobby => lobby state
 - battle state
   - `use skill1` ...
+  - `use talisman` ...
   - win against boss: get new talentpoints => rest state
   - loose against boss => lobby state
 
@@ -72,7 +74,8 @@ The Game has 9 bosses, after beating the last boss you won the game. If you loos
   - List of Skills
   - Current enemy stats
   - Enemy skill list
-- `use skillx/slotx`
+- `use skill`
+- `use talisman`
 
 # Creation
 
@@ -81,6 +84,7 @@ The Game has 9 bosses, after beating the last boss you won the game. If you loos
 step by step:
 
 - Name: string
+- Difficulty: string
 - for each stat
 
 **skill_creation**
@@ -94,25 +98,14 @@ step by step:
 
 # Stats
 
-_Fixed_
-
 each fixed stat should cost a certain amount of talentpoints
 
-- Name => set by player
-- Health => set by player
-- Power => set by player
-- Speed => set by player
-- Talentpoints => based on difficulty
-  - normal
-  - hard
-  - expert
-  - master
-  - torment
+- Name
+- Health
+- Power
+- Speed
+- Talentpoints
 
-_Dynamic_
-
-- currentHealth => at the start the same as Health
-- Alive
 
 # Skills
 
@@ -135,6 +128,9 @@ i want to track:
 - amount of talentpoints used
 
 
-# Terms
+# Calculation
 
-Total Power = `power * dmgMultiplier * [activeSkillMultiplier] * [passiveSkillMultiplier]`
+basicSkillPower = `power * skillDamageMultiplier`
+fullSkillPower = `basicSkillPower * effectMulti`
+
+each effect can be applied as often as casted (so the same effect can be applied multiple times) and each effectMulti will be calculated in the order of the casting

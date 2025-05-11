@@ -140,9 +140,6 @@
         "costperturn": "Cost per Turn",
         "costperstat": "Cost per Stat",
         "costper01multi": "Cost per 0.1 Multi",
-        "durationskill": "Durationskill",
-        "immediateskill": "Immediateskill",
-        "passiveskill": "Passiveskill",
         "boss": "Boss"
     },
     "help": {

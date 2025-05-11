@@ -1,185 +1,90 @@
-# Effects new grouping
+# Effect Usage
 
-**all**
+**Turn Process for use skill**
 
-- PrimaryFunction
-  - increase
-  - decrease
-  - block
-  - remove
-- Target
-  - self
-  - enemy
-- EffectTiming
-  - OnTurnStart
-  - OnSkillUse
-  - OnTurnEnd
-  - OnDurationEnd
-- probability
-- effectMultiplier
-  - totalBuffTurnCount 
-  - totalBuffCount      
-  - totalDebuffTurnCount
-  - totalDebuffCount   
-- Cost (does it cost something to activate, can be null, dynamically available for everything, can be used to reduce talentpointcosts)
-  - nothing (default, just cast the effect)
-  - remove a buff
-  - decrease some health
-- CostValue (integer, default 0, can only be used if Cost != nothing)
-- Category
-  - buff
-  - debuff
-- talentpointCosts
+1. check effects for turn start
+- execution
+- Bleeding
+2. `use skill` command
+3. loop if an effect is blocked (effect.type block)
+- Block Debuffs
+- BlockBuffs
+4. loop for special effects (`effect.probability`)
+- evasion
+- Resistance
+- ReduceHealing
+- Confusion
+- Distraction
+5. determine `basicSkillPower` (`currentPower * skillMulti`)
+6. loop effects of both entities to create `fullSkillPower` (`currentPower * skillMulti * effectMulti`) (can be more effect multis, e.g. 0,5 for damage reduction or 2,0 for crit) with `effect.multi`
+- Finisher
+- Immunity
+- Adapation
+- critical strike
+- IncPower
+- Fury
+- Weaken
+- Vulnerability
+7. loop effects of both enitites for special effects (e.g. Lifeleech, confusion, reflect damage) and excecute the effects (`effect.execute()`)
+- Lifeleech
+- reflect damage
+8. use fullSkillPower to do the damage
+9. loop effects for turn end and reduction of turns of effects
+- Heal Over Time (HOT)
 
-**Increase/Decrease**
+**Turn Process for use talisman**
 
-- PrimaryFunction
-  - increase
-  - decrease
-- Target
-  - self
-  - enemy
-- affectedStat
-    - calculatedDamage
-    - currentHealth
-    - currentPower
-    - activeEffect
-    - randomActiveEffect
-    - allActiveEffects
-- EffectTiming
-  - OnTurnStart
-  - OnSkillUse
-  - OnTurnEnd
-  - OnDurationEnd
-- effectMultiplier
-  - totalBuffTurnCount 
-  - totalBuffCount      
-  - totalDebuffTurnCount
-  - totalDebuffCount   
-- Cost (does it cost something to activate, can be null, dynamically available for everything, can be used to reduce talentpointcosts)
-  - nothing (default, just cast the effect)
-  - remove a buff
-  - decrease some health
-- CostValue (integer, default 0, can only be used if Cost != nothing)
-- Category
-  - buff
-  - debuff
-- talentpointCosts
+1. check effects for turn start
+- execution
+2. `use talisman` command
+- BuffTurnBonusDamage
+- DebuffTurnBonusDamage
+- Heal
+- BuffHeal
+- HealthCleanse
+- Cleanse
+- Dispel
+- ExtendBuffs
+- ExtendDebuffs
+- ReduceBuffs
+- ReduceDebuffs
+...
 
+**example struct**
 
+```go
+type SkillEffect struct {
+  name                 string
+  description          string
+  talentpointCosts     int
+  probability          float32
+  category             EffectCategory
+  execute              func()
+  checkCondition       func() bool
+  usageTiming          EffectTiming
+  multi                float32
+}
 
-**Block**
+type EffectCategory int
+const (
+  ecfIncrease EffectCategory = iota
+  ecDecrease
+  ecBlock
+  ecRemove
+)
 
-- blockType
-  - Increase
-  - Decrease
-  - Remove
-- affectedStat
-    - calculatedDamage
-    - currentHealth
-    - currentPower
-    - activeEffect
-    - randomActiveEffect
-    - newActiveEffect
-    - allActiveEffects
-    - useSkill
-    - (randomSkill)
-- EffectTiming
-  - OnSkillUse
-- Category
-  - buff
-  - debuff
+type EffectTiming int
+const (
+  etOnTurnStart EffectTiming = iota
+  etOnSkillUse
+  etOnTurnEnd
+  etOnDurationEnd
+)
+
+```
 
 
-**Remove**
-
-- affectedStat
-    - currentHealth
-    - activeEffect
-    - randomActiveEffect
-    - allActiveEffects
-- EffectTiming
-  - OnSkillUse
-- probability
-- effectMultiplier
-- Cost
-- CostValue
-- Category
-  - buff
-  - debuff
-- talentpointCosts
-
-
-
-|           stat          | increase | decrease | block | remove |
-|-------------------------|----------|----------|-------|--------|
-| currentHealth           | +        | +        | +     | +      |
-| currentPower            | +        | +        | +     | +      |
-| activeEffectTurns       | +        | +        | +     | +      |
-| randomActiveEffectTurns | +        | +        | +     | +      |
-| newActiveEffect         | -        | -        | +     | -      |
-| allActiveEffectsTurns   | +        | +        | +     | +      |
-| randomSkill             | -        | -        | +     | -      |
-
-
-\pagebreak
-
-
-
-
-# Effects new grouping - table
-
-<br />
-
-**template**
-
-| name | PrimaryFunction | affectedStat | Target | Category | EffectTiming | Trigger | effectMultiplier | Cost | CostValue | blockType | talentpointCosts | fehlt |
-|------|-----------------|--------------|--------|----------|--------------|---------|------------------|------|-----------|-----------|------------------|-------|
-|      |                 |              |        |          |              |         |                  |      |           |           |                  |       |
-
----
----
----
-
-|          name         | PrimaryFunction |   affectedStat   | Target | Category |   EffectTiming  |        Trigger         |   effectMultiplier   | Cost | CostValue | blockType |     fehlt      |
-|-----------------------|-----------------|------------------|--------|----------|-----------------|------------------------|----------------------|------|-----------|-----------|----------------|
-| Execution             | remove          | currentHealth    | enemy  | debuff   | OnOtherSkillUse | enemy below 10% health | -                    | -    | -         | -         | -              |
-| Finisher              | increase        | calculatedDamage | self   | buff     | OnOtherSkillUse | enemy below 10% health | 100%                 | -    | -         | -         | -              |
-| BuffTurnBonusDamage   | increase        | calculatedDamage | self   | buff     | OnOtherSkillUse | -                      | totalBuffTurnCount   | -    | -         | -         | -              |
-| DebuffTurnBonusDamage | increase        | calculatedDamage | self   | buff     | OnOtherSkillUse | -                      | totalDebuffTurnCount | -    | -         | -         | -              |
-| Heal                  | increase        | currentHealth    | self   | buff     | OnThisSkillUse  | -                      | -                    | -    | -         | -         | wieviel health |
-| Heal Over Time        | increase        | currentHealth    | self   | buff     | OnTurnEnd       | -                      | -                    | -    | -         | -         | wieviel health |
-| Lifeleech             | increase        | currentHealth    |        |          |                 |                        |                      |      |           |           |                |
-| BuffHeal              |                 |                  |        |          |                 |                        |                      |      |           |           |                |
-| HealthCleanse         |                 |                  |        |          |                 |                        |                      |      |           |           |                |
-| Cleanse               |                 |                  |        |          |                 |                        |                      |      |           |           |                |
-| Dispel                |                 |                  |        |          |                 |                        |                      |      |           |           |                |
-| ExtendBuffs           |                 |                  |        |          |                 |                        |                      |      |           |           |                |
-| ExtendDebuffs         |                 |                  |        |          |                 |                        |                      |      |           |           |                |
-| ReduceBuffs           |                 |                  |        |          |                 |                        |                      |      |           |           |                |
-| ReduceDebuffs         |                 |                  |        |          |                 |                        |                      |      |           |           |                |
-| Block Debuffs         |                 |                  |        |          |                 |                        |                      |      |           |           |                |
-| Evasion               |                 |                  |        |          |                 |                        |                      |      |           |           |                |
-| Shield                |                 |                  |        |          |                 |                        |                      |      |           |           |                |
-| Resistance            |                 |                  |        |          |                 |                        |                      |      |           |           |                |
-| Immunity              |                 |                  |        |          |                 |                        |                      |      |           |           |                |
-| Adaptation            |                 |                  |        |          |                 |                        |                      |      |           |           |                |
-| Critical Strike       |                 |                  |        |          |                 |                        |                      |      |           |           |                |
-| IncPower              |                 |                  |        |          |                 |                        |                      |      |           |           |                |
-| Fury                  |                 |                  |        |          |                 |                        |                      |      |           |           |                |
-| Reflect Damage        |                 |                  |        |          |                 |                        |                      |      |           |           |                |
-| Bleeding              |                 |                  |        |          |                 |                        |                      |      |           |           |                |
-| Weaken                |                 |                  |        |          |                 |                        |                      |      |           |           |                |
-| BlockBuffs            |                 |                  |        |          |                 |                        |                      |      |           |           |                |
-| ReduceHealing         |                 |                  |        |          |                 |                        |                      |      |           |           |                |
-| Vulnerability         |                 |                  |        |          |                 |                        |                      |      |           |           |                |
-| Confusion             |                 |                  |        |          |                 |                        |                      |      |           |           |                |
-| Distraction           |                 |                  |        |          |                 |                        |                      |      |           |           |                |
-
-
-\pagebreak
-
-# Effects
+# Effectslist
 
 https://github.com/papierkorp/arcadebattle/blob/1c62a25f4e3e0624f7643347efaf1ef25b9b21d0/docs/gameidea.md
 
@@ -188,7 +93,6 @@ https://github.com/papierkorp/arcadebattle/blob/1c62a25f4e3e0624f7643347efaf1ef2
     - Finisher: `adds bonus damage if enemy is low`
     - BuffTurnBonusDamage: `Bonus Damage to amount of all remaining Buff Turns`
     - DebuffTurnBonusDamage: `Bonus Damage to Amount of all remaining Debuff Turns of Enemy`
-    - Pierce: `ingore shield effects`
 - Recovery
     - Heal: `Immediately restores health based on power stat`
     - Heal Over Time (HOT): `Restores health at the start of each turn`
@@ -205,7 +109,6 @@ https://github.com/papierkorp/arcadebattle/blob/1c62a25f4e3e0624f7643347efaf1ef2
 - Defensive Buffs
     - Block Debuffs: `Prevents new debuffs from being applied while active`
     - evasion: `50% Chance to dont get damage`
-    - Shield: `Create a shield that absorbs damage equal to 25% of max health`
     - Resistance: `50% Chance to block an incoming Debuff`
     - Immunity: `Receive 50% less damage`
     - Adapation: `Receive 10% less Damage from repeated sources`

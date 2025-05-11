@@ -22,23 +22,9 @@ func newCommand(commandArgs []string) {
 		playercreatedMsg := GetGameTextGameMessage("playercreated")
 		fmt.Println(playercreatedMsg)
 	case "skill":
-		skilltype := commandArgs[2]
 		invalidskillcreationMsg := GetGameTextError("invalidskillcreation")
-		var err error
-		var skill Skill
 
-		switch skilltype {
-		case "duration":
-			skill, err = CreateNewDurationSkill(commandArgs)
-		case "immediate":
-			skill, err = CreateNewImmediateSkill(commandArgs)
-		case "passive":
-			skill, err = CreateNewPassiveSkill(commandArgs)
-		default:
-			invalidskilltypeMsg := GetGameTextError("invalidskilltype")
-			fmt.Println(invalidskillcreationMsg + " - " + invalidskilltypeMsg + "\n")
-			return
-		}
+		skill, err := CreateNewSkill(commandArgs)
 
 		if err != nil {
 			fmt.Println(invalidskillcreationMsg, err)

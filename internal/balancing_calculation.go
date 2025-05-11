@@ -102,109 +102,61 @@ func getStatsCost(statName string) (int, costList, error) {
 // ------------------------- CALCULATION -------------------------
 // ---------------------------------------------------------------
 
-// func calculateSkillCostOLD(ds *DurationSkill) int {
-// 	calculationMsg := GetGameTextGameMessage("talentcalculation")
-// 	totalMsg := GetGameTextGameMessage("total")
-// 	effectMsg := GetGameTextGameMessage("effect")
-// 	dmgMultiMsg := GetGameTextGameMessage("damagemultiplier")
-// 	durationMsg := GetGameTextGameMessage("duration")
-// 	costper01multiMsg := GetGameTextGameMessage("costper01multi")
+func calculateSkillCost(s *Skill) int {
+	// calculationMsg := GetGameTextGameMessage("talentcalculation")
+	// totalMsg := GetGameTextGameMessage("total")
+	// effectMsg := GetGameTextGameMessage("effect")
+	// dmgMultiMsg := GetGameTextGameMessage("damagemultiplier")
+	// durationMsg := GetGameTextGameMessage("duration")
+	// costper01multiMsg := GetGameTextGameMessage("costper01multi")
 
-// 	err, passiveMulti, _ := getSkillCost("passivemulti")
-// 	if err != nil {
-// 		fmt.Println(err)
-// 	}
+	// err, dmgMultiCostPer01Multi, _ := getSkillCost("dmgmulti")
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
 
-// 	err, dmgMultiCostPer01Multi, _ := getSkillCost("dmgmulti")
-// 	if err != nil {
-// 		fmt.Println(err)
-// 	}
+	// var dmgCost int = 0
 
-// 	var dmgCost int = 0
-// 	if ds.skilltype != PassiveEffect {
-// 		adjustedMulti := ds.dmgmulti - 0.1 // 0.1 is the default
-// 		if adjustedMulti < 0 {
-// 			adjustedMulti = 0
-// 		}
+	// totalEffectCost := 0
+	// err, durationCostperTurn, _ := getSkillCost("duration")
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
 
-// 		numberOfIncrements := int(adjustedMulti * 10)
-// 		dmgCost = numberOfIncrements * dmgMultiCostPer01Multi
-// 	}
+	// fmt.Println("\n" + calculationMsg + "\n")
 
-// 	totalEffectCost := 0
-// 	err, durationCostperTurn, _ := getSkillCost("duration")
-// 	if err != nil {
-// 		fmt.Println(err)
-// 	}
+	// for _, effect := range s.effectList {
+	// 	effectTotalCost := effect.cost
 
-// 	fmt.Println("\n" + calculationMsg + "\n")
+	// 	additionalCost := effect.duration * durationCostperTurn
+	// 	effectTotalCost += additionalCost
 
-// 	for _, effect := range ds.effectList {
-// 		effectTotalCost := effect.cost
+	// 	// if s.skilltype != PassiveEffect
 
-// 		if ds.skilltype == DurationEffect && effect.duration > 1 {
-// 			additionalCost := effect.duration * durationCostperTurn
-// 			effectTotalCost += additionalCost
-// 		}
+	// 	costperturnMsg := GetGameTextGameMessage("costperturn")
 
-// 		if ds.skilltype == PassiveEffect {
-// 			effectTotalCost = effect.cost * passiveMulti
+	// 	// Damage Over Time   20 (Duration * Cost per Turn: 3 * 5 + Effect: 5)
+	// 	fmt.Printf("  %-18s %d (%s * %s: %d * %d + %s: %d)\n",
+	// 		effect.name,
+	// 		effectTotalCost,
+	// 		durationMsg,
+	// 		costperturnMsg,
+	// 		effect.duration,
+	// 		durationCostperTurn,
+	// 		effectMsg,
+	// 		effect.cost)
 
-// 			passivemultiMsg := GetGameTextGameMessage("passivemulti")
+	// 	totalEffectCost += effectTotalCost
+	// }
 
-// 			// Reduce Buffs       50 (Effect * Passive Multiplier: 5 * 10 )
-// 			fmt.Printf("  %-18s %d (%s * %s: %d * %d )\n",
-// 				effect.name,
-// 				effectTotalCost,
-// 				effectMsg,
-// 				passivemultiMsg,
-// 				effect.cost,
-// 				passiveMulti,
-// 			)
-// 		} else {
-// 			// if s.skilltype != PassiveEffect
+	// totalCost := totalEffectCost + dmgCost
 
-// 			costperturnMsg := GetGameTextGameMessage("costperturn")
+	// fmt.Printf("  %-18s %d (%s x %s: %.2f x %d)\n", dmgMultiMsg, dmgCost, dmgMultiMsg, costper01multiMsg, s.dmgmulti, dmgMultiCostPer01Multi)
+	// fmt.Println("  " + strings.Repeat("_", 24))
+	// fmt.Printf("  %-18s %d\n\n", totalMsg, totalCost)
 
-// 			// Damage Over Time   20 (Duration * Cost per Turn: 3 * 5 + Effect: 5)
-// 			fmt.Printf("  %-18s %d (%s * %s: %d * %d + %s: %d)\n",
-// 				effect.name,
-// 				effectTotalCost,
-// 				durationMsg,
-// 				costperturnMsg,
-// 				effect.duration,
-// 				durationCostperTurn,
-// 				effectMsg,
-// 				effect.cost)
-// 		}
+	// s.talentpointcoststotal = totalCost
 
-// 		totalEffectCost += effectTotalCost
-
-// 	}
-
-// 	totalCost := totalEffectCost + dmgCost
-
-// 	fmt.Printf("  %-18s %d (%s x %s: %.2f x %d)\n", dmgMultiMsg, dmgCost, dmgMultiMsg, costper01multiMsg, ds.dmgmulti, dmgMultiCostPer01Multi)
-// 	fmt.Println("  " + strings.Repeat("_", 24))
-// 	fmt.Printf("  %-18s %d\n\n", totalMsg, totalCost)
-
-// 	ds.talentpointcoststotal = totalCost
-
-// 	return totalCost
-// }
-
-func calculateDurationSkillCost(ds *DurationSkill) int {
-	fmt.Println(ds)
-	return 0
-}
-
-func calculateImmediateSkillCost(is *ImmediateSkill) int {
-	fmt.Println(is)
-	return 0
-}
-
-func calculatePassiveSkillCost(ps *PassiveSkill) int {
-	fmt.Println(ps)
 	return 0
 }
 
