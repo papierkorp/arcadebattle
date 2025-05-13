@@ -1,6 +1,6 @@
 # Arcade Battle
 
-This game should be a Textbased Game which completly works in the Console with Commands written in pure GOlang.
+This game should be a Textbased Game which completly works in the Console/Terminal with Commands written in pure GOlang.
 
 At the beginning the player has to create his own Character. Depending on the difficulty he gets a different amount of Talentpoints.
 The Talentpoints are used to: upgrade Player stats (e.g. health, power, speed), create skills (each skill has stats and effects) or buy talismans (one time use items). The Player can create as many skills as he wants/has Talentpoints.

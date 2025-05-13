@@ -2,124 +2,169 @@
 
 **Turn Process for use skill**
 
-1. check effects for turn start - effectgroups: 
-- take damage
+1. loop effects for turn start
+- entity: `both`
+- usageTiming: `etiOnTurnStart`
 2. `use skill` command
-3. loop if an effect is blocked (effect.type block) - effectgroups: 
-- block debuffs
-- block buffs
-- block healing
-4. loop for special effects - effectgroups: 
-- block damage
-- stop skill
-- change target
+3. loop if an effect is blocked / target is changed
+- entity: `both`
+- usageTiming: `etiOnSkillStart`
 5. determine `basicSkillPower` (`currentPower * skillMulti`)
-6. loop effects of both entities to create `fullSkillPower` (`currentPower * skillMulti * effectMulti`) (can be more effect multis, e.g. 0,5 for damage reduction or 2,0 for crit) with `effect.multi` - effectgroups: 
-- increase damage done
-- decrease damage taken 
-- decrease damage done 
-- increase power 
-- increase damage taken 
-- decrease healing 
-- increase healing
+6. loop effects to create `fullSkillPower` (`currentPower * skillMulti * each effectMulti`)
+- usageTiming: `etiOnSkillCalculation`
 7. use fullSkillPower to do the damage
-8. loop effects for turn end and reduction of turns of effects and reactions - effectgroups: 
-- heal 
-- do damage
+8. loop effects for turn end and reduction of turns of effects and reactions - trigger: `onTurnEnd`
+- usageTiming: `etiOnTurnEnd`
 
 **Turn Process for use talisman**
 
-1. check effects for turn start
-- execution
+1. loop effects for turn start
+- entity: `both`
+- usageTiming: `etiOnTurnStart`
 2. `use talisman` command
 ...
 
 
-# Effectlist (grouping)
+# Effect necessities
 
-https://github.com/papierkorp/arcadebattle/blob/1c62a25f4e3e0624f7643347efaf1ef25b9b21d0/docs/gameidea.md
+```go
+type SkillEffect struct {
+  name                 string
+  description          string
+  talentpointCosts     int
+  probability          float32
+  type                 EffectType
+  category             EffectCategory
+  execute              func()
+  checkCondition       func() bool
+  usageTiming          EffectTiming
+  multi                float32
+}
 
-**buff**
+type EffectCategory int
+const (
+  ecaHeal EffectCategory = iota
+  ecaDoDamage
+  ecaIncreasePower
+  ecaIncreaseDamageDone
+  ecaDecreaseDamageTaken
+  ecaIncreaseHealing
+  ecaaBlockDebuffs
+  ecaBlockDamage
+  ecaStopSkill
+  ecaChangeTarget
+  ecaTakeDamage
+  ecaDecreasePower
+  ecaDecreaseDamageDone
+  ecaIncreaseDamageTaken
+  ecaDecreaseHealing
+  ecaBlockBuffs
+  ecaBlockHealing
+)
 
-- increase power
-  - IncPower: `Increases damage output by 50%`
-  - Adrenaline Rush: `Power increases by 10% each turn, up to 50%`
-  - Vengeance: `Power increases by 10% for each 10% of your missing health`
-  - Combo Mastery: `Each consecutive use of the same skill increases power by 15%`
-- increase damage done
-  - Finisher: `adds bonus damage if enemy is low`
-  - critical strike: `50% Chance to double the damage`
-  - Fury: `each attack increases damage of next attack`
-- decrease damage taken
-  - Immunity: `Receive 50% less damage`
-  - Adapation: `Receive 10% less Damage from repeated sources`
-  - Damage Dispersal: `Convert 20% of damage taken into a DoT on yourself that deals less total damage`
-- increase healing
-  - Regenerative Core: `Healing effects become 30% stronger for each debuff you have`
-  - Crisis Recovery: `Healing effects are 100% stronger when below 30% health`
-- block debuffs
-  - Block Debuffs: `Prevents new debuffs from being applied while active`
-  - Resistance: `50% Chance to block an incoming Debuff`
-- block damage
-  - evasion: `50% Chance to dont get damage`
-- stop skill
-  - luckyTiming: `50% Chance to block an incoming skill`
-- heal
-  - Lifeleech: `Gain 50% of your Damage in Health`
-  - lastStand: `Heal 50% of the Damage you take`
-  - Heal Over Time (HOT): `Restores health at the start of each turn`
-- do damage
-  - reflect damage: `Reflect 50% of the damage you Receive`
-- change target
-  - Mirror: `50% Chance the attack is mirrored`
+type EffectTiming int
+const (
+  etiOnTurnStart EffectTiming = iota
+  etiOnSkillStart
+  etiOnSkillCalculation
+  etiOnTurnEnd
+)
 
-**debuff**
+type EffectType int
+const (
+  etyBuff EffectType = iota
+  etyDebuff
+)
 
-- decrease power
-- decrease damage done
-  - Weaken: `Reduces target's damage output by 50%`
-- increase damage taken
-  - Vulnerability: `Receive 50% more damage`
-- decrease healing
-  - ReduceHealing: `Reduces all healing received by 50%`
-- block buffs
-  - BlockBuffs: `Prevents the target from receiving buffs and healing effects`
-- block healing
-- stop skill
-  - Confusion: `50% Chance to miss the skill`
-  - Mental Block: `cannot use the same skill twice in a row`
-- take damage
-  - Execution: `Immediately kill the enemy while below 10% health`
-  - Bleeding: `Applies a damaging effect that deals damage at the start of each turn`
-  - Unstable Affliction: `When cleansed, explodes`
-  - Soul Burn: `Deals damage based on maximum health`
-- change target
-  - Distraction: `50% Chance to attack itself`
+type BattleState struct {
+  currentHealth        int
+  currentPower         int
+  totalBuffTurnsCount  int
+  totalBuffCount       int
+  totalDebuffTurnCount int
+  totalDebuffCount     int
+  activeEffectsList    []ActiveEffect
+  currentBattlePhase   BattlePhase
+}
 
-**more ideas**
+type ActiveEffect struct {
+  skillEffect SkillEffect
+  totalPower  int
+  turnsLeft   int
+  source      Entity
+  target      Entity
+}
+```
 
-- get a random buff/debuff when attacking/attacked
-- remove a random buff/debuff when attacking/attacked
-- status swap (swap all buffs/debuffs)
-- steal enemy power
-- sacrifice health to deal damage/increase damage
-- effect only does damage when it naturally runs out of turns (no removal) but increase the damage for every turn it passed
-- Health Siphon: Each turn, steal a small amount of health from the enemy
+# Game Effects Table
 
-# Talismanlist (one time use items)
+## Buffs (Self)
 
-- do damage
-  - BuffTurnBonusDamage: `Bonus Damage to amount of all remaining Buff Turns`
-  - DebuffTurnBonusDamage: `Bonus Damage to Amount of all remaining Debuff Turns of Enemy`
-- heal
-  - Heal: `Immediately restores health based on power stat`
-  - BuffHeal: `Stronger direct heal but remove one random buff`
-  - HealthCleanse: `Pay 10% of your current health to remove a random Debuff`
-- remove effects
-  - Cleanse: `Removes all negative effects from the target`
-  - Dispel: `Removes all positive effects from the target`
-- change effect turns
-  - ExtendBuffs: `+1 Turn for each 10 Total Power`
-  - ExtendDebuffs: `+1 Turn for each 10 Total Power`
-  - ReduceBuffs: `-1 Turn for each 10 Total Power`
-  - ReduceDebuffs: `-1 Turn for each 10 Total Power` 
+|         Name         |      Trigger       |        Category       |                                   Description                                   |
+|----------------------|--------------------|-----------------------|---------------------------------------------------------------------------------|
+| Lifeleech            | onTurnEnd          | heal                  | Gain 50% of your Damage in Health                                               |
+| Last Stand           | onTurnEnd          | heal                  | Heal 50% of the Damage you take                                                 |
+| Heal Over Time (HOT) | onTurnEnd          | heal                  | Restores health at the start of each turn                                       |
+| Reflect Damage       | onTurnEnd          | do damage             | Reflect 50% of the damage you Receive                                           |
+| Increase Power       | onSkillCalculation | increase power        | Increases damage output by 50%                                                  |
+| Adrenaline Rush      | onSkillCalculation | increase power        | Power increases by 10% each turn, up to 50%                                     |
+| Vengeance            | onSkillCalculation | increase power        | Power increases by 10% for each 10% of your missing health                      |
+| Combo Mastery        | onSkillCalculation | increase power        | Each consecutive use of the same skill increases power by 15%                   |
+| Finisher             | onSkillCalculation | increase damage done  | Adds bonus damage if enemy is low                                               |
+| Critical Strike      | onSkillCalculation | increase damage done  | 50% Chance to double the damage                                                 |
+| Fury                 | onSkillCalculation | increase damage done  | Each attack increases damage of next attack                                     |
+| Immunity             | onSkillCalculation | decrease damage taken | Receive 50% less damage                                                         |
+| Adaptation           | onSkillCalculation | decrease damage taken | Receive 10% less Damage from repeated sources                                   |
+| Damage Dispersal     | onSkillCalculation | decrease damage taken | Convert 20% of damage taken into a DoT on yourself that deals less total damage |
+| Regenerative Core    | onSkillCalculation | increase healing      | Healing effects become 30% stronger for each debuff you have                    |
+| Crisis Recovery      | onSkillCalculation | increase healing      | Healing effects are 100% stronger when below 30% health                         |
+| Block Debuffs        | onSkillStart       | block debuffs         | Prevents new debuffs from being applied while active                            |
+| Resistance           | onSkillStart       | block debuffs         | 50% Chance to block an incoming Debuff                                          |
+| Evasion              | onSkillStart       | block damage          | 50% Chance to dont get damage                                                   |
+| Lucky Timing         | onSkillStart       | stop skill            | 50% Chance to block an incoming skill                                           |
+| Mirror               | onSkillStart       | change target         | 50% Chance the attack is mirrored                                               |
+
+## Debuffs (Enemy)
+
+|         Name        |      Trigger       |        Category       |                              Description                              |
+|---------------------|--------------------|-----------------------|-----------------------------------------------------------------------|
+| Execution           | onTurnStart        | take damage           | Immediately kill the enemy while below 10% health                     |
+| Bleeding            | onTurnStart        | take damage           | Applies a damaging effect that deals damage at the start of each turn |
+| Unstable Affliction | onTurnStart        | take damage           | When cleansed, explodes                                               |
+| Soul Burn           | onTurnStart        | take damage           | Deals damage based on maximum health                                  |
+| Weaken              | onSkillCalculation | decrease damage done  | Reduces target's damage output by 50%                                 |
+| Vulnerability       | onSkillCalculation | increase damage taken | Receive 50% more damage                                               |
+| Reduce Healing      | onSkillCalculation | decrease healing      | Reduces all healing received by 50%                                   |
+| Block Buffs         | onSkillStart       | block buffs           | Prevents the target from receiving buffs and healing effects          |
+| Confusion           | onSkillStart       | stop skill            | 50% Chance to miss the skill                                          |
+| Mental Block        | onSkillStart       | stop skill            | Cannot use the same skill twice in a row                              |
+| Distraction         | onSkillStart       | change target         | 50% Chance to attack itself                                           |
+
+## Talismans (One-time Use Items)
+
+|           Name           |       Category      |                          Description                          |
+|--------------------------|---------------------|---------------------------------------------------------------|
+| Buff Turn Bonus Damage   | do damage           | Bonus Damage to amount of all remaining Buff Turns            |
+| Debuff Turn Bonus Damage | do damage           | Bonus Damage to Amount of all remaining Debuff Turns of Enemy |
+| Heal                     | heal                | Immediately restores health based on power stat               |
+| Buff Heal                | heal                | Stronger direct heal but remove one random buff               |
+| Health Cleanse           | heal                | Pay 10% of your current health to remove a random Debuff      |
+| Cleanse                  | remove effects      | Removes all negative effects from the target                  |
+| Dispel                   | remove effects      | Removes all positive effects from the target                  |
+| Extend Buffs             | change effect turns | +1 Turn for each 10 Total Power                               |
+| Extend Debuffs           | change effect turns | +1 Turn for each 10 Total Power                               |
+| Reduce Buffs             | change effect turns | -1 Turn for each 10 Total Power                               |
+| Reduce Debuffs           | change effect turns | -1 Turn for each 10 Total Power                               |
+
+## Additional Effect Ideas
+
+|        Name        | Type |                                                        Description                                                        |
+|--------------------|------|---------------------------------------------------------------------------------------------------------------------------|
+| Random Effect      | misc | Get a random buff/debuff when attacking/attacked                                                                          |
+| Effect Removal     | misc | Remove a random buff/debuff when attacking/attacked                                                                       |
+| Status Swap        | misc | Swap all buffs/debuffs                                                                                                    |
+| Power Theft        | misc | Steal enemy power                                                                                                         |
+| Health Sacrifice   | misc | Sacrifice health to deal damage/increase damage                                                                           |
+| Time Bomb          | misc | Effect only does damage when it naturally runs out of turns (no removal) but increase the damage for every turn it passed |
+| Health Siphon      | misc | Each turn, steal a small amount of health from the enemy                                                                  |
+| influence Talisman | misc | block talisman..                                                                                                          |
