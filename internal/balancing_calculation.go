@@ -85,7 +85,7 @@ func getSkillCost(skillPart string) (int, costList, error) {
 
 func getStatsCost(statName string) (int, costList, error) {
 	var statCostList = costList{
-		"hp_cost":    1, // cost per 1 HP
+		"hp_cost":    1, // cost per 5 HP
 		"power_cost": 1, // cost per 1 Power
 		"speed_cost": 2, // cost per 1 speed
 	}

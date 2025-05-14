@@ -36,6 +36,9 @@ type Stats struct {
 
 func createPlayer(args []string) (*Player, error) {
 
+	// new0 player1 name2 difficulty3 health4 power5 speed6
+	// new player John normal 25 15 8
+
 	newplayerMsg := GetGameTextCommand("newplayer")
 	if len(args) != 7 {
 		invalidArgsMsg := GetGameTextError("invalidargs")
