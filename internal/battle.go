@@ -7,14 +7,15 @@ import (
 
 // BattleState comment
 type BattleState struct {
-	currentHealth        int
-	currentPower         int
-	totalBuffTurnsCount  int
-	totalBuffCount       int
-	totalDebuffTurnCount int
-	totalDebuffCount     int
-	activeEffectsList    []ActiveEffect
-	currentBattlePhase   BattlePhase
+	currentHealth          int
+	currentPower           int
+	totalBuffTurnsCount    int
+	totalBuffCount         int
+	totalDebuffTurnCount   int
+	totalDebuffCount       int
+	activeEffectsList      []ActiveEffect
+	currentBattlePhase     BattlePhase
+	lastFullSkillPowerUsed int
 }
 
 // BattlePhase comment
@@ -176,9 +177,9 @@ func printTurnOrderSequence() {
 		fmt.Printf("  %s %d: %s\n", turnMsg, i+1, turn)
 	}
 
-	fmt.Println("  --- " + loopMsg + " ---")
+	fmt.Println("  --- " + loopMsg + " ---\n\n")
 
-	fmt.Print("\n" + separator2Msg + "\n\n")
+	// fmt.Print("\n" + separator2Msg + "\n\n")
 }
 
 // GCD greatest common divisor (GCD) via Euclidean algorithm

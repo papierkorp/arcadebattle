@@ -147,14 +147,14 @@ func (p *Player) SetCurrentHealth(health int) {
 	p.battlestate.currentHealth = health
 }
 
-// SetTotalTurnsBuffs sets the total turns for buffs in battle state
+// SetTotalTurnsBuffs sets the total turns for buffs
 func (p *Player) SetTotalTurnsBuffs(turns int) {
-	p.battlestate.totalTurnsBuffs = turns
+	p.battlestate.totalBuffTurnsCount = turns
 }
 
-// SetTotalTurnsDebuff sets the total turns for debuffs in battle state
+// SetTotalTurnsDebuff sets the total turns for debuffs
 func (p *Player) SetTotalTurnsDebuff(turns int) {
-	p.battlestate.totalTurnsDebuff = turns
+	p.battlestate.totalDebuffTurnCount = turns
 }
 
 // AddActiveEffect adds an effect to the active effects list
@@ -165,7 +165,7 @@ func (p *Player) AddActiveEffect(effect ActiveEffect) {
 // RemoveActiveEffect removes an effect from the active effects list
 func (p *Player) RemoveActiveEffect(effect SkillEffect) {
 	p.battlestate.activeEffectsList = slices.DeleteFunc(p.battlestate.activeEffectsList, func(ae ActiveEffect) bool {
-		return ae.skillEffect.name == effect.name
+		return ae.skillEffect.internalName == effect.internalName
 	})
 }
 
@@ -210,40 +210,50 @@ func (p *Player) HandleDefeat() {
 // ResetBattleState resets the battle state to initial values
 func (p *Player) ResetBattleState() {
 	p.battlestate = BattleState{
-		currentHealth:      p.stats.health,
-		totalTurnsBuffs:    0,
-		totalTurnsDebuff:   0,
-		activeEffectsList:  []ActiveEffect{},
-		currentBattlePhase: turnStart,
+		currentHealth:        p.stats.health,
+		totalBuffTurnsCount:  0,
+		totalDebuffTurnCount: 0,
+		activeEffectsList:    []ActiveEffect{},
+		currentBattlePhase:   turnStart,
 	}
 }
 
 // ApplyDamage applies damage to the player
 func (p *Player) ApplyDamage(amount int) {
-	// todo: implement damage application logic with shields and effects
-
 	currentHealth := p.battlestate.currentHealth
 	newHealth := max(currentHealth-amount, 0)
 
-	damagedealtMsg := GetGameTextBattle("damagedealt")
+	damagereceivedMsg := GetGameTextBattle("damagereceived")
 	damageMsg := GetGameTextBattle("damage")
-	fmt.Printf("%s %d %s\n", damagedealtMsg, amount, damageMsg)
+	fmt.Printf("%s %d %s\n", damagereceivedMsg, amount, damageMsg)
+
 	p.battlestate.currentHealth = newHealth
+	fmt.Println("new health: ", currentPlayer.battlestate.currentHealth)
+
 }
 
 // ApplyHealing applies healing to the player
 func (p *Player) ApplyHealing(amount int) {
-	// todo: implement healing logic with effects
 	currentHealth := p.battlestate.currentHealth
 	maxHealth := p.stats.health
 	newHealth := min(maxHealth, currentHealth+amount)
+
+	youhealedMsg := GetGameTextBattle("youhealed")
+	playerStatus := GetGameTextStatusPlayer()
+	fmt.Printf("%s %d %s\n", youhealedMsg, amount, playerStatus.Health)
+
 	p.battlestate.currentHealth = newHealth
+	fmt.Println("new health: ", currentPlayer.battlestate.currentHealth)
 }
 
 // HasActiveEffect checks if the player has a specific active effect
 func (p *Player) HasActiveEffect(effectType string) bool {
 	// todo: implement effect checking logic
 	return false
+}
+
+func (p *Player) SetFullSkillPower(power int) {
+	p.battlestate.lastFullSkillPowerUsed = power
 }
 
 // -------------------------------------------------------------------------
@@ -254,29 +264,23 @@ func (p *Player) HasActiveEffect(effectType string) bool {
 // -------------------------------battle------------------------------
 // -------------------------------------------------------------------------
 
+// player Action in battle
 func playerTurn() {
+	separator2Msg := GetGameTextGameMessage("separator2")
+	fmt.Println(separator2Msg)
 	fmt.Print("player turn\n")
 
 	// -----------------------turnStart-----------------------
 	currentPlayer.SetBattlePhase(turnStart)
-	var remainingEffects []ActiveEffect
 
 	for _, activeEffect := range currentPlayer.GetBattleState().activeEffectsList {
-		activeEffect.skillEffect.usage(activeEffect)
-
-		activeEffect.turnsLeft--
-
-		if activeEffect.turnsLeft > 0 {
-			remainingEffects = append(remainingEffects, activeEffect)
+		if activeEffect.skillEffect.usageTiming == etiOnTurnStart {
+			activeEffect.skillEffect.execute(activeEffect)
 		}
 	}
 
-	currentPlayer.GetBattleState().activeEffectsList = remainingEffects
-
 	// -----------------------turnAction-----------------------
 	currentPlayer.SetBattlePhase(turnAction)
-
-	// is handled in start.go in the useCommand
 
 	battlepromptMsg := GetGameTextBattle("battleprompt")
 
@@ -333,6 +337,22 @@ func playerTurn() {
 	rl.SetPrompt(promptMsg)
 
 	// -----------------------turnEnd-----------------------
+	var remainingEffects []ActiveEffect
 
+	for _, activeEffect := range currentPlayer.GetBattleState().activeEffectsList {
+		if activeEffect.skillEffect.usageTiming == etiOnTurnEnd {
+			activeEffect.skillEffect.execute(activeEffect)
+		}
+
+		activeEffect.turnsLeft--
+
+		if activeEffect.turnsLeft > 0 {
+			remainingEffects = append(remainingEffects, activeEffect)
+		} else if activeEffect.skillEffect.usageTiming == etiOnEffectRemoval {
+			activeEffect.skillEffect.execute(activeEffect)
+		}
+	}
+
+	currentPlayer.GetBattleState().activeEffectsList = remainingEffects
 	currentPlayer.SetBattlePhase(turnEnd)
 }

@@ -33,31 +33,7 @@ func getTalentpoints(d difficulty) int {
 
 func getEffectCost(effectName string) (int, error) {
 	effectCosts := costList{
-		"directdamage":          5,
-		"pierce":                5,
-		"finisher":              5,
-		"buffturnbonusdamage":   5,
-		"debuffturnbonusdamage": 5,
-		"directheal":            5,
-		"lifeleech":             5,
-		"cleanse":               5,
-		"dispel":                5,
-		"extendbuffs":           5,
-		"extenddebuffs":         5,
-		"reducedebuffs":         5,
-		"reducebuffs":           5,
-		"blockdebuffs":          5,
-		"healovertime":          5,
-		"incpower":              5,
-		"shield":                5,
-		"reflectdamage":         5,
-		"evasion":               5,
-		"critrate":              5,
-		"dot":                   5,
-		"stun":                  5,
-		"damagereduction":       5,
-		"blockbuffs":            5,
-		"grievouswounds":        5,
+		"heal1": 5,
 	}
 	cost, exists := effectCosts[effectName]
 	if !exists {

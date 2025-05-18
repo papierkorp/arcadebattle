@@ -119,12 +119,12 @@ func (b *Boss) SetCurrentHealth(health int) {
 
 // SetTotalTurnsBuffs sets the total turns for buffs
 func (b *Boss) SetTotalTurnsBuffs(turns int) {
-	b.battlestate.totalTurnsBuffs = turns
+	b.battlestate.totalBuffTurnsCount = turns
 }
 
 // SetTotalTurnsDebuff sets the total turns for debuffs
 func (b *Boss) SetTotalTurnsDebuff(turns int) {
-	b.battlestate.totalTurnsDebuff = turns
+	b.battlestate.totalDebuffTurnCount = turns
 }
 
 // AddActiveEffect adds an effect to the active effects list
@@ -135,7 +135,7 @@ func (b *Boss) AddActiveEffect(effect ActiveEffect) {
 // RemoveActiveEffect removes an effect from the active effects list
 func (b *Boss) RemoveActiveEffect(effect SkillEffect) {
 	b.battlestate.activeEffectsList = slices.DeleteFunc(b.battlestate.activeEffectsList, func(ae ActiveEffect) bool {
-		return ae.skillEffect.name == effect.name
+		return ae.skillEffect.internalName == effect.internalName
 	})
 }
 
@@ -182,11 +182,11 @@ func (b *Boss) HandleDefeat() {
 // ResetBattleState resets the battle state to initial values
 func (b *Boss) ResetBattleState() {
 	b.battlestate = BattleState{
-		currentHealth:      b.stats.health,
-		totalTurnsBuffs:    0,
-		totalTurnsDebuff:   0,
-		activeEffectsList:  []ActiveEffect{},
-		currentBattlePhase: turnStart,
+		currentHealth:        b.stats.health,
+		totalBuffTurnsCount:  0,
+		totalDebuffTurnCount: 0,
+		activeEffectsList:    []ActiveEffect{},
+		currentBattlePhase:   turnStart,
 	}
 }
 
@@ -215,11 +215,15 @@ func (b *Boss) ApplyHealing(amount int) {
 // HasActiveEffect checks if the boss has a specific active effect
 func (b *Boss) HasActiveEffect(effectType string) bool {
 	for _, effect := range b.battlestate.activeEffectsList {
-		if effect.skillEffect.name == effectType {
+		if effect.skillEffect.internalName == effectType {
 			return true
 		}
 	}
 	return false
+}
+
+func (b *Boss) SetFullSkillPower(power int) {
+	b.battlestate.lastFullSkillPowerUsed = power
 }
 
 // -------------------------------------------------------------------------
@@ -257,6 +261,8 @@ func leaveBattle() {
 // -------------------------------------------------------------------------
 
 func bossTurn() {
+	separator2Msg := GetGameTextGameMessage("separator2")
+	fmt.Println(separator2Msg)
 	fmt.Print("boss turn\n")
 
 	// -----------------------turnStart-----------------------
@@ -264,7 +270,7 @@ func bossTurn() {
 	var remainingEffects []ActiveEffect
 
 	for _, activeEffect := range currentBoss.GetBattleState().activeEffectsList {
-		activeEffect.skillEffect.usage(activeEffect)
+		activeEffect.skillEffect.execute(activeEffect)
 		activeEffect.turnsLeft--
 
 		if activeEffect.turnsLeft > 0 {
@@ -276,6 +282,9 @@ func bossTurn() {
 
 	// -----------------------turnAction-----------------------
 	currentBoss.SetBattlePhase(turnAction)
+
+	fmt.Println("Boss dealt 6 Damage")
+	currentPlayer.ApplyDamage(6)
 
 	// todo: add use skills
 

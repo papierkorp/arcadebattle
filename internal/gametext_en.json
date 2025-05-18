@@ -1,333 +1,235 @@
 {
-    "error": {
-        "invalidcommand": "Unknown command",
-        "invalidhelp": "No help available for command:",
-        "invalidplayercreation": "Error creating player:",
-        "invalidskillcreation": "Error creating skill:",
-        "noplayer": "No player created yet",
-        "invalidargs": "Invalid number of arguments. Usage:",
-        "invalidhealth": "Invalid health value: must be a number",
-        "invalidpower": "Invalid power value: must be a number",
-        "invalidspeed": "Invalid speed value: must be a number",
-        "exceededtalentpoints": "Used too many talent points",
-        "invaliddifficulty": "Invalid difficulty, must be normal, hard, expert, master, or torment",
-        "dead": "You died",
-        "invalidskillname": "Invalid skill, no such skill available",
-        "emtpyskillname": "Skill name cannot be empty",
-        "invaliddmgmulti": "Invalid damage multiplier",
-        "invalidduration": "Invalid duration value",
-        "durationpositive": "Duration must be positive",
-        "noskill": "No skills created yet",
-        "noactiveeffect": "No active effects",
-        "internal": "internal error",
-        "invalidboss": "Couldnt create Boss.",
-        "internalturnoutofbounds": "Turn index out of bounds!",
-        "invalidstat": "Invalid stat name",
-        "invalideffect": "Invalid effect name",
-        "invalideffectpass": "duration effect requires duration value in format effect:duration",
-        "invalidskilltype": "Invalid skill type: must be immediate, duration, or passive",
-        "invalidskillcost": "Invalid skillcost",
-        "missingdmgmulti": "missing damage multiplier for non-passive skill",
-        "notavailable": "Not available",
-        "invalidskilltypeeffect": "Invalid effect: cant be used with this skilltype",
-        "invalidentity": "Invalid entity",
-        "noskillusage": "You can only use the skill command during battle."
+  "error": {
+    "invalidcommand": "Unknown command",
+    "invalidhelp": "No help available for command:",
+    "invalidplayercreation": "Error creating player:",
+    "invalidskillcreation": "Error creating skill:",
+    "noplayer": "No player created yet",
+    "invalidargs": "Invalid number of arguments. Usage:",
+    "invalidhealth": "Invalid health value: must be a number",
+    "invalidpower": "Invalid power value: must be a number",
+    "invalidspeed": "Invalid speed value: must be a number",
+    "exceededtalentpoints": "Used too many talent points",
+    "invaliddifficulty": "Invalid difficulty, must be normal, hard, expert, master, or torment",
+    "dead": "You died",
+    "invalidskillname": "Invalid skill, no such skill available",
+    "emtpyskillname": "Skill name cannot be empty",
+    "invaliddmgmulti": "Invalid damage multiplier",
+    "invalidduration": "Invalid duration value",
+    "durationpositive": "Duration must be positive",
+    "noskill": "No skills created yet",
+    "noactiveeffect": "No active effects",
+    "internal": "internal error",
+    "invalidboss": "Couldnt create Boss.",
+    "internalturnoutofbounds": "Turn index out of bounds!",
+    "invalidstat": "Invalid stat name",
+    "invalideffect": "Invalid effect name",
+    "invalideffectpass": "duration effect requires duration value in format effect:duration",
+    "invalidskilltype": "Invalid skill type: must be immediate, duration, or passive",
+    "invalidskillcost": "Invalid skillcost",
+    "missingdmgmulti": "missing damage multiplier for non-passive skill",
+    "notavailable": "Not available",
+    "invalidskilltypeeffect": "Invalid effect: cant be used with this skilltype",
+    "invalidentity": "Invalid entity",
+    "noskillusage": "You can only use the skill command during battle."
+  },
+  "status": {
+    "player": {
+      "name": "Name",
+      "health": "HP",
+      "power": "Power",
+      "speed": "Speed",
+      "skilllist": "Skilllist",
+      "talentpointstotal": "Total talentpoints",
+      "talentpointsremaining": "Remaining talent points",
+      "difficulty": "Difficulty",
+      "bosses": "Defeated Bosses",
+      "alive": "Alive",
+      "state": "State",
+      "activeeffectlist": "Active Effects"
     },
-    "status": {
-        "player": {
-            "name": "Name",
-            "health": "HP",
-            "power": "Power",
-            "speed": "Speed",
-            "skilllist": "Skilllist",
-            "talentpointstotal": "Total talentpoints",
-            "talentpointsremaining": "Remaining talent points",
-            "difficulty": "Difficulty",
-            "bosses": "Defeated Bosses",
-            "alive": "Alive",
-            "state": "State",
-            "activeeffectlist": "Active Effects"
-        },
-        "boss": {
-            "name": "Name",
-            "health": "HP",
-            "power": "Power",
-            "speed": "Speed",
-            "skilllist": "Skilllist",
-            "activeeffectlist": "Active Effects"
-        }
-    },
-    "state": {
-        "idle": {
-            "name": "Idle",
-            "message": "Back in Lobby"
-        },
-        "battle": {
-            "name": "Battle",
-            "message": "Currently in Battle"
-        },
-        "dead": {
-            "name": "Dead",
-            "message": "You dead :("
-        }
-    },
-    "difficulty": {
-        "normal": {
-            "name": "Normal",
-            "message": "Keeping it casual, I respect that"
-        },
-        "hard": {
-            "name": "Hard",
-            "message": "Now we're talking, time to break a sweat"
-        },
-        "expert": {
-            "name": "Expert",
-            "message": "Getting spicy, hope you brought your A-game"
-        },
-        "master": {
-            "name": "Master",
-            "message": "Bold move champ, your keyboard might need insurance"
-        },
-        "torment": {
-            "name": "Torment",
-            "message": "Quite the sadist, aren't we? Let the pain begin"
-        }
+    "boss": {
+      "name": "Name",
+      "health": "HP",
+      "power": "Power",
+      "speed": "Speed",
+      "skilllist": "Skilllist",
+      "activeeffectlist": "Active Effects"
+    }
+  },
+  "state": {
+    "idle": {
+      "name": "Idle",
+      "message": "Back in Lobby"
     },
     "battle": {
-        "start": "Battle started!",
-        "currentenemy": "Your current enemy is:",
-        "turnorder": "Turn order sequence",
-        "turn": "Turn",
-        "loop": "Loop",
-        "battleprompt": "=> ",
-        "bossdefeated": "You defeated the boss:",
-        "useskill": "Using skill",
-        "damagedealt": "You dealt",
-        "damage": "damage",
-        "effectblocked": "Effect was blocked",
-        "newhealth": "New health"
+      "name": "Battle",
+      "message": "Currently in Battle"
     },
-    "gamemessage": {
-        "availablecommands": "Available Commands:",
-        "welcome": "Welcome to Arcade Battle - a text-based RPG where you create and customize a unique character! Spend talent points to build your character's stats (health, power, speed) and create custom skills with various effects. Battle through 9 increasingly difficult bosses, earning new talent points with each victory. But be careful - one defeat means permanent death and you'll need to create a new character. Choose your difficulty wisely: higher difficulties offer fewer talent points but a greater challenge. Create powerful skill combinations, manage your resources carefully, and see if you can defeat all 9 bosses!",
-        "gamestart": "Game started. Type 'status' to see your current status. Type 'quit' to exit.",
-        "gamestarthelp": "Type 'help' to get a feeling for the game =)",
-        "goodbye": "Goodbye!",
-        "goodbyebattle": "You cowardly left the Battlefield, battle will be resetted!",
-        "prompt": "> ",
-        "playercreated": "Player created successfully!",
-        "skillcreated": "Skill created successfully!",
-        "available": "Available",
-        "used": "Used",
-        "separator": "|",
-        "separator2": "==================",
-        "talentcalculation": "Talentpoint Calculation:",
-        "total": "Total",
-        "talentpointsbefore": "Initial talent points",
-        "talentpointsafter": "Remaining talent points",
-        "talentpointsused": "Talentpoints used",
-        "effect": "Effect",
-        "effects": "Effects",
-        "damagemultiplier": "Damage Multiplier",
-        "duration": "Duration",
-        "newtalentpoints": "You earned new Talentpoints",
-        "talentpointscosts": "Talentpointcosts",
-        "immediate": "Immediate",
-        "type": "Type",
-        "damage": "DMG",
-        "passive": "Passive",
-        "passivemulti": "Passive Multiplier",
-        "costperturn": "Cost per Turn",
-        "costperstat": "Cost per Stat",
-        "costper01multi": "Cost per 0.1 Multi",
-        "boss": "Boss"
+    "dead": {
+      "name": "Dead",
+      "message": "You dead :("
+    }
+  },
+  "difficulty": {
+    "normal": {
+      "name": "Normal",
+      "message": "Keeping it casual, I respect that"
+    },
+    "hard": {
+      "name": "Hard",
+      "message": "Now we're talking, time to break a sweat"
+    },
+    "expert": {
+      "name": "Expert",
+      "message": "Getting spicy, hope you brought your A-game"
+    },
+    "master": {
+      "name": "Master",
+      "message": "Bold move champ, your keyboard might need insurance"
+    },
+    "torment": {
+      "name": "Torment",
+      "message": "Quite the sadist, aren't we? Let the pain begin"
+    }
+  },
+  "battle": {
+    "start": "Battle started!",
+    "currentenemy": "Your current enemy is:",
+    "turnorder": "Turn order sequence",
+    "turn": "Turn",
+    "loop": "Loop",
+    "battleprompt": "=> ",
+    "bossdefeated": "You defeated the boss",
+    "useskill": "Using skill",
+    "damagedealt": "You dealt",
+    "damagereceived": "You received",
+    "youhealed": "You healed for",
+    "damage": "damage",
+    "effectblocked": "Effect was blocked",
+    "newhealth": "New health"
+  },
+  "gamemessage": {
+    "availablecommands": "Available Commands:",
+    "welcome": "Welcome to Arcade Battle - a text-based RPG where you create and customize a unique character! Spend talent points to build your character's stats (health, power, speed) and create custom skills with various effects. Battle through 9 increasingly difficult bosses, earning new talent points with each victory. But be careful - one defeat means permanent death and you'll need to create a new character. Choose your difficulty wisely: higher difficulties offer fewer talent points but a greater challenge. Create powerful skill combinations, manage your resources carefully, and see if you can defeat all 9 bosses!",
+    "gamestart": "Game started. Type 'status' to see your current status. Type 'quit' to exit.",
+    "gamestarthelp": "Type 'help' to get a feeling for the game =)",
+    "goodbye": "Goodbye!",
+    "goodbyebattle": "You cowardly left the Battlefield, battle will be resetted!",
+    "prompt": "> ",
+    "playercreated": "Player created successfully!",
+    "skillcreated": "Skill created successfully!",
+    "available": "Available",
+    "used": "Used",
+    "separator": "|",
+    "separator2": "==================",
+    "talentcalculation": "Talentpoint Calculation:",
+    "total": "Total",
+    "talentpointsbefore": "Initial talent points",
+    "talentpointsafter": "Remaining talent points",
+    "talentpointsused": "Talentpoints used",
+    "effect": "Effect",
+    "effects": "Effects",
+    "damagemultiplier": "Damage Multiplier",
+    "duration": "Duration",
+    "newtalentpoints": "You earned new Talentpoints",
+    "talentpointscosts": "Talentpointcosts",
+    "immediate": "Immediate",
+    "type": "Type",
+    "damage": "DMG",
+    "passive": "Passive",
+    "passivemulti": "Passive Multiplier",
+    "costperturn": "Cost per Turn",
+    "costperstat": "Cost per Stat",
+    "costper01multi": "Cost per 0.1 Multi",
+    "boss": "Boss"
+  },
+  "help": {
+    "header": "==================",
+    "footer": "==================",
+    "note": "Note: Type 'help <command>' for more detailed information about a specific command",
+    "command": "Command",
+    "description": "Description",
+    "detail": "Detail",
+    "usage": "Usage",
+    "example": "Example"
+  },
+  "skilleffects": {
+    "heal1": {
+      "name": "Lifeleech",
+      "description": "Gain 50% of your Damage in Health"
+    }
+  },
+  "commanddocs": {
+    "newplayer": {
+      "name": "new player",
+      "description": "Create a new player character",
+      "detail": "Creates a new player with specified stats using talent points based on chosen difficulty",
+      "usage": "new player <name> <difficulty> <health> <power> <speed>",
+      "example": "new player John normal 10 5 5"
+    },
+    "newskill": {
+      "name": "new skill",
+      "description": "Create a new skill for your character",
+      "detail": "Creates a new skill with specified parameters using available talent points",
+      "usage": "new skill <name> <skilltype> [dmgmulti] [effect:duration pairs]...",
+      "example": "new skill Fireball duration 1.5 dot:3 stun:5"
+    },
+    "newimmediateskill": {
+      "name": "new skill immediate",
+      "description": "Create a new immediate skill for your character",
+      "detail": "Creates a new immediate skill with direct, instant effects using available talent points",
+      "usage": "new skill immediate <name> <dmgmulti> [effects...]",
+      "example": "new skill immediate Fireball 1.5 directdamage pierce"
+    },
+    "newdurationskill": {
+      "name": "new skill duration",
+      "description": "Create a new duration skill for your character",
+      "detail": "Creates a new skill with effects that last for multiple turns using available talent points",
+      "usage": "new skill duration <name> <dmgmulti> <duration> [effects...]",
+      "example": "new skill duration PoisonCloud 1.2 3 dot grievouswounds"
+    },
+    "newpassiveskill": {
+      "name": "new skill passive",
+      "description": "Create a new passive skill for your character",
+      "detail": "Creates a new passive skill that provides constant benefits without activation",
+      "usage": "new skill passive <name> [effects...]",
+      "example": "new skill passive Resilience blockdebuffs damagereduction"
+    },
+    "status": {
+      "name": "status",
+      "description": "Display current player stats and game state",
+      "detail": "Shows detailed information about your character including health, power, speed, skills, and current state",
+      "usage": "status [p (player) | b (boss)]",
+      "example": "status | status p | status b"
     },
     "help": {
-        "header": "==================",
-        "footer": "==================",
-        "note": "Note: Type 'help <command>' for more detailed information about a specific command",
-        "command": "Command",
-        "description": "Description",
-        "detail": "Detail",
-        "usage": "Usage",
-        "example": "Example"
+      "name": "help",
+      "description": "Show available commands and their usage",
+      "detail": "Displays a list of all available commands with descriptions and examples",
+      "usage": "help [command]",
+      "example": "help help status"
     },
-    "skilleffects": {
-        "directdamage": {
-            "name": "Direct Damage",
-            "description": "Deals immediate damage based on power stat and multiplier"
-        },
-        "pierce": {
-            "name": "Pierce",
-            "description": "Ignores shield effects and deals partial damage directly to health"
-        },
-        "finisher": {
-            "name": "Finisher",
-            "description": "Adds bonus damage if enemy is low on health"
-        },
-        "buffturnbonusdamage": {
-            "name": "Buff Turn Bonus Damage",
-            "description": "Bonus damage based on amount of all remaining buff turns"
-        },
-        "debuffturnbonusdamage": {
-            "name": "Debuff Turn Bonus Damage",
-            "description": "Bonus damage based on amount of all remaining debuff turns of enemy"
-        },
-        "directheal": {
-            "name": "Direct Heal",
-            "description": "Immediately restores health based on power stat"
-        },
-        "lifeleech": {
-            "name": "Life Leech",
-            "description": "Gain 50% of your damage in health"
-        },
-        "cleanse": {
-            "name": "Cleanse",
-            "description": "Removes all negative effects from the target"
-        },
-        "dispel": {
-            "name": "Dispel",
-            "description": "Removes all positive effects from the target"
-        },
-        "extendbuffs": {
-            "name": "Extend Buffs",
-            "description": "+1 turn for each 10 total power"
-        },
-        "extenddebuffs": {
-            "name": "Extend Debuffs",
-            "description": "+1 turn for each 10 total power"
-        },
-        "reducedebuffs": {
-            "name": "Reduce Debuffs",
-            "description": "-1 turn for each 10 total power"
-        },
-        "reducebuffs": {
-            "name": "Reduce Buffs",
-            "description": "-1 turn for each 10 total power"
-        },
-        "blockdebuffs": {
-            "name": "Block Debuffs",
-            "description": "Prevents new debuffs from being applied while active"
-        },
-        "healovertime": {
-            "name": "Heal Over Time",
-            "description": "Restores health at the start of each turn"
-        },
-        "incpower": {
-            "name": "Increase Power",
-            "description": "Increases damage output by 50%"
-        },
-        "shield": {
-            "name": "Shield",
-            "description": "Creates a defensive barrier that blocks direct damage and some effects"
-        },
-        "reflectdamage": {
-            "name": "Reflect Damage",
-            "description": "Reflect 50% of the damage you receive"
-        },
-        "evasion": {
-            "name": "Evasion",
-            "description": "50% chance to avoid damage"
-        },
-        "critrate": {
-            "name": "Critical Rate",
-            "description": "50% chance to double damage"
-        },
-        "stun": {
-            "name": "Stun",
-            "description": "Prevents the target from taking any actions"
-        },
-        "damagereduction": {
-            "name": "Damage Reduction",
-            "description": "Reduces target's damage output by 50%"
-        },
-        "blockbuffs": {
-            "name": "Block Buffs",
-            "description": "Prevents the target from receiving buffs and healing effects"
-        },
-        "grievouswounds": {
-            "name": "Grievous Wounds",
-            "description": "Reduces all healing received by 50%"
-        },
-        "dot": {
-            "name": "Damage Over Time",
-            "description": "Applies a damaging effect that deals damage at the start of each turn"
-        },
-        "buff": {
-            "name": "Buff",
-            "description": "Increases damage output by 50%"
-        }
+    "quit": {
+      "name": "quit",
+      "description": "Exit the game",
+      "detail": "Saves current game state and exits the application",
+      "usage": "quit | exit",
+      "example": "quit"
     },
-    "commanddocs": {
-        "newplayer": {
-            "name": "new player",
-            "description": "Create a new player character",
-            "detail": "Creates a new player with specified stats using talent points based on chosen difficulty",
-            "usage": "new player <name> <difficulty> <health> <power> <speed>",
-            "example": "new player John normal 10 5 5"
-        },
-        "newskill": {
-            "name": "new skill",
-            "description": "Create a new skill for your character",
-            "detail": "Creates a new skill with specified parameters using available talent points",
-            "usage": "new skill <name> <skilltype> [dmgmulti] [effect:duration pairs]...",
-            "example": "new skill Fireball duration 1.5 dot:3 stun:5"
-        },
-        "newimmediateskill": {
-            "name": "new skill immediate",
-            "description": "Create a new immediate skill for your character",
-            "detail": "Creates a new immediate skill with direct, instant effects using available talent points",
-            "usage": "new skill immediate <name> <dmgmulti> [effects...]",
-            "example": "new skill immediate Fireball 1.5 directdamage pierce"
-        },
-        "newdurationskill": {
-            "name": "new skill duration",
-            "description": "Create a new duration skill for your character",
-            "detail": "Creates a new skill with effects that last for multiple turns using available talent points",
-            "usage": "new skill duration <name> <dmgmulti> <duration> [effects...]",
-            "example": "new skill duration PoisonCloud 1.2 3 dot grievouswounds"
-        },
-        "newpassiveskill": {
-            "name": "new skill passive",
-            "description": "Create a new passive skill for your character",
-            "detail": "Creates a new passive skill that provides constant benefits without activation",
-            "usage": "new skill passive <name> [effects...]",
-            "example": "new skill passive Resilience blockdebuffs damagereduction"
-        },
-        "status": {
-            "name": "status",
-            "description": "Display current player stats and game state",
-            "detail": "Shows detailed information about your character including health, power, speed, skills, and current state",
-            "usage": "status [p (player) | b (boss)]",
-            "example": "status | status p | status b"
-        },
-        "help": {
-            "name": "help",
-            "description": "Show available commands and their usage",
-            "detail": "Displays a list of all available commands with descriptions and examples",
-            "usage": "help [command]",
-            "example": "help help status"
-        },
-        "quit": {
-            "name": "quit",
-            "description": "Exit the game",
-            "detail": "Saves current game state and exits the application",
-            "usage": "quit | exit",
-            "example": "quit"
-        },
-        "test": {
-            "name": "test",
-            "description": "Run predefined test cases",
-            "detail": "Executes test cases for player creation, skill creation, and various game scenarios",
-            "usage": "test <player | playerf | skill | skillf>",
-            "example": "test player | test skillf"
-        },
-        "useskill": {
-            "name": "use skill",
-            "description": "Use a skill during battle",
-            "detail": "Activates one of your skills to power or defend against the current boss",
-            "usage": "use skill <skillname>",
-            "example": "use skill fireball | use skill shield"
-        }
+    "test": {
+      "name": "test",
+      "description": "Run predefined test cases",
+      "detail": "Executes test cases for player creation, skill creation, and various game scenarios",
+      "usage": "test <player | playerf | skill | skillf>",
+      "example": "test player | test skillf"
+    },
+    "useskill": {
+      "name": "use skill",
+      "description": "Use a skill during battle",
+      "detail": "Activates one of your skills to power or defend against the current boss",
+      "usage": "use skill <skillname>",
+      "example": "use skill fireball | use skill shield"
     }
+  }
 }

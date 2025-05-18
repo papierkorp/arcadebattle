@@ -9,11 +9,10 @@
 3. loop if an effect is blocked / target is changed
 - entity: `both`
 - usageTiming: `etiOnSkillStart`
-5. determine `basicSkillPower` (`currentPower * skillMulti`)
-6. loop effects to create `fullSkillPower` (`currentPower * skillMulti * each effectMulti`)
+4. loop effects to create `fullSkillPower` (`currentPower * skillMulti * each effectMulti`)
 - usageTiming: `etiOnSkillCalculation`
-7. use fullSkillPower to do the damage
-8. loop effects for turn end and reduction of turns of effects and reactions - trigger: `onTurnEnd`
+5. use fullSkillPower to do the damage
+6. loop effects for turn end and reduction of turns of effects and reactions - trigger: `onTurnEnd`
 - usageTiming: `etiOnTurnEnd`
 
 **Turn Process for use talisman**
@@ -29,17 +28,19 @@
 
 ```go
 type SkillEffect struct {
-  name                 string
-  description          string
-  talentpointCosts     int
-  probability          float32
-  type                 EffectType
-  category             EffectCategory
-  execute              func()
-  checkCondition       func() bool
-  usageTiming          EffectTiming
-  multi                float32
+  internalName     string
+  displayName      string
+  description      string
+  talentpointCosts int
+  probability      float32
+  effectType       effectType
+  category         effectCategory
+  execute          func()
+  checkCondition   func() bool
+  usageTiming      effectTiming
+  multi            float32
 }
+
 
 type EffectCategory int
 const (
@@ -70,6 +71,7 @@ const (
   etiOnSkillStart
   etiOnSkillCalculation
   etiOnTurnEnd
+  etiOnEffectRemoval
 )
 
 type EffectType int
@@ -115,6 +117,7 @@ new skill Fireball 1.5 4
 
 |       Category      |      trigger       |      Description      |             Calc             | Value |
 |---------------------|--------------------|-----------------------|------------------------------|-------|
+| SkillDamage         | -                  | 1 damage per 1 power  | fullSkillPower               | 23    |
 | Heal                | onTurnEnd          | 2 Health per 3 power  | fullSkillPower / 3 * 2       | 16    |
 | DoDamage            | onSkillCalculation | -                     | -                            | -     |
 | IncreasePower       | onSkillCalculation | 0.1 multi per 5 power | fullSkillPower / 5 * 0,1 + 1 | 1,46  |
