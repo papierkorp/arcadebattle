@@ -23,7 +23,6 @@ import (
 type GameTextEffect struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
-	Cost        int    `json:"cost"`
 }
 
 type GameTextCommand struct {
@@ -197,8 +196,11 @@ func GetGameTextEffect(key string) *GameTextEffect {
 	return &GameTextEffect{
 		Name:        effect.Name,
 		Description: effect.Description,
-		Cost:        effect.Cost,
 	}
+}
+
+func GetGameTextSkilleffects() map[string]GameTextEffect {
+	return gameText.SkillEffects
 }
 
 // todo commanddocs newskills => text update

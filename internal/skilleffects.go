@@ -95,21 +95,44 @@ func newSkillEffect(effectName string) (SkillEffect, error) {
 		"heal1": {
 			internalName:   "heal1",
 			probability:    1.0,
-			effectType:     etyBuff,
+			effectType:     etyDebuff,
 			category:       ecaHeal,
 			execute:        effectExecuteHeal1,
 			checkCondition: effectCheckConditionHeal1,
 			usageTiming:    etiOnTurnEnd,
 			multi:          1,
 		},
+		"increasepower1": {
+			internalName:   "increasepower1",
+			probability:    1.0,
+			effectType:     etyBuff,
+			category:       ecaIncreasePower,
+			execute:        effectExecuteIncreasePower1,
+			checkCondition: effectCheckConditionIncreasePower1,
+			usageTiming:    etiOnSkillCalculation,
+			multi:          0.1,
+		},
 	}
 
+	effectNameOld := effectName
 	effectName = strings.ToLower(effectName)
 	effectConfig, exists := partSkillEffectMap[effectName]
 
 	if !exists {
+		allEffects := GetGameTextSkilleffects()
+
+		for internalName, effect := range allEffects {
+
+			if effectName == strings.ToLower(effect.Name) {
+				effectName = strings.ToLower(internalName)
+				effectConfig, exists = partSkillEffectMap[effectName]
+			}
+		}
+	}
+
+	if !exists {
 		invalidEffectMsg := GetGameTextError("invalideffect")
-		return SkillEffect{}, fmt.Errorf("%s: %s", invalidEffectMsg, effectName)
+		return SkillEffect{}, fmt.Errorf("%s: %s", invalidEffectMsg, effectNameOld)
 	}
 
 	effectCost, err := getEffectCost(effectName)
@@ -141,5 +164,12 @@ func effectExecuteHeal1(ae ActiveEffect) {
 }
 
 func effectCheckConditionHeal1() bool {
+	return true
+}
+
+func effectExecuteIncreasePower1(ae ActiveEffect) {
+}
+
+func effectCheckConditionIncreasePower1() bool {
 	return true
 }

@@ -65,7 +65,7 @@ func checkCurrentTurn() {
 			return
 		}
 
-		if currentPlayer.state == dead {
+		if currentPlayer.CheckDefeat() {
 			currentPlayer.HandleDefeat()
 			return
 		}

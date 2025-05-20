@@ -195,20 +195,13 @@ func (s *Skill) Use(skillSource string) error {
 
 	//-------------- Calculate Power --------------
 
-	var basicSkillPower float32 = 0.0
-	calculatedFullSkillPower := basicSkillPower
+	fullSkillPower, err := calculateSkillPower(s, source, target)
 
-	for _, effect := range s.effectList {
-		if effect.usageTiming == etiOnSkillCalculation {
-			//todo: calculate power increase/reduction
-			basicSkillPower = float32(source.GetStats().power) * s.dmgmulti
-			if rand.Float32() <= effect.probability {
-				calculatedFullSkillPower = calculatedFullSkillPower * effect.multi
-			}
-		}
+	if err != nil {
+		internalErrorMsg := GetGameTextError("internal")
+		invalidskillpowercalculationMsg := GetGameTextError("invalidskillpowercalculation")
+		return fmt.Errorf("%s - %s (%s)", internalErrorMsg, invalidskillpowercalculationMsg, err)
 	}
-
-	fullSkillPower := int(calculatedFullSkillPower)
 
 	//-------------- Apply Effect --------------
 
@@ -233,9 +226,16 @@ func (s *Skill) Use(skillSource string) error {
 				target:      target,
 			}
 
-			source.SetFullSkillPower(fullSkillPower)
+			fmt.Println("effect.effectType: ", effect.effectType)
 
-			target.AddActiveEffect(newEffect)
+			if effect.effectType == etyBuff {
+				source.SetFullSkillPower(fullSkillPower)
+				source.AddActiveEffect(newEffect)
+			} else if effect.effectType == etyDebuff {
+				source.SetFullSkillPower(fullSkillPower)
+				target.AddActiveEffect(newEffect)
+			}
+
 		}
 
 		//-------------- Handle Damage --------------
@@ -245,4 +245,34 @@ func (s *Skill) Use(skillSource string) error {
 	}
 
 	return nil
+}
+
+func calculateSkillPower(s *Skill, source Entity, target Entity) (int, error) {
+	var basicSkillPower float32 = 0.0
+	calculatedFullSkillPower := basicSkillPower
+
+	for _, effect := range s.effectList {
+		if effect.usageTiming == etiOnSkillCalculation {
+			//todo: calculate power increase/reduction
+			newPower := float32(source.GetStats().power)/5*effect.multi + 1
+			basicSkillPower = newPower * s.dmgmulti
+
+			if rand.Float32() <= effect.probability {
+				calculatedFullSkillPower = calculatedFullSkillPower * effect.multi
+			}
+		}
+	}
+
+	for _, effect := range s.effectList {
+		if effect.usageTiming == etiOnSkillCalculation {
+			//todo: calculate power increase/reduction
+			basicSkillPower = float32(source.GetStats().power) * s.dmgmulti
+			if rand.Float32() <= effect.probability {
+				calculatedFullSkillPower = calculatedFullSkillPower * effect.multi
+			}
+		}
+	}
+
+	fullSkillPower := int(calculatedFullSkillPower)
+	return fullSkillPower, nil
 }

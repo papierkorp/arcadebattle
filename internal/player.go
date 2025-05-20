@@ -203,8 +203,6 @@ func (p *Player) HandleDefeat() {
 	StateDead()
 
 	currentPlayer.state = idle
-
-	StateIdle()
 }
 
 // ResetBattleState resets the battle state to initial values

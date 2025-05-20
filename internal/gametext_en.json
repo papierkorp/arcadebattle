@@ -16,6 +16,8 @@
     "emtpyskillname": "Skill name cannot be empty",
     "invaliddmgmulti": "Invalid damage multiplier",
     "invalidduration": "Invalid duration value",
+    "invalidskillpowercalculation": "Invalid Skillpower Calculation",
+    "invalidskillpointcalculation": "Invalid Skillpoint Calculation",
     "durationpositive": "Duration must be positive",
     "noskill": "No skills created yet",
     "noactiveeffect": "No active effects",
@@ -158,6 +160,10 @@
     "heal1": {
       "name": "Lifeleech",
       "description": "Gain 50% of your Damage in Health"
+    },
+    "increasepower1": {
+      "name": "IncreasePower",
+      "description": "Gain 0.1 Multi to your Power per 5 Power"
     }
   },
   "commanddocs": {

@@ -155,30 +155,30 @@ unless otherwise defined
 
 |         Name         |      Trigger       |       Category      |                                   Description                                   |
 |----------------------|--------------------|---------------------|---------------------------------------------------------------------------------|
-| Heal1                | onTurnEnd          | Heal                | Gain 50% of your Damage in Health                                               |
-| Heal2                | onTurnEnd          | Heal                | Heal 50% of the Damage you take                                                 |
-| Heal3                | onTurnEnd          | Heal                | Restores health at the start of each turn                                       |
-| DoDamage1            | onTurnEnd          | DoDamage            | Reflect 50% of the damage you Receive                                           |
-| IncreasePower1       | onSkillCalculation | IncreasePower       | Increase power                                                                  |
-| IncreasePower2       | onSkillCalculation | IncreasePower       | Power increases by 10% each turn, up to 50%                                     |
-| IncreasePower3       | onSkillCalculation | IncreasePower       | Power increases by 10% for each 10% of your missing health                      |
-| IncreasePower4       | onSkillCalculation | IncreasePower       | Each consecutive use of the same skill increases power by 15%                   |
-| IncreaseDamageDone1  | onSkillCalculation | IncreaseDamageDone  | Adds bonus damage if enemy is low                                               |
-| IncreaseDamageDone2  | onSkillCalculation | IncreaseDamageDone  | 50% Chance to double the damage                                                 |
-| IncreaseDamageDone3  | onSkillCalculation | IncreaseDamageDone  | Each attack increases damage of next attack                                     |
-| DecreaseDamageTaken1 | onSkillCalculation | DecreaseDamageTaken | Receive 50% less damage                                                         |
-| DecreaseDamageTaken2 | onSkillCalculation | DecreaseDamageTaken | Receive 10% less Damage from repeated sources                                   |
-| DecreaseDamageTaken3 | onSkillCalculation | DecreaseDamageTaken | Convert 20% of damage taken into a DoT on yourself that deals less total damage |
-| IncreaseHealing1     | onSkillCalculation | IncreaseHealing     | Healing effects become 30% stronger for each debuff you have                    |
-| IncreaseHealing2     | onSkillCalculation | IncreaseHealing     | Healing effects are 100% stronger when below 30% health                         |
-| BlockDebuffs1        | onSkillStart       | BlockDebuffs        | Prevents new debuffs from being applied while active                            |
-| BlockDebuffs2        | onSkillStart       | BlockDebuffs        | 50% Chance to block an incoming Debuff                                          |
-| BlockDamage1         | onSkillStart       | BlockDamage         | 50% Chance to dont get damage                                                   |
-| StopSkill1           | onSkillStart       | StopSkill           | 50% Chance to block an incoming skill                                           |
-| ChangeTarget1        | onSkillStart       | ChangeTarget        | 50% Chance the attack is mirrored                                               |
-| RemoveEffect1        | onSkillStart       | RemoveEffect        | remove a random debuff                                                          |
-| RemoveEffect2        | onSkillStart       | RemoveEffect        | remove a random buff of the enemy when attacked                                 |
-| RemoveEffect3        | onSkillStart       | RemoveEffect        | remove a random debuff when attacked                                            |
+| heal1                | onTurnEnd          | Heal                | Gain 50% of your Damage in Health                                               |
+| heal2                | onTurnEnd          | Heal                | Heal 50% of the Damage you take                                                 |
+| heal3                | onTurnEnd          | Heal                | Restores health at the start of each turn                                       |
+| doDamage1            | onTurnEnd          | DoDamage            | Reflect 50% of the damage you Receive                                           |
+| increasePower1       | onSkillCalculation | IncreasePower       | Increase power                                                                  |
+| increasePower2       | onSkillCalculation | IncreasePower       | Power increases by 10% each turn, up to 50%                                     |
+| increasePower3       | onSkillCalculation | IncreasePower       | Power increases by 10% for each 10% of your missing health                      |
+| increasePower4       | onSkillCalculation | IncreasePower       | Each consecutive use of the same skill increases power by 15%                   |
+| increaseDamageDone1  | onSkillCalculation | IncreaseDamageDone  | Adds bonus damage if enemy is low                                               |
+| increaseDamageDone2  | onSkillCalculation | IncreaseDamageDone  | 50% Chance to double the damage                                                 |
+| increaseDamageDone3  | onSkillCalculation | IncreaseDamageDone  | Each attack increases damage of next attack                                     |
+| decreaseDamageTaken1 | onSkillCalculation | DecreaseDamageTaken | Receive 50% less damage                                                         |
+| decreaseDamageTaken2 | onSkillCalculation | DecreaseDamageTaken | Receive 10% less Damage from repeated sources                                   |
+| decreaseDamageTaken3 | onSkillCalculation | DecreaseDamageTaken | Convert 20% of damage taken into a DoT on yourself that deals less total damage |
+| increaseHealing1     | onSkillCalculation | IncreaseHealing     | Healing effects become 30% stronger for each debuff you have                    |
+| increaseHealing2     | onSkillCalculation | IncreaseHealing     | Healing effects are 100% stronger when below 30% health                         |
+| blockDebuffs1        | onSkillStart       | BlockDebuffs        | Prevents new debuffs from being applied while active                            |
+| blockDebuffs2        | onSkillStart       | BlockDebuffs        | 50% Chance to block an incoming Debuff                                          |
+| blockDamage1         | onSkillStart       | BlockDamage         | 50% Chance to dont get damage                                                   |
+| stopSkill1           | onSkillStart       | StopSkill           | 50% Chance to block an incoming skill                                           |
+| changeTarget1        | onSkillStart       | ChangeTarget        | 50% Chance the attack is mirrored                                               |
+| removeEffect1        | onSkillStart       | RemoveEffect        | remove a random debuff                                                          |
+| removeEffect2        | onSkillStart       | RemoveEffect        | remove a random buff of the enemy when attacked                                 |
+| removeEffect3        | onSkillStart       | RemoveEffect        | remove a random debuff when attacked                                            |
 
 ## Debuffs (Enemy)
 

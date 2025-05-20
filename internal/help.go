@@ -153,12 +153,10 @@ func helpForSkillEffect(effectName string) {
 
 	effectMsg := GetGameTextGameMessage("effect")
 	descriptionMsg := GetGameTextHelp("description")
-	talentpointscostsMsg := GetGameTextGameMessage("talentpointscosts")
 
 	fmt.Print("\n" + headerMsg + "\n\n")
 	fmt.Printf("%s: %s\n", effectMsg, effect.Name)
 	fmt.Printf("%s: %s\n", descriptionMsg, effect.Description)
-	fmt.Printf("%s: %d\n", talentpointscostsMsg, effect.Cost)
 
 	// Show which skill types can use this effect
 	var validSkillTypes []string

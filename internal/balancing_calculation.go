@@ -33,13 +33,15 @@ func getTalentpoints(d difficulty) int {
 
 func getEffectCost(effectName string) (int, error) {
 	effectCosts := costList{
-		"heal1": 5,
+		"heal1":          5,
+		"increasepower1": 5,
 	}
 	cost, exists := effectCosts[effectName]
 	if !exists {
 		internalErrorMsg := GetGameTextError("internal")
 		invalidEffectMsg := GetGameTextError("invalideffect")
-		return 0, fmt.Errorf("%s: %s (%s)", internalErrorMsg, invalidEffectMsg, effectName)
+		invalidskillpointcalculationMsg := GetGameTextError("invalidskillpointcalculation")
+		return 0, fmt.Errorf("%s: %s, %s (%s)", internalErrorMsg, invalidEffectMsg, invalidskillpointcalculationMsg, effectName)
 	}
 	return cost, nil
 }

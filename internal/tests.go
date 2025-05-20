@@ -114,12 +114,12 @@ func testSkill() {
 }
 
 func testSkill2() {
-	testInput := "new skill Poison 0.7 3 dot"
+	testInput := "new skill Lifeleech2 0.7 3 Lifeleech"
 	ExecuteTest(testInput)
 }
 
 func testSkill3() {
-	testInput := "new skill Poison 0.7 3 dot"
+	testInput := "new skill PowerUp 0.7 3 increasepower1"
 	ExecuteTest(testInput)
 }
 
