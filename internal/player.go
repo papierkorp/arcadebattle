@@ -227,7 +227,6 @@ func (p *Player) ApplyDamage(amount int) {
 
 	p.battlestate.currentHealth = newHealth
 	fmt.Println("new health: ", currentPlayer.battlestate.currentHealth)
-
 }
 
 // ApplyHealing applies healing to the player
@@ -250,8 +249,20 @@ func (p *Player) HasActiveEffect(effectType string) bool {
 	return false
 }
 
-func (p *Player) SetFullSkillPower(power int) {
-	p.battlestate.lastFullSkillPowerUsed = power
+func (p *Player) SetLastRawSkillPowerUsed(power int) {
+	p.battlestate.lastRawSkillPowerUsed = power
+}
+
+func (p *Player) SetLastActualDamageTaken(damage int) {
+	p.battlestate.lastActualDamageTaken = damage
+}
+
+func (p *Player) SetLastOutgoingDamage(damage int) {
+	p.battlestate.lastOutgoingDamage = damage
+}
+
+func (p *Player) SetLastIncomingDamage(damage int) {
+	p.battlestate.lastIncomingDamage = damage
 }
 
 // -------------------------------------------------------------------------

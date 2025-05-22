@@ -195,7 +195,7 @@ func (s *Skill) Use(skillSource string) error {
 
 	//-------------- Calculate Power --------------
 
-	fullSkillPower, err := calculateSkillPower(s, source, target)
+	rawSkillPower, err := calculateRawSkillPower(s, source, target)
 
 	if err != nil {
 		internalErrorMsg := GetGameTextError("internal")
@@ -219,60 +219,123 @@ func (s *Skill) Use(skillSource string) error {
 
 		if !isBlocked {
 			newEffect := ActiveEffect{
-				skillEffect: effect,
-				totalPower:  fullSkillPower,
-				turnsLeft:   s.duration,
-				source:      source,
-				target:      target,
+				skillEffect:   effect,
+				rawSkillPower: rawSkillPower,
+				turnsLeft:     s.duration,
+				source:        source,
+				target:        target,
 			}
 
 			fmt.Println("effect.effectType: ", effect.effectType)
 
 			if effect.effectType == etyBuff {
-				source.SetFullSkillPower(fullSkillPower)
+				source.SetLastRawSkillPowerUsed(rawSkillPower)
 				source.AddActiveEffect(newEffect)
 			} else if effect.effectType == etyDebuff {
-				source.SetFullSkillPower(fullSkillPower)
+				source.SetLastRawSkillPowerUsed(rawSkillPower)
 				target.AddActiveEffect(newEffect)
 			}
-
 		}
 
 		//-------------- Handle Damage --------------
 
-		target.ApplyDamage(fullSkillPower)
+		calculatedDamage, err := calculateCalculatedDamage(s, rawSkillPower)
+
+		if err != nil {
+			internalErrorMsg := GetGameTextError("internal")
+			invalidskillpowercalculationMsg := GetGameTextError("invalidskillpowercalculation")
+			return fmt.Errorf("%s - %s (%s)", internalErrorMsg, invalidskillpowercalculationMsg, err)
+		}
+
+		outgoingDamage, err := calculateOutgoingDamage(s, source, calculatedDamage)
+
+		if err != nil {
+			internalErrorMsg := GetGameTextError("internal")
+			invalidskillpowercalculationMsg := GetGameTextError("invalidskillpowercalculation")
+			return fmt.Errorf("%s - %s (%s)", internalErrorMsg, invalidskillpowercalculationMsg, err)
+		}
+
+		incomingDamage := outgoingDamage
+		actualDamageTaken, err := calculateActualDamageTaken(s, target, incomingDamage)
+
+		if err != nil {
+			internalErrorMsg := GetGameTextError("internal")
+			invalidskillpowercalculationMsg := GetGameTextError("invalidskillpowercalculation")
+			return fmt.Errorf("%s - %s (%s)", internalErrorMsg, invalidskillpowercalculationMsg, err)
+		}
+
+		source.SetLastOutgoingDamage(outgoingDamage)
+		target.SetLastIncomingDamage(incomingDamage)
+		target.SetLastActualDamageTaken(actualDamageTaken)
+		target.ApplyDamage(rawSkillPower)
 
 	}
 
 	return nil
 }
 
-func calculateSkillPower(s *Skill, source Entity, target Entity) (int, error) {
-	var basicSkillPower float32 = 0.0
-	calculatedFullSkillPower := basicSkillPower
+func calculateRawSkillPower(s *Skill, source Entity, target Entity) (int, error) {
+	//todo: return error
+	var basePower float32 = float32(source.GetBattleState().currentPower)
+	modifiedPower := basePower
 
 	for _, effect := range s.effectList {
 		if effect.usageTiming == etiOnSkillCalculation {
-			//todo: calculate power increase/reduction
-			newPower := float32(source.GetStats().power)/5*effect.multi + 1
-			basicSkillPower = newPower * s.dmgmulti
-
-			if rand.Float32() <= effect.probability {
-				calculatedFullSkillPower = calculatedFullSkillPower * effect.multi
+			if effect.category == ecaIncreasePower || effect.category == ecaDecreasePower {
+				if rand.Float32() <= effect.probability {
+					modifiedPower = float32(basePower/effect.powerRatio*effect.baseValue + 1)
+				}
 			}
 		}
 	}
 
-	for _, effect := range s.effectList {
-		if effect.usageTiming == etiOnSkillCalculation {
-			//todo: calculate power increase/reduction
-			basicSkillPower = float32(source.GetStats().power) * s.dmgmulti
-			if rand.Float32() <= effect.probability {
-				calculatedFullSkillPower = calculatedFullSkillPower * effect.multi
+	for _, effect := range source.GetBattleState().activeEffectsList {
+		if effect.skillEffect.usageTiming == etiOnSkillCalculation {
+			if effect.skillEffect.category == ecaIncreasePower || effect.skillEffect.category == ecaDecreasePower {
+				if rand.Float32() <= effect.skillEffect.probability {
+					modifiedPower = float32(basePower/effect.skillEffect.powerRatio*effect.skillEffect.baseValue + 1)
+				}
 			}
 		}
 	}
 
-	fullSkillPower := int(calculatedFullSkillPower)
-	return fullSkillPower, nil
+	rawSkillPower := int(modifiedPower * s.dmgmulti)
+
+	return rawSkillPower, nil
+}
+
+func calculateCalculatedDamage(s *Skill, rawSkillpower int) (int, error) {
+	//todo: return error
+	calculatedDamage := int(float32(rawSkillpower) * s.dmgmulti)
+	return calculatedDamage, nil
+}
+
+func calculateOutgoingDamage(s *Skill, source Entity, calculatedDamage int) (int, error) {
+	var outgoingDamage int = calculatedDamage
+
+	for _, effect := range source.GetBattleState().activeEffectsList {
+		if effect.skillEffect.usageTiming == etiOnSkillCalculation {
+			if effect.skillEffect.category == ecaIncreasePower || effect.skillEffect.category == ecaDecreasePower {
+				if rand.Float32() <= effect.skillEffect.probability {
+					outgoingDamage = float32(basePower/5*effect.skillEffect.baseValue + 1)
+				}
+			}
+		}
+	}
+	return outgoingDamage, nil
+}
+
+func calculateActualDamageTaken(s *Skill, target Entity, incomingDamage int) (int, error) {
+	var actualDamageTaken int = 0
+
+	for _, effect := range target.GetBattleState().activeEffectsList {
+		if effect.skillEffect.usageTiming == etiOnSkillCalculation {
+			if effect.skillEffect.category == ecaIncreasePower || effect.skillEffect.category == ecaDecreasePower {
+				if rand.Float32() <= effect.skillEffect.probability {
+					modifiedPower = float32(basePower/5*effect.skillEffect.baseValue + 1)
+				}
+			}
+		}
+	}
+	return actualDamageTaken, nil
 }

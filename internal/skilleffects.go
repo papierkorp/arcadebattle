@@ -18,7 +18,8 @@ type SkillEffect struct {
 	execute          func(ae ActiveEffect)
 	checkCondition   func() bool
 	usageTiming      effectTiming
-	multi            float32
+	baseValue        float32 // calculate: baseValue per powerRatio, e.g. 1 damage per 3 powerRatio
+	powerRatio       float32 // calculate: baseValue per powerRatio e.g. 0.1 multi per 5 powerRatio
 }
 
 type effectCategory int
@@ -27,8 +28,8 @@ const (
 	ecaHeal effectCategory = iota
 	ecaDoDamage
 	ecaIncreasePower
-	ecaIncreaseDamageDone
-	ecaDecreaseDamageTaken
+	ecaIncreaseOutgoingDamage
+	ecaDecreaseIncomingDamage
 	ecaIncreaseHealing
 	ecaaBlockDebuffs
 	ecaBlockDamage
@@ -36,8 +37,8 @@ const (
 	ecaChangeTarget
 	ecaTakeDamage
 	ecaDecreasePower
-	ecaDecreaseDamageDone
-	ecaIncreaseDamageTaken
+	ecaDecreaseOutgoingDamage
+	ecaIncreaseIncomingDamage
 	ecaDecreaseHealing
 	ecaBlockBuffs
 	ecaBlockHealing
@@ -64,16 +65,16 @@ const (
 
 // ActiveEffect is on the Entity in the BattleState
 type ActiveEffect struct {
-	skillEffect SkillEffect
-	totalPower  int
-	turnsLeft   int
-	source      Entity
-	target      Entity
+	skillEffect   SkillEffect
+	rawSkillPower int
+	turnsLeft     int
+	source        Entity
+	target        Entity
 }
 
 func (ae ActiveEffect) String() string {
 	return fmt.Sprintf("Effectname: %s | Power: %d | Duration: %d",
-		ae.skillEffect.displayName, ae.totalPower, ae.turnsLeft)
+		ae.skillEffect.displayName, ae.rawSkillPower, ae.turnsLeft)
 }
 
 func newSkillEffect(effectName string) (SkillEffect, error) {
@@ -88,7 +89,8 @@ func newSkillEffect(effectName string) (SkillEffect, error) {
 		execute        func(ae ActiveEffect)
 		checkCondition func() bool
 		usageTiming    effectTiming
-		multi          float32
+		baseValue      float32
+		powerRatio     float32
 	}
 
 	partSkillEffectMap := map[string]partSkillEffect{
@@ -100,7 +102,8 @@ func newSkillEffect(effectName string) (SkillEffect, error) {
 			execute:        effectExecuteHeal1,
 			checkCondition: effectCheckConditionHeal1,
 			usageTiming:    etiOnTurnEnd,
-			multi:          1,
+			baseValue:      2,
+			powerRatio:     3,
 		},
 		"increasepower1": {
 			internalName:   "increasepower1",
@@ -110,7 +113,8 @@ func newSkillEffect(effectName string) (SkillEffect, error) {
 			execute:        effectExecuteIncreasePower1,
 			checkCondition: effectCheckConditionIncreasePower1,
 			usageTiming:    etiOnSkillCalculation,
-			multi:          0.1,
+			baseValue:      0.1,
+			powerRatio:     5,
 		},
 	}
 
@@ -153,14 +157,33 @@ func newSkillEffect(effectName string) (SkillEffect, error) {
 		execute:          effectConfig.execute,
 		checkCondition:   effectConfig.checkCondition,
 		usageTiming:      effectConfig.usageTiming,
-		multi:            effectConfig.multi,
+		baseValue:        effectConfig.baseValue,
+		powerRatio:       effectConfig.powerRatio,
 	}
 
 	return skillEffect, nil
 }
 
+func (se SkillEffect) CalculateEffect(power int) (float32, error) {
+	switch se.category {
+	case ecaHeal, ecaTakeDamage, ecaRemoveEffect, ecaChangeEffectTurn:
+		// e.g. 2 healing per 3 powerRatio
+		// e.g. 1 effect removal per 10 powerRatio
+		return float32(power) / se.powerRatio * se.baseValue, nil
+	case ecaIncreasePower, ecaIncreaseOutgoingDamage, ecaDecreaseIncomingDamage,
+		ecaDecreasePower, ecaDecreaseOutgoingDamage, ecaIncreaseIncomingDamage,
+		ecaDecreaseHealing, ecaIncreaseHealing:
+		// e.g. 0.1 increase per 5 powerRatio
+		return (float32(power)/se.powerRatio)*se.baseValue + 1, nil
+	default:
+		internalErrorMsg := GetGameTextError("internal")
+		nosuchCategoryMsg := GetGameTextError("nosuchcategory")
+		return 0, fmt.Errorf("(CalculateEffect) %s - %s", internalErrorMsg, nosuchCategoryMsg)
+	}
+}
+
 func effectExecuteHeal1(ae ActiveEffect) {
-	ae.source.ApplyHealing(ae.totalPower / 2)
+	ae.source.ApplyHealing(ae.rawSkillPower / 2)
 }
 
 func effectCheckConditionHeal1() bool {

@@ -20,7 +20,10 @@ type Entity interface {
 	RemoveActiveEffect(effect SkillEffect)
 	ClearActiveEffects()
 	SetBattlePhase(phase BattlePhase)
-	SetFullSkillPower(power int)
+	SetLastRawSkillPowerUsed(power int)
+	SetLastActualDamageTaken(damage int)
+	SetLastIncomingDamage(damage int)
+	SetLastOutgoingDamage(damage int)
 
 	// Status
 	GetName() string

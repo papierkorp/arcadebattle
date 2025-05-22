@@ -33,7 +33,8 @@
     "notavailable": "Not available",
     "invalidskilltypeeffect": "Invalid effect: cant be used with this skilltype",
     "invalidentity": "Invalid entity",
-    "noskillusage": "You can only use the skill command during battle."
+    "noskillusage": "You can only use the skill command during battle.",
+    "nosuchcategory": "No such category available."
   },
   "status": {
     "player": {

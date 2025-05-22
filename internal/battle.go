@@ -7,15 +7,18 @@ import (
 
 // BattleState comment
 type BattleState struct {
-	currentHealth          int
-	currentPower           int
-	totalBuffTurnsCount    int
-	totalBuffCount         int
-	totalDebuffTurnCount   int
-	totalDebuffCount       int
-	activeEffectsList      []ActiveEffect
-	currentBattlePhase     BattlePhase
-	lastFullSkillPowerUsed int
+	currentHealth         int
+	currentPower          int
+	totalBuffTurnsCount   int
+	totalBuffCount        int
+	totalDebuffTurnCount  int
+	totalDebuffCount      int
+	activeEffectsList     []ActiveEffect
+	currentBattlePhase    BattlePhase
+	lastRawSkillPowerUsed int
+	lastActualDamageTaken int
+	lastIncomingDamage    int
+	lastOutgoingDamage    int
 }
 
 // BattlePhase comment

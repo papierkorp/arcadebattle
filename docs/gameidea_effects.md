@@ -9,9 +9,9 @@
 3. loop if an effect is blocked / target is changed
 - entity: `both`
 - usageTiming: `etiOnSkillStart`
-4. loop effects to create `fullSkillPower` (`currentPower * skillMulti * each effectMulti`)
+4. loop effects to create `rawSkillPower` (`currentPower * skillMulti * each effectMulti`)
 - usageTiming: `etiOnSkillCalculation`
-5. use fullSkillPower to do the damage
+5. use rawSkillPower to do the damage
 6. loop effects for turn end and reduction of turns of effects and reactions - trigger: `onTurnEnd`
 - usageTiming: `etiOnTurnEnd`
 
@@ -44,11 +44,11 @@ type SkillEffect struct {
 
 type EffectCategory int
 const (
-  ecaHeal EffectCategory = iota
+  ecaHeal effectCategory = iota
   ecaDoDamage
   ecaIncreasePower
-  ecaIncreaseDamageDone
-  ecaDecreaseDamageTaken
+  ecaIncreaseOutgoingDamage
+  ecaDecreaseIncomingDamage
   ecaIncreaseHealing
   ecaaBlockDebuffs
   ecaBlockDamage
@@ -56,8 +56,8 @@ const (
   ecaChangeTarget
   ecaTakeDamage
   ecaDecreasePower
-  ecaDecreaseDamageDone
-  ecaIncreaseDamageTaken
+  ecaDecreaseOutgoingDamage
+  ecaIncreaseIncomingDamage
   ecaDecreaseHealing
   ecaBlockBuffs
   ecaBlockHealing
@@ -67,7 +67,7 @@ const (
 
 type EffectTiming int
 const (
-  etiOnTurnStart EffectTiming = iota
+  etiOnTurnStart effectTiming = iota
   etiOnSkillStart
   etiOnSkillCalculation
   etiOnTurnEnd
@@ -93,7 +93,7 @@ type BattleState struct {
 
 type ActiveEffect struct {
   skillEffect SkillEffect
-  totalPower  int
+  rawSkillPower  int
   turnsLeft   int
   source      Entity
   target      Entity
@@ -102,7 +102,15 @@ type ActiveEffect struct {
 
 # Calculations
 
-example fullSkillPower:
+- basePower => currentPower from battleState
+- modifiedPower => basePower +/- buffs/debuffs source Entity
+- rawSkillPower => modifiedPower * skillDmgmulti
+- calculatedDamage => 1 damage per 1 rawSkillPower
+- outgoingDamage => calculatedDamage +/- buffs/debuffs source Entity
+- incomingDamage => outgoingDamage
+- actualDamageTaken => incomingDamage +/- buffs/debuffs target Entity
+
+example rawSkillPower:
 
 ```
 // new player name difficulty health power speed
@@ -115,35 +123,35 @@ new skill Fireball 1.5 4
 23     * 1,46    = 34
 ```
 
-|       Category      |      trigger       |      Description      |             Calc             | Value |
-|---------------------|--------------------|-----------------------|------------------------------|-------|
-| SkillDamage         | -                  | 1 damage per 1 power  | fullSkillPower               | 23    |
-| Heal                | onTurnEnd          | 2 Health per 3 power  | fullSkillPower / 3 * 2       | 16    |
-| DoDamage            | onSkillCalculation | -                     | -                            | -     |
-| IncreasePower       | onSkillCalculation | 0.1 multi per 5 power | fullSkillPower / 5 * 0,1 + 1 | 1,46  |
-| IncreaseDamageDone  | onSkillCalculation | 0.1 multi per 5 power | fullSkillPower / 5 * 0,1 + 1 | 1,46  |
-| DecreaseDamageTaken | onSkillCalculation | 0.1 multi per 5 power | fullSkillPower / 5 * 0,1 + 1 | 1,46  |
-| IncreaseHealing     | onSkillCalculation | 0.1 multi per 3 power | fullSkillPower / 3 * 0,1 + 1 | 1,76  |
-| BlockDebuffs        | onSkillStart       | -                     | -                            | -     |
-| BlockDamage         | onSkillStart       | -                     | -                            | -     |
-| StopSkill           | onSkillStart       | -                     | -                            | -     |
-| ChangeTarget        | onSkillStart       | -                     | -                            | -     |
-| RemoveEffect        | onSkillStart       | 1 effect per 10 power | fullSkillPower / 10          | 2     |
-| DecreasePower       | onSkillCalculation | 0.1 multi per 5 power | fullSkillPower / 5 * 0,1 + 1 | 1,46  |
-| BlockHealing        | onSkillStart       | -                     | -                            | -     |
-| TakeDamage          | onTurnStart        | 2 Damage per 3 power  | fullSkillPower / 3 * 2       | 16    |
-| DecreaseDamageDone  | onSkillCalculation | 0.1 multi per 5 power | fullSkillPower / 5 * 0,1 + 1 | 1,46  |
-| IncreaseDamageTaken | onSkillCalculation | 0.1 multi per 5 power | fullSkillPower / 5 * 0,1 + 1 | 1,46  |
-| DecreaseHealing     | onSkillCalculation | 0.1 multi per 5 power | fullSkillPower / 5 * 0,1 + 1 | 1,46  |
-| BlockBuffs          | onSkillStart       | -                     | -                            | -     |
-| ChangeEffectTurn    | onSkillStart       | 1 turn per 10 power   | fullSkillPower / 10          | 2     |
+|          Category         |        Trigger        |      Description      |             Calc            | Value |
+|---------------------------|-----------------------|-----------------------|-----------------------------|-------|
+| SkillDamage               | -                     | 1 damage per 1 power  | rawSkillPower               | 23    |
+| ecaHeal                   | etiOnTurnEnd          | 2 Health per 3 power  | rawSkillPower / 3 * 2       | 16    |
+| ecaDoDamage               | etiOnSkillCalculation | -                     | -                           | -     |
+| ecaIncreasePower          | etiOnSkillCalculation | 0.1 multi per 5 power | rawSkillPower / 5 * 0,1 + 1 | 1,46  |
+| ecaIncreaseOutgoingDamage | etiOnSkillCalculation | 0.1 multi per 5 power | rawSkillPower / 5 * 0,1 + 1 | 1,46  |
+| ecaDecreaseIncomingDamage | etiOnSkillCalculation | 0.1 multi per 5 power | rawSkillPower / 5 * 0,1 + 1 | 1,46  |
+| ecaIncreaseHealing        | etiOnSkillCalculation | 0.1 multi per 3 power | rawSkillPower / 3 * 0,1 + 1 | 1,76  |
+| ecaaBlockDebuffs          | etiOnSkillStart       | -                     | -                           | -     |
+| ecaBlockDamage            | etiOnSkillStart       | -                     | -                           | -     |
+| ecaStopSkill              | etiOnSkillStart       | -                     | -                           | -     |
+| ecaChangeTarget           | etiOnSkillStart       | -                     | -                           | -     |
+| ecaRemoveEffect           | etiOnSkillStart       | 1 effect per 10 power | rawSkillPower / 10          | 2     |
+| ecaDecreasePower          | etiOnSkillCalculation | 0.1 multi per 5 power | rawSkillPower / 5 * 0,1 + 1 | 1,46  |
+| ecaBlockHealing           | etiOnSkillStart       | -                     | -                           | -     |
+| ecaTakeDamage             | etiOnTurnStart        | 2 Damage per 3 power  | rawSkillPower / 3 * 2       | 16    |
+| ecaDecreaseOutgoingDamage | etiOnSkillCalculation | 0.1 multi per 5 power | rawSkillPower / 5 * 0,1 + 1 | 1,46  |
+| ecaIncreaseIncomingDamage | etiOnSkillCalculation | 0.1 multi per 5 power | rawSkillPower / 5 * 0,1 + 1 | 1,46  |
+| ecaDecreaseHealing        | etiOnSkillCalculation | 0.1 multi per 5 power | rawSkillPower / 5 * 0,1 + 1 | 1,46  |
+| ecaBlockBuffs             | etiOnSkillStart       | -                     | -                           | -     |
+| ecaChangeEffectTurn       | etiOnSkillStart       | 1 turn per 10 power   | rawSkillPower / 10          | 2     |
 
-|      trigger       |      description      |
-|--------------------|-----------------------|
-| onSkillCalculation | 0.1 multi per 5 power |
-| onTurnEnd          | 2 y per 3 power       |
-| onTurnStart        | 2 y per 3 power       |
-| onSkillStart       | 1 y per 10 power      |
+|        Trigger        |      Description      |
+|-----------------------|-----------------------|
+| etiOnSkillCalculation | 0.1 multi per 5 power |
+| etiOnTurnEnd          | 2 y per 3 power       |
+| etiOnTurnStart        | 2 y per 3 power       |
+| etiOnSkillStart       | 1 y per 10 power      |
 
 unless otherwise defined
 
@@ -153,54 +161,53 @@ unless otherwise defined
 
 ## Buffs (Self)
 
-|         Name         |      Trigger       |       Category      |                                   Description                                   |
-|----------------------|--------------------|---------------------|---------------------------------------------------------------------------------|
-| heal1                | onTurnEnd          | Heal                | Gain 50% of your Damage in Health                                               |
-| heal2                | onTurnEnd          | Heal                | Heal 50% of the Damage you take                                                 |
-| heal3                | onTurnEnd          | Heal                | Restores health at the start of each turn                                       |
-| doDamage1            | onTurnEnd          | DoDamage            | Reflect 50% of the damage you Receive                                           |
-| increasePower1       | onSkillCalculation | IncreasePower       | Increase power                                                                  |
-| increasePower2       | onSkillCalculation | IncreasePower       | Power increases by 10% each turn, up to 50%                                     |
-| increasePower3       | onSkillCalculation | IncreasePower       | Power increases by 10% for each 10% of your missing health                      |
-| increasePower4       | onSkillCalculation | IncreasePower       | Each consecutive use of the same skill increases power by 15%                   |
-| increaseDamageDone1  | onSkillCalculation | IncreaseDamageDone  | Adds bonus damage if enemy is low                                               |
-| increaseDamageDone2  | onSkillCalculation | IncreaseDamageDone  | 50% Chance to double the damage                                                 |
-| increaseDamageDone3  | onSkillCalculation | IncreaseDamageDone  | Each attack increases damage of next attack                                     |
-| decreaseDamageTaken1 | onSkillCalculation | DecreaseDamageTaken | Receive 50% less damage                                                         |
-| decreaseDamageTaken2 | onSkillCalculation | DecreaseDamageTaken | Receive 10% less Damage from repeated sources                                   |
-| decreaseDamageTaken3 | onSkillCalculation | DecreaseDamageTaken | Convert 20% of damage taken into a DoT on yourself that deals less total damage |
-| increaseHealing1     | onSkillCalculation | IncreaseHealing     | Healing effects become 30% stronger for each debuff you have                    |
-| increaseHealing2     | onSkillCalculation | IncreaseHealing     | Healing effects are 100% stronger when below 30% health                         |
-| blockDebuffs1        | onSkillStart       | BlockDebuffs        | Prevents new debuffs from being applied while active                            |
-| blockDebuffs2        | onSkillStart       | BlockDebuffs        | 50% Chance to block an incoming Debuff                                          |
-| blockDamage1         | onSkillStart       | BlockDamage         | 50% Chance to dont get damage                                                   |
-| stopSkill1           | onSkillStart       | StopSkill           | 50% Chance to block an incoming skill                                           |
-| changeTarget1        | onSkillStart       | ChangeTarget        | 50% Chance the attack is mirrored                                               |
-| removeEffect1        | onSkillStart       | RemoveEffect        | remove a random debuff                                                          |
-| removeEffect2        | onSkillStart       | RemoveEffect        | remove a random buff of the enemy when attacked                                 |
-| removeEffect3        | onSkillStart       | RemoveEffect        | remove a random debuff when attacked                                            |
+|         Name         |        Trigger        |        Category        |                                   Description                                   |
+|----------------------|-----------------------|------------------------|---------------------------------------------------------------------------------|
+| heal1                | etiOnTurnEnd          | ecaHeal                | Gain 50% of your Damage in Health                                               |
+| heal2                | etiOnTurnEnd          | ecaHeal                | Heal 50% of the Damage you take                                                 |
+| heal3                | etiOnTurnEnd          | ecaHeal                | Restores health at the start of each turn                                       |
+| doDamage1            | etiOnTurnEnd          | ecaDoDamage            | Reflect 50% of the damage you Receive                                           |
+| increasePower1       | etiOnSkillCalculation | ecaIncreasePower       | Increase power                                                                  |
+| increasePower2       | etiOnSkillCalculation | ecaIncreasePower       | Power increases by 10% each turn, up to 50%                                     |
+| increasePower3       | etiOnSkillCalculation | ecaIncreasePower       | Power increases by 10% for each 10% of your missing health                      |
+| increasePower4       | etiOnSkillCalculation | ecaIncreasePower       | Each consecutive use of the same skill increases power by 15%                   |
+| increaseDamageDone1  | etiOnSkillCalculation | ecaIncreaseOutgoingDamage  | Adds bonus damage if enemy is low                                               |
+| increaseDamageDone2  | etiOnSkillCalculation | ecaIncreaseOutgoingDamage  | 50% Chance to double the damage                                                 |
+| increaseDamageDone3  | etiOnSkillCalculation | ecaIncreaseOutgoingDamage  | Each attack increases damage of next attack                                     |
+| decreaseDamageTaken1 | etiOnSkillCalculation | ecaDecreaseIncomingDamage | Receive 50% less damage                                                         |
+| decreaseDamageTaken2 | etiOnSkillCalculation | ecaDecreaseIncomingDamage | Receive 10% less Damage from repeated sources                                   |
+| decreaseDamageTaken3 | etiOnSkillCalculation | ecaDecreaseIncomingDamage | Convert 20% of damage taken into a DoT on yourself that deals less total damage |
+| increaseHealing1     | etiOnSkillCalculation | ecaIncreaseHealing     | Healing effects become 30% stronger for each debuff you have                    |
+| increaseHealing2     | etiOnSkillCalculation | ecaIncreaseHealing     | Healing effects are 100% stronger when below 30% health                         |
+| blockDebuffs1        | etiOnSkillStart       | ecaaBlockDebuffs       | Prevents new debuffs from being applied while active                            |
+| blockDebuffs2        | etiOnSkillStart       | ecaaBlockDebuffs       | 50% Chance to block an incoming Debuff                                          |
+| blockDamage1         | etiOnSkillStart       | ecaBlockDamage         | 50% Chance to dont get damage                                                   |
+| stopSkill1           | etiOnSkillStart       | ecaStopSkill           | 50% Chance to block an incoming skill                                           |
+| changeTarget1        | etiOnSkillStart       | ecaChangeTarget        | 50% Chance the attack is mirrored                                               |
+| removeEffect1        | etiOnSkillStart       | ecaRemoveEffect        | remove a random debuff                                                          |
+| removeEffect2        | etiOnSkillStart       | ecaRemoveEffect        | remove a random buff of the enemy when attacked                                 |
+| removeEffect3        | etiOnSkillStart       | ecaRemoveEffect        | remove a random debuff when attacked                                            |
 
 ## Debuffs (Enemy)
 
-|         Name         |      Trigger       |       Category      |                              Description                              |
-|----------------------|--------------------|---------------------|-----------------------------------------------------------------------|
-| DecreasePower1       | onSkillCalculation | DecreasePower       | Reduce targets Power                                                  |
-| BlockHealing1        | onSkillStart       | BlockHealing        | 50% Chance to block heals                                             |
-| TakeDamage1          | onTurnStart        | TakeDamage          | Immediately kill the enemy while below 10% health                     |
-| TakeDamage2          | onTurnStart        | TakeDamage          | Applies a damaging effect that deals damage at the start of each turn |
-| TakeDamage3          | onTurnStart        | TakeDamage          | When cleansed, explodes                                               |
-| TakeDamage4          | onTurnStart        | TakeDamage          | Deals damage based on maximum health                                  |
-| DecreaseDamageDone1  | onSkillCalculation | DecreaseDamageDone  | Reduces target's damage output by 50%                                 |
-| IncreaseDamageTaken1 | onSkillCalculation | IncreaseDamageTaken | Receive 50% more damage                                               |
-| DecreaseHealing1     | onSkillCalculation | DecreaseHealing     | Reduces all healing received by 50%                                   |
-| BlockBuffs1          | onSkillStart       | BlockBuffs          | Prevents the target from receiving buffs and healing effects          |
-| StopSkill1           | onSkillStart       | StopSkill           | 50% Chance to miss the skill                                          |
-| StopSkill2           | onSkillStart       | StopSkill           | Cannot use the same skill twice in a row                              |
-| ChangeTarget1        | onSkillStart       | ChangeTarget        | 50% Chance to attack itself                                           |
-| RemoveEffect1        | onTurnStart        | RemoveEffect        | remove a random Buff                                                  |
-| RemoveEffect2        | onSkillStart       | RemoveEffect        | remove a random Buff when attacked                                    |
-| RemoveEffect3        | onSkillStart       | RemoveEffect        | remove a random debuff of the enemy when attacked                     |
-
+|         Name         |        Trigger        |        Category        |                              Description                              |
+|----------------------|-----------------------|------------------------|-----------------------------------------------------------------------|
+| DecreasePower1       | etiOnSkillCalculation | ecaDecreasePower       | Reduce targets Power                                                  |
+| BlockHealing1        | etiOnSkillStart       | ecaBlockHealing        | 50% Chance to block heals                                             |
+| TakeDamage1          | etiOnTurnStart        | ecaTakeDamage          | Immediately kill the enemy while below 10% health                     |
+| TakeDamage2          | etiOnTurnStart        | ecaTakeDamage          | Applies a damaging effect that deals damage at the start of each turn |
+| TakeDamage3          | etiOnTurnStart        | ecaTakeDamage          | When cleansed, explodes                                               |
+| TakeDamage4          | etiOnTurnStart        | ecaTakeDamage          | Deals damage based on maximum health                                  |
+| DecreaseDamageDone1  | etiOnSkillCalculation | ecaDecreaseOutgoingDamage  | Reduces target's damage output by 50%                                 |
+| IncreaseDamageTaken1 | etiOnSkillCalculation | ecaIncreaseIncomingDamage | Receive 50% more damage                                               |
+| DecreaseHealing1     | etiOnSkillCalculation | ecaDecreaseHealing     | Reduces all healing received by 50%                                   |
+| BlockBuffs1          | etiOnSkillStart       | ecaBlockBuffs          | Prevents the target from receiving buffs and healing effects          |
+| StopSkill1           | etiOnSkillStart       | ecaStopSkill           | 50% Chance to miss the skill                                          |
+| StopSkill2           | etiOnSkillStart       | ecaStopSkill           | Cannot use the same skill twice in a row                              |
+| ChangeTarget1        | etiOnSkillStart       | ecaChangeTarget        | 50% Chance to attack itself                                           |
+| RemoveEffect1        | etiOnTurnStart        | ecaRemoveEffect        | remove a random Buff                                                  |
+| RemoveEffect2        | etiOnSkillStart       | ecaRemoveEffect        | remove a random Buff when attacked                                    |
+| RemoveEffect3        | etiOnSkillStart       | ecaRemoveEffect        | remove a random debuff of the enemy when attacked                     |
 
 ## Talismans (One-time Use Items)
 

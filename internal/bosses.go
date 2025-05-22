@@ -222,8 +222,20 @@ func (b *Boss) HasActiveEffect(effectType string) bool {
 	return false
 }
 
-func (b *Boss) SetFullSkillPower(power int) {
-	b.battlestate.lastFullSkillPowerUsed = power
+func (b *Boss) SetLastRawSkillPowerUsed(power int) {
+	b.battlestate.lastRawSkillPowerUsed = power
+}
+
+func (b *Boss) SetLastActualDamageTaken(damage int) {
+	b.battlestate.lastActualDamageTaken = damage
+}
+
+func (b *Boss) SetLastOutgoingDamage(damage int) {
+	b.battlestate.lastOutgoingDamage = damage
+}
+
+func (b *Boss) SetLastIncomingDamage(damage int) {
+	b.battlestate.lastIncomingDamage = damage
 }
 
 // -------------------------------------------------------------------------
