@@ -238,6 +238,14 @@ func (b *Boss) SetLastIncomingDamage(damage int) {
 	b.battlestate.lastIncomingDamage = damage
 }
 
+func (b *Boss) SetLastSkillUsed(skill *Skill) {
+	b.battlestate.lastSkillUsed = skill
+}
+
+func (b *Boss) SetCurrentSkillUsed(skill *Skill) {
+	b.battlestate.currentSkillUsed = skill
+}
+
 // -------------------------------------------------------------------------
 // -------------------------------handle state------------------------------
 // -------------------------------------------------------------------------

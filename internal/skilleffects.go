@@ -18,8 +18,7 @@ type SkillEffect struct {
 	execute          func(ae ActiveEffect)
 	checkCondition   func() bool
 	usageTiming      effectTiming
-	baseValue        float32 // calculate: baseValue per powerRatio, e.g. 1 damage per 3 powerRatio
-	powerRatio       float32 // calculate: baseValue per powerRatio e.g. 0.1 multi per 5 powerRatio
+	outputValue      func() effectOutputValue
 }
 
 type effectCategory int
@@ -54,6 +53,7 @@ const (
 	etiOnSkillCalculation
 	etiOnTurnEnd
 	etiOnEffectRemoval
+	etiOnSkillEnd
 )
 
 type effectType int
@@ -62,6 +62,11 @@ const (
 	etyBuff effectType = iota
 	etyDebuff
 )
+
+type effectOutputValue struct {
+	multiplier float32
+	output     int
+}
 
 // ActiveEffect is on the Entity in the BattleState
 type ActiveEffect struct {
@@ -89,8 +94,7 @@ func newSkillEffect(effectName string) (SkillEffect, error) {
 		execute        func(ae ActiveEffect)
 		checkCondition func() bool
 		usageTiming    effectTiming
-		baseValue      float32
-		powerRatio     float32
+		damageOutput   func() effectOutputValue
 	}
 
 	partSkillEffectMap := map[string]partSkillEffect{
@@ -102,8 +106,7 @@ func newSkillEffect(effectName string) (SkillEffect, error) {
 			execute:        effectExecuteHeal1,
 			checkCondition: effectCheckConditionHeal1,
 			usageTiming:    etiOnTurnEnd,
-			baseValue:      2,
-			powerRatio:     3,
+			damageOutput:   effectOutputValueHeal1,
 		},
 		"increasepower1": {
 			internalName:   "increasepower1",
@@ -113,8 +116,7 @@ func newSkillEffect(effectName string) (SkillEffect, error) {
 			execute:        effectExecuteIncreasePower1,
 			checkCondition: effectCheckConditionIncreasePower1,
 			usageTiming:    etiOnSkillCalculation,
-			baseValue:      0.1,
-			powerRatio:     5,
+			damageOutput:   effectOutputValueIncreasePower1,
 		},
 	}
 
@@ -157,29 +159,9 @@ func newSkillEffect(effectName string) (SkillEffect, error) {
 		execute:          effectConfig.execute,
 		checkCondition:   effectConfig.checkCondition,
 		usageTiming:      effectConfig.usageTiming,
-		baseValue:        effectConfig.baseValue,
-		powerRatio:       effectConfig.powerRatio,
 	}
 
 	return skillEffect, nil
-}
-
-func (se SkillEffect) CalculateEffect(power int) (float32, error) {
-	switch se.category {
-	case ecaHeal, ecaTakeDamage, ecaRemoveEffect, ecaChangeEffectTurn:
-		// e.g. 2 healing per 3 powerRatio
-		// e.g. 1 effect removal per 10 powerRatio
-		return float32(power) / se.powerRatio * se.baseValue, nil
-	case ecaIncreasePower, ecaIncreaseOutgoingDamage, ecaDecreaseIncomingDamage,
-		ecaDecreasePower, ecaDecreaseOutgoingDamage, ecaIncreaseIncomingDamage,
-		ecaDecreaseHealing, ecaIncreaseHealing:
-		// e.g. 0.1 increase per 5 powerRatio
-		return (float32(power)/se.powerRatio)*se.baseValue + 1, nil
-	default:
-		internalErrorMsg := GetGameTextError("internal")
-		nosuchCategoryMsg := GetGameTextError("nosuchcategory")
-		return 0, fmt.Errorf("(CalculateEffect) %s - %s", internalErrorMsg, nosuchCategoryMsg)
-	}
 }
 
 func effectExecuteHeal1(ae ActiveEffect) {
@@ -190,9 +172,27 @@ func effectCheckConditionHeal1() bool {
 	return true
 }
 
+func effectOutputValueHeal1() effectOutputValue {
+	return effectOutputValue{
+		multiplier: 1.0,
+		baseValue:  2.0,
+		powerRatio: 3.0,
+		damage:     0,
+	}
+}
+
 func effectExecuteIncreasePower1(ae ActiveEffect) {
 }
 
 func effectCheckConditionIncreasePower1() bool {
 	return true
+}
+
+func effectOutputValueIncreasePower1() effectOutputValue {
+	return effectOutputValue{
+		multiplier: 1.0,
+		baseValue:  0.1,
+		powerRatio: 5.0,
+		damage:     0,
+	}
 }

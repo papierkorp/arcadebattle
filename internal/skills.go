@@ -264,6 +264,7 @@ func (s *Skill) Use(skillSource string) error {
 			return fmt.Errorf("%s - %s (%s)", internalErrorMsg, invalidskillpowercalculationMsg, err)
 		}
 
+		source.SetLastSkillUsed(s)
 		source.SetLastOutgoingDamage(outgoingDamage)
 		target.SetLastIncomingDamage(incomingDamage)
 		target.SetLastActualDamageTaken(actualDamageTaken)

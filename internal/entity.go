@@ -24,6 +24,8 @@ type Entity interface {
 	SetLastActualDamageTaken(damage int)
 	SetLastIncomingDamage(damage int)
 	SetLastOutgoingDamage(damage int)
+	SetLastSkillUsed(skill *Skill)
+	SetCurrentSkillUsed(skill *Skill)
 
 	// Status
 	GetName() string

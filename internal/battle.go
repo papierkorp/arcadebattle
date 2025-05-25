@@ -19,6 +19,8 @@ type BattleState struct {
 	lastActualDamageTaken int
 	lastIncomingDamage    int
 	lastOutgoingDamage    int
+	lastSkillUsed         *Skill
+	currentSkillUsed      *Skill
 }
 
 // BattlePhase comment

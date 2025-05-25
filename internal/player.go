@@ -265,6 +265,14 @@ func (p *Player) SetLastIncomingDamage(damage int) {
 	p.battlestate.lastIncomingDamage = damage
 }
 
+func (p *Player) SetLastSkillUsed(skill *Skill) {
+	p.battlestate.lastSkillUsed = skill
+}
+
+func (p *Player) SetCurrentSkillUsed(skill *Skill) {
+	p.battlestate.currentSkillUsed = skill
+}
+
 // -------------------------------------------------------------------------
 // -------------------------------handle state------------------------------
 // -------------------------------------------------------------------------
