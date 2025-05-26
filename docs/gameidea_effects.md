@@ -162,51 +162,91 @@ unless otherwise defined
 
 ## Buffs (Self)
 
-|         Name         |        Trigger        |          Category         |     outputBase    |                         Description                          |
-|----------------------|-----------------------|---------------------------|-------------------|--------------------------------------------------------------|
-| heal1                | etiOnSkillEnd         | ecaHeal                   | OutgoingDamage    | Gain 50% of your Damage in Health                            |
-| heal2                | etiOnSkillEnd         | ecaHeal                   | ActualDamageTaken | Heal 50% of the Damage you take                              |
-| heal3                | etiOnTurnStart        | ecaHeal                   | effectMulti       | Restores health at the start of each turn                    |
-| heal4                | etiOnTurnEnd          | ecaHeal                   | effectMulti       | Restores health at the end of each turn                      |
-| heal4                | etiOnEffectRemoval    | ecaHeal                   | effectMulti       | gain a massive heal when this effect expires or is removed   |
-| doDamage1            | etiOnTurnEnd          | ecaDoDamage               | ActualDamageTaken | Reflect 50% of the damage you Receive                        |
-| increasePower1       | etiOnSkillCalculation | ecaIncreasePower          | effectMulti       | Increase power                                               |
-| increasePower3       | etiOnSkillCalculation | ecaIncreasePower          | effectMulti       | Power increases by 10% for each 10% of your missing health   |
-| increaseDamageDone1  | etiOnSkillCalculation | ecaIncreaseOutgoingDamage | effectMulti       | Adds bonus damage if enemy is low                            |
-| increaseDamageDone2  | etiOnSkillCalculation | ecaIncreaseOutgoingDamage | effectMulti       | 50% Chance to double the damage                              |
-| increaseDamageDone3  | etiOnSkillCalculation | ecaIncreaseOutgoingDamage | effectMulti       | Deal double the damage if the same skill is used repeatedly  |
-| decreaseDamageTaken1 | etiOnSkillCalculation | ecaDecreaseIncomingDamage | effectMulti       | Receive 50% less damage                                      |
-| decreaseDamageTaken2 | etiOnSkillCalculation | ecaDecreaseIncomingDamage | effectMulti       | Receive 10% less Damage from repeated sources                |
-| increaseHealing1     | etiOnSkillCalculation | ecaIncreaseHealing        | effectMulti       | Healing effects become 30% stronger for each debuff you have |
-| increaseHealing2     | etiOnSkillCalculation | ecaIncreaseHealing        | effectMulti       | Healing effects are 100% stronger when below 30% health      |
-| blockDebuffs1        | etiOnSkillStart       | ecaBlockDebuffs           | -                 | Prevents new debuffs from being applied while active         |
-| blockDebuffs2        | etiOnSkillStart       | ecaBlockDebuffs           | -                 | 50% Chance to block an incoming Debuff                       |
-| blockDebuffs3        | etiOnSkillStart       | ecaBlockDebuffs           | -                 | Block debuffs from the ecaHeal Category                      |
-| blockDamage1         | etiOnSkillStart       | ecaBlockDamage            | effectMulti       | 50% Chance to dont get damage                                |
-| stopSkill1           | etiOnSkillStart       | ecaStopSkill              | -                 | 50% Chance to block an incoming skill                        |
-| changeTarget1        | etiOnSkillStart       | ecaChangeTarget           | IncomingDamage    | 50% Chance the attack is mirrored                            |
-| removeEffect1        | etiOnSkillStart       | ecaRemoveEffect           | -                 | remove a random debuff                                       |
-| removeEffect2        | etiOnSkillStart       | ecaRemoveEffect           | -                 | remove a random buff of the enemy when attacked              |
-| removeEffect3        | etiOnSkillStart       | ecaRemoveEffect           | -                 | remove a random debuff when attacked                         |
+|         Name         |        Trigger        |          Category         |     outputBase    |                          Description                           |
+|----------------------|-----------------------|---------------------------|-------------------|----------------------------------------------------------------|
+| heal1                | etiOnSkillEnd         | ecaHeal                   | OutgoingDamage    | Gain 50% of your Damage in Health                              |
+| heal2                | etiOnSkillEnd         | ecaHeal                   | ActualDamageTaken | Heal 50% of the Damage you take                                |
+| heal3                | etiOnTurnStart        | ecaHeal                   | effectMulti       | Restores health at the start of each turn                      |
+| heal4                | etiOnTurnEnd          | ecaHeal                   | effectMulti       | Restores health at the end of each turn                        |
+| heal5                | etiOnEffectRemoval    | ecaHeal                   | effectMulti       | gain a massive heal when this effect expires or is removed     |
+| doDamage1            | etiOnSkillEnd         | ecaDoDamage               | ActualDamageTaken | deal 50% of the damage you Receive                             |
+| increasePower1       | etiOnSkillCalculation | ecaIncreasePower          | effectMulti       | Increase power                                                 |
+| increasePower2       | etiOnSkillCalculation | ecaIncreasePower          | effectMulti       | Power increases by 10% for each 10% of your missing health     |
+| increasePower3       | etiOnSkillCalculation | ecaIncreasePower          | effectMulti       | Power increases by 10% for each active buff you have           |
+| increasePower4       | etiOnSkillCalculation | ecaIncreasePower          | effectMulti       | Power increases by 20% when at full health                     |
+| increasePower5       | etiOnSkillCalculation | ecaIncreasePower          | effectMulti       | Power increases by 10% for each defeated boss                  |
+| increaseDamageDone1  | etiOnSkillCalculation | ecaIncreaseOutgoingDamage | effectMulti       | Adds bonus damage if enemy is low                              |
+| increaseDamageDone2  | etiOnSkillCalculation | ecaIncreaseOutgoingDamage | effectMulti       | 50% Chance to double the damage                                |
+| increaseDamageDone3  | etiOnSkillCalculation | ecaIncreaseOutgoingDamage | effectMulti       | Deal double the damage if the same skill is used repeatedly    |
+| decreaseDamageTaken1 | etiOnSkillCalculation | ecaDecreaseIncomingDamage | effectMulti       | Receive 50% less damage                                        |
+| decreaseDamageTaken2 | etiOnSkillCalculation | ecaDecreaseIncomingDamage | effectMulti       | Receive 10% less Damage from repeated sources                  |
+| decreaseDamageTaken3 | etiOnSkillCalculation | ecaDecreaseIncomingDamage |                   |                                                                |
+| increaseHealing1     | etiOnSkillCalculation | ecaIncreaseHealing        | effectMulti       | Healing effects are 10% stronger for each debuff you have      |
+| increaseHealing2     | etiOnSkillCalculation | ecaIncreaseHealing        | effectMulti       | Healing effects are 100% stronger when below 30% health        |
+| increaseHealing3     | etiOnSkillCalculation | ecaIncreaseHealing        | effectMulti       | Healing effects are 10% stronger for each active buff          |
+| blockDebuffs1        | etiOnSkillStart       | ecaBlockDebuffs           | -                 | Prevents new debuffs from being applied                        |
+| blockDebuffs2        | etiOnSkillStart       | ecaBlockDebuffs           | -                 | 50% Chance to block an incoming Debuff                         |
+| blockDebuffs3        | etiOnSkillStart       | ecaBlockDebuffs           | -                 | Block the next 3 debuffs                                       |
+| blockDebuffs4        | etiOnSkillStart       | ecaBlockDebuffs           | -                 | Block debuffs that reduce power/damage                         |
+| blockDebuffs5        | etiOnSkillStart       | ecaBlockDebuffs           | -                 | Block debuffs that cause damage                                |
+| blockDebuffs6        | etiOnSkillStart       | ecaBlockDebuffs           | -                 | Block debuffs that prevent healing                             |
+| blockDebuffs7        | etiOnSkillStart       | ecaBlockDebuffs           | -                 | Block debuffs that stop skills/change targets                  |
+| blockDebuffs7        | etiOnSkillStart       | ecaBlockDebuffs           | -                 | Block buff prevention and effect manipulation                  |
+| blockDamage1         | etiOnSkillStart       | ecaBlockDamage            | effectMulti       | 50% Chance to dont get damage                                  |
+| blockDamage2         | etiOnSkillStart       | ecaBlockDamage            | effectMulti       | block damage if below 5% health                                |
+| blockDamage3         | etiOnSkillStart       | ecaBlockDamage            | effectMulti       | block damage if the enemy used the same skill as a turn before |
+| changeTarget1        | etiOnSkillStart       | ecaChangeTarget           | IncomingDamage    | 50% Chance to reflect the damage                               |
+| changeTarget2        | etiOnSkillStart       | ecaChangeTarget           | -                 | 50% Chance to reflect the effects                              |
+| changeTarget3        | etiOnSkillStart       | ecaChangeTarget           | IncomingDamage    | reflect the damage if below 5% health                          |
+| removeEffect1        | etiOnTurnStart        | ecaRemoveEffect           | -                 | remove a random debuff                                         |
+| removeEffect2        | etiOnSkillStart       | ecaRemoveEffect           | -                 | remove a random buff of the enemy when attacked                |
+| removeEffect3        | etiOnSkillStart       | ecaRemoveEffect           | -                 | remove a random debuff when attacked                           |
+| removeEffect4        | etiOnTurnEnd          | ecaRemoveEffect           | -                 | remove a random debuff that reduce power/damage                |
+| removeEffect5        | etiOnTurnEnd          | ecaRemoveEffect           | -                 | remove a random debuff that cause damage                       |
+| removeEffect6        | etiOnTurnEnd          | ecaRemoveEffect           | -                 | remove a random debuff that that prevent healing               |
+| removeEffect7        | etiOnTurnEnd          | ecaRemoveEffect           | -                 | remove a random debuff that that stop skills/change targets    |
+| removeEffect8        | etiOnTurnStart        | ecaRemoveEffect           | -                 | remove the oldest debuff                                       |
+| removeEffect9        | etiOnTurnStart        | ecaRemoveEffect           | -                 | remove the newest debuff                                       |
+| removeEffect10       | etiOnTurnStart        | ecaRemoveEffect           | -                 | remove the debuff with the most remaining turns                |
+| removeEffect11       | etiOnTurnStart        | ecaRemoveEffect           | -                 | remove the debuff with the least remaining turns               |
+
 
 ## Debuffs (Enemy)
 
 |         Name         |        Trigger        |          Category         |   outputBase   |                              Description                              |
 |----------------------|-----------------------|---------------------------|----------------|-----------------------------------------------------------------------|
 | DecreasePower1       | etiOnSkillCalculation | ecaDecreasePower          | effectMulti    | Reduce targets Power                                                  |
+| DecreasePower2       | etiOnSkillCalculation | ecaDecreasePower          |                |                                                                       |
+| DecreasePower3       | etiOnSkillCalculation | ecaDecreasePower          |                |                                                                       |
+| DecreasePower4       | etiOnSkillCalculation | ecaDecreasePower          |                |                                                                       |
+| DecreasePower5       | etiOnSkillCalculation | ecaDecreasePower          |                |                                                                       |
 | BlockHealing1        | etiOnSkillStart       | ecaBlockHealing           | effectMulti    | 50% Chance to block heals                                             |
+| BlockHealing2        | etiOnSkillStart       | ecaBlockHealing           |                |                                                                       |
+| BlockHealing3        | etiOnSkillStart       | ecaBlockHealing           |                |                                                                       |
 | TakeDamage1          | etiOnTurnStart        | ecaTakeDamage             | -              | Immediately kill the enemy while below 10% health                     |
 | TakeDamage2          | etiOnTurnStart        | ecaTakeDamage             | effectMulti    | Applies a damaging effect that deals damage at the start of each turn |
 | TakeDamage3          | etiOnEffectRemoval    | ecaTakeDamage             | effectMulti    | When cleansed, explodes                                               |
 | TakeDamage4          | etiOnTurnStart        | ecaTakeDamage             | effectMulti    | Deals damage based on maximum health                                  |
+| TakeDamage5          | etiOnTurnStart        | ecaTakeDamage             |                |                                                                       |
+| TakeDamage6          | etiOnTurnStart        | ecaTakeDamage             |                |                                                                       |
 | DecreaseDamageDone1  | etiOnSkillCalculation | ecaDecreaseOutgoingDamage | effectMulti    | Reduces target's damage output by 50%                                 |
+| DecreaseDamageDone2  | etiOnSkillCalculation | ecaDecreaseOutgoingDamage |                |                                                                       |
+| DecreaseDamageDone3  | etiOnSkillCalculation | ecaDecreaseOutgoingDamage |                |                                                                       |
+| DecreaseDamageDone4  | etiOnSkillCalculation | ecaDecreaseOutgoingDamage |                |                                                                       |
+| DecreaseDamageDone5  | etiOnSkillCalculation | ecaDecreaseOutgoingDamage |                |                                                                       |
+| DecreaseDamageDone6  | etiOnSkillCalculation | ecaDecreaseOutgoingDamage |                |                                                                       |
 | IncreaseDamageTaken1 | etiOnSkillCalculation | ecaIncreaseIncomingDamage | effectMulti    | Receive 50% more damage                                               |
+| IncreaseDamageTaken2 | etiOnSkillCalculation | ecaIncreaseIncomingDamage |                |                                                                       |
+| IncreaseDamageTaken3 | etiOnSkillCalculation | ecaIncreaseIncomingDamage |                |                                                                       |
+| IncreaseDamageTaken4 | etiOnSkillCalculation | ecaIncreaseIncomingDamage |                |                                                                       |
+| IncreaseDamageTaken5 | etiOnSkillCalculation | ecaIncreaseIncomingDamage |                |                                                                       |
+| IncreaseDamageTaken6 | etiOnSkillCalculation | ecaIncreaseIncomingDamage |                |                                                                       |
 | DecreaseHealing1     | etiOnSkillCalculation | ecaDecreaseHealing        | effectMulti    | Reduces all healing received by 50%                                   |
+| DecreaseHealing2     | etiOnSkillCalculation | ecaDecreaseHealing        |                |                                                                       |
+| DecreaseHealing3     | etiOnSkillCalculation | ecaDecreaseHealing        |                |                                                                       |
 | BlockBuffs1          | etiOnSkillStart       | ecaBlockBuffs             | -              | Prevents the target from receiving buffs                              |
 | BlockBuffs2          | etiOnSkillStart       | ecaBlockBuffs             | effectMulti    | Prevents the target from receiving healing effects                    |
 | BlockBuffs3          | etiOnSkillStart       | ecaBlockBuffs             | effectMulti    | Prevents the target from receiving ecaIncreaseOutgoingDamage effects  |
-| StopSkill1           | etiOnSkillStart       | ecaStopSkill              | -              | 50% Chance to miss the skill                                          |
-| StopSkill2           | etiOnSkillStart       | ecaStopSkill              | -              | Cannot use the same skill twice in a row                              |
 | ChangeTarget1        | etiOnSkillStart       | ecaChangeTarget           | IncomingDamage | 50% Chance to attack itself                                           |
 | RemoveEffect1        | etiOnTurnStart        | ecaRemoveEffect           | -              | remove a random Buff                                                  |
 | RemoveEffect2        | etiOnSkillStart       | ecaRemoveEffect           | -              | remove a random Buff when attacked                                    |
