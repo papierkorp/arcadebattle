@@ -7,7 +7,7 @@
     "noplayer": "No player created yet",
     "invalidargs": "Invalid number of arguments. Usage:",
     "invalidhealth": "Invalid health value: must be a number",
-    "invalidpower": "Invalid power value: must be a number",
+    "invalidstrength": "Invalid strength value: must be a number",
     "invalidspeed": "Invalid speed value: must be a number",
     "exceededtalentpoints": "Used too many talent points",
     "invaliddifficulty": "Invalid difficulty, must be normal, hard, expert, master, or torment",
@@ -40,7 +40,7 @@
     "player": {
       "name": "Name",
       "health": "HP",
-      "power": "Power",
+      "strength": "Strength",
       "speed": "Speed",
       "skilllist": "Skilllist",
       "talentpointstotal": "Total talentpoints",
@@ -54,7 +54,7 @@
     "boss": {
       "name": "Name",
       "health": "HP",
-      "power": "Power",
+      "strength": "Strength",
       "speed": "Speed",
       "skilllist": "Skilllist",
       "activeeffectlist": "Active Effects"
@@ -114,7 +114,7 @@
   },
   "gamemessage": {
     "availablecommands": "Available Commands:",
-    "welcome": "Welcome to Arcade Battle - a text-based RPG where you create and customize a unique character! Spend talent points to build your character's stats (health, power, speed) and create custom skills with various effects. Battle through 9 increasingly difficult bosses, earning new talent points with each victory. But be careful - one defeat means permanent death and you'll need to create a new character. Choose your difficulty wisely: higher difficulties offer fewer talent points but a greater challenge. Create powerful skill combinations, manage your resources carefully, and see if you can defeat all 9 bosses!",
+    "welcome": "Welcome to Arcade Battle - a text-based RPG where you create and customize a unique character! Spend talent points to build your character's stats (health, strength, speed) and create custom skills with various effects. Battle through 9 increasingly difficult bosses, earning new talent points with each victory. But be careful - one defeat means permanent death and you'll need to create a new character. Choose your difficulty wisely: higher difficulties offer fewer talent points but a greater challenge. Create powerful skill combinations, manage your resources carefully, and see if you can defeat all 9 bosses!",
     "gamestart": "Game started. Type 'status' to see your current status. Type 'quit' to exit.",
     "gamestarthelp": "Type 'help' to get a feeling for the game =)",
     "goodbye": "Goodbye!",
@@ -172,7 +172,7 @@
       "name": "new player",
       "description": "Create a new player character",
       "detail": "Creates a new player with specified stats using talent points based on chosen difficulty",
-      "usage": "new player <name> <difficulty> <health> <power> <speed>",
+      "usage": "new player <name> <difficulty> <health> <strength> <speed>",
       "example": "new player John normal 10 5 5"
     },
     "newskill": {
@@ -206,7 +206,7 @@
     "status": {
       "name": "status",
       "description": "Display current player stats and game state",
-      "detail": "Shows detailed information about your character including health, power, speed, skills, and current state",
+      "detail": "Shows detailed information about your character including health, strength, speed, skills, and current state",
       "usage": "status [p (player) | b (boss)]",
       "example": "status | status p | status b"
     },

@@ -8,7 +8,7 @@ type Entity interface {
 	// Stats
 	GetStats() Stats
 	SetHealth(hp int)
-	SetPower(power int)
+	SetStrength(strength int)
 	SetSpeed(speed int)
 
 	// BattleState

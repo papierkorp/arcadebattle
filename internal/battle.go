@@ -8,7 +8,7 @@ import (
 // BattleState comment
 type BattleState struct {
 	currentHealth         int
-	currentPower          int
+	currentStrength       int
 	totalBuffTurnsCount   int
 	totalBuffCount        int
 	totalDebuffTurnCount  int

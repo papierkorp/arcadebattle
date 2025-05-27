@@ -21,7 +21,7 @@ func statusPlayer() {
 	} else {
 		fmt.Printf("\n%s: %s\n", playerStatus.Name, currentPlayer.name)
 		fmt.Printf("%s: %d\n", playerStatus.Health, currentPlayer.battlestate.currentHealth)
-		fmt.Printf("%s: %d\n", playerStatus.Power, currentPlayer.stats.power)
+		fmt.Printf("%s: %d\n", playerStatus.Strength, currentPlayer.stats.strength)
 		fmt.Printf("%s: %d\n", playerStatus.Speed, currentPlayer.stats.speed)
 
 		fmt.Printf("%s:\n", playerStatus.Skilllist)
@@ -62,7 +62,7 @@ func statusBoss() {
 
 	fmt.Printf("\n%s: %s\n", bossStatus.Name, currentBoss.name)
 	fmt.Printf("%s: %d\n", bossStatus.Health, currentBoss.battlestate.currentHealth)
-	fmt.Printf("%s: %d\n", bossStatus.Power, currentBoss.stats.power)
+	fmt.Printf("%s: %d\n", bossStatus.Strength, currentBoss.stats.strength)
 	fmt.Printf("%s: %d\n", bossStatus.Speed, currentBoss.stats.speed)
 
 	fmt.Printf("%s:\n", bossStatus.Skilllist)

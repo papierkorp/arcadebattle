@@ -3,7 +3,7 @@
 This game should be a Textbased Game which completly works in the Console/Terminal with Commands written in pure GOlang.
 
 At the beginning the player has to create his own Character. Depending on the difficulty he gets a different amount of Talentpoints.
-The Talentpoints are used to: upgrade Player stats (e.g. health, power, speed), create skills (each skill has stats and effects) or buy talismans (one time use items). The Player can create as many skills as he wants/has Talentpoints.
+The Talentpoints are used to: upgrade Player stats (e.g. health, strength, speed), create skills (each skill has stats and effects) or buy talismans (one time use items). The Player can create as many skills as he wants/has Talentpoints.
 The game is based on the effects which should enable strategic depth and a paper, rock, scissors system.
 After winning against a boss he gets new Talentpoints.
 The Game has 9 bosses, after beating the last boss you won the game. If you loose one fight your Character is dead and you have to create new one.
@@ -102,7 +102,7 @@ each fixed stat should cost a certain amount of talentpoints
 
 - Name
 - Health
-- Power
+- strength
 - Speed
 - Talentpoints
 
@@ -126,11 +126,3 @@ i want to track:
 - amount of characters written
 - amount of skills created
 - amount of talentpoints used
-
-
-# Calculation
-
-basicSkillPower = `power * skillDamageMultiplier`
-fullSkillPower = `basicSkillPower * effectMulti`
-
-each effect can be applied as often as casted (so the same effect can be applied multiple times) and each effectMulti will be calculated in the order of the casting

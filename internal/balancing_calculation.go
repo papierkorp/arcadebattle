@@ -145,7 +145,7 @@ func calculateStatsCost(stats Stats) int {
 		fmt.Println(err)
 	}
 
-	powerStats := stats.power
+	powerStats := stats.strength
 	powerCost, _, err := getStatsCost("power_cost")
 	if err != nil {
 		fmt.Println(err)
@@ -176,7 +176,7 @@ func calculateStatsCost(stats Stats) int {
 
 	fmt.Println(calculationMsg)
 	fmt.Printf("\n  %-10s %d (%s x %s: %d x %d)\n", playerStatus.Health, hpTotalCost, playerStatus.Health, costperstatMsg, hpStats, hpCost)
-	fmt.Printf("  %-10s %d (%s x %s: %d x %d)\n", playerStatus.Power, powerTotalCost, playerStatus.Power, costperstatMsg, powerStats, powerCost)
+	fmt.Printf("  %-10s %d (%s x %s: %d x %d)\n", playerStatus.Strength, powerTotalCost, playerStatus.Strength, costperstatMsg, powerStats, powerCost)
 	fmt.Printf("  %-10s %d (%s x %s: %d x %d)\n", playerStatus.Speed, speedTotalCost, playerStatus.Speed, costperstatMsg, speedStats, speedCost)
 	fmt.Println("  " + strings.Repeat("-", 16))
 	fmt.Printf("  %-10s %d\n", totalMsg, totalCost)

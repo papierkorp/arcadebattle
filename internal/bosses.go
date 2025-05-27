@@ -32,9 +32,9 @@ func createBoss(oldstats Stats) (*Boss, error) {
 		baseHealth = oldstats.health
 	}
 
-	var basePower = 25
-	if oldstats.power > 0.0 {
-		basePower = oldstats.power
+	var baseStrength = 25
+	if oldstats.strength > 0.0 {
+		baseStrength = oldstats.strength
 	}
 
 	baseSpeed := 15
@@ -42,37 +42,37 @@ func createBoss(oldstats Stats) (*Boss, error) {
 		baseSpeed = oldstats.speed
 	}
 
-	healthMultiplier := 1.0 + (float64(currentBossNumber-1) * 0.4) // +40% per boss
-	powerMultiplier := 1.0 + (float64(currentBossNumber-1) * 0.35) // +35% per boss
-	speedMultiplier := 1.0 + (float64(currentBossNumber-1) * 0.2)  // +20% per boss
+	healthMultiplier := 1.0 + (float64(currentBossNumber-1) * 0.4)    // +40% per boss
+	strengthMultiplier := 1.0 + (float64(currentBossNumber-1) * 0.35) // +35% per boss
+	speedMultiplier := 1.0 + (float64(currentBossNumber-1) * 0.2)     // +20% per boss
 
 	switch difficulty {
 	case hard:
 		healthMultiplier *= 1.3
-		powerMultiplier *= 1.2
+		strengthMultiplier *= 1.2
 		speedMultiplier *= 1.1
 	case expert:
 		healthMultiplier *= 1.6
-		powerMultiplier *= 1.4
+		strengthMultiplier *= 1.4
 		speedMultiplier *= 1.2
 	case master:
 		healthMultiplier *= 2.0
-		powerMultiplier *= 1.7
+		strengthMultiplier *= 1.7
 		speedMultiplier *= 1.4
 	case torment:
 		healthMultiplier *= 2.5
-		powerMultiplier *= 2.0
+		strengthMultiplier *= 2.0
 		speedMultiplier *= 1.6
 	}
 
 	bossHealth := int(float64(baseHealth) * healthMultiplier)
-	bossPower := int(float64(basePower) * powerMultiplier)
+	bossStrength := int(float64(baseStrength) * strengthMultiplier)
 	bossSpeed := int(float64(baseSpeed) * speedMultiplier)
 
 	newStats := Stats{
-		health: bossHealth,
-		power:  bossPower,
-		speed:  bossSpeed,
+		health:   bossHealth,
+		strength: bossStrength,
+		speed:    bossSpeed,
 	}
 
 	bossName := fmt.Sprintf("%s-boss-%d", difficulty, currentBossNumber)
@@ -97,9 +97,9 @@ func (b *Boss) SetHealth(hp int) {
 	b.stats.health = hp
 }
 
-// SetPower sets the power stat for the boss
-func (b *Boss) SetPower(power int) {
-	b.stats.power = power
+// SetStrength sets the strength stat for the boss
+func (b *Boss) SetStrength(strength int) {
+	b.stats.strength = strength
 }
 
 // SetSpeed sets the speed stat for the boss
@@ -252,9 +252,9 @@ func (b *Boss) SetCurrentSkillUsed(skill *Skill) {
 
 func checkCurrentBoss() error {
 	stats := Stats{
-		health: 0,
-		power:  0.0,
-		speed:  0,
+		health:   0,
+		strength: 0.0,
+		speed:    0,
 	}
 	boss, err := createBoss(stats)
 	if err != nil {

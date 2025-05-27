@@ -43,7 +43,7 @@ go build -o arcadebattle.exe
 
 - `help` - Display available commands
 - `status` - Check your current stats and skills
-- `new player <name> <difficulty> <health> <power> <speed>` - Create a character
+- `new player <name> <difficulty> <health> <strength> <speed>` - Create a character
 - `new skill <type> <name> [parameters]` - Create a new skill
 - `battle` - Start a battle with the next boss
 - `use <skill>` - Use a skill during battle
@@ -56,7 +56,7 @@ Skills come in three types:
 - **Duration**: Effects that last several turns
 - **Passive**: Permanent bonuses that are always active
 
-Each skill costs talent points based on its power and effects. Choose wisely!
+Each skill costs talent points based on its strength and effects. Choose wisely!
 
 ## Development
 

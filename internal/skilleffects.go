@@ -27,10 +27,12 @@ const (
 	ecaHeal effectCategory = iota
 	ecaDoDamage
 	ecaIncreasePower
+	ecaIncreaseStrength
 	ecaIncreaseOutgoingDamage
 	ecaDecreaseIncomingDamage
 	ecaIncreaseHealing
-	ecaaBlockDebuffs
+	ecaAddEffect
+	ecaBlockDebuffs
 	ecaBlockDamage
 	ecaStopSkill
 	ecaChangeTarget
@@ -49,11 +51,13 @@ type effectTiming int
 
 const (
 	etiOnTurnStart effectTiming = iota
-	etiOnSkillStart
+	etiOnIncmoingDamage
 	etiOnSkillCalculation
 	etiOnTurnEnd
 	etiOnEffectRemoval
-	etiOnSkillEnd
+	etiOnActualDamage
+	etiOnIncomingEffect
+	etiOnSkillStart
 )
 
 type effectType int
@@ -175,9 +179,7 @@ func effectCheckConditionHeal1() bool {
 func effectOutputValueHeal1() effectOutputValue {
 	return effectOutputValue{
 		multiplier: 1.0,
-		baseValue:  2.0,
-		powerRatio: 3.0,
-		damage:     0,
+		output:     0,
 	}
 }
 
@@ -191,8 +193,6 @@ func effectCheckConditionIncreasePower1() bool {
 func effectOutputValueIncreasePower1() effectOutputValue {
 	return effectOutputValue{
 		multiplier: 1.0,
-		baseValue:  0.1,
-		powerRatio: 5.0,
-		damage:     0,
+		output:     0,
 	}
 }

@@ -29,14 +29,14 @@ type Player struct {
 
 // Stats comment
 type Stats struct {
-	health int
-	power  int
-	speed  int
+	health   int
+	strength int
+	speed    int
 }
 
 func createPlayer(args []string) (*Player, error) {
 
-	// new0 player1 name2 difficulty3 health4 power5 speed6
+	// new0 player1 name2 difficulty3 health4 strength5 speed6
 	// new player John normal 25 15 8
 
 	newplayerMsg := GetGameTextCommand("newplayer")
@@ -58,10 +58,10 @@ func createPlayer(args []string) (*Player, error) {
 		return nil, fmt.Errorf(invalidHealthMsg, err)
 	}
 
-	power, err := strconv.Atoi(args[5])
+	strength, err := strconv.Atoi(args[5])
 	if err != nil {
-		invalidPowerMsg := GetGameTextError("invalidpower")
-		return nil, fmt.Errorf(invalidPowerMsg, err)
+		invalidstrengthMsg := GetGameTextError("invalidstrength")
+		return nil, fmt.Errorf(invalidstrengthMsg, err)
 	}
 
 	speed, err := strconv.Atoi(args[6])
@@ -71,9 +71,9 @@ func createPlayer(args []string) (*Player, error) {
 	}
 
 	stats := Stats{
-		health: health,
-		power:  power,
-		speed:  speed,
+		health:   health,
+		strength: strength,
+		speed:    speed,
 	}
 
 	usedTalentpoints := calculateStatsCost(stats)
@@ -127,9 +127,9 @@ func (p *Player) SetHealth(hp int) {
 	p.stats.health = hp
 }
 
-// SetPower sets the power stat for the player
-func (p *Player) SetPower(power int) {
-	p.stats.power = power
+// SetStrength sets the strength stat for the player
+func (p *Player) SetStrength(strength int) {
+	p.stats.strength = strength
 }
 
 // SetSpeed sets the speed stat for the player
@@ -288,6 +288,7 @@ func playerTurn() {
 	fmt.Print("player turn\n")
 
 	// -----------------------turnStart-----------------------
+	// todo: calculate currentStrength
 	currentPlayer.SetBattlePhase(turnStart)
 
 	for _, activeEffect := range currentPlayer.GetBattleState().activeEffectsList {

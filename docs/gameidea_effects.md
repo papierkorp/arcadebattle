@@ -1,56 +1,56 @@
 # Effect Usage
 
-**Turn Process for use skill**
+**Turn Process for playerTurn**
 
 1. loop effects for turn start
-- entity: `both`
-- usageTiming: `etiOnTurnStart`
+- loop on entity: `self`
+  - usageTiming: `etiOnTurnStart`
+  - stats loop
 2. `use skill` command
-3. loop if an effect is blocked / target is changed
-- entity: `both`
-- usageTiming: `etiOnSkillStart`
-4. loop effects to create `rawSkillPower` (`currentPower * skillMulti * each effectMulti`)
-- usageTiming: `etiOnSkillCalculation`
-5. use rawSkillPower to do the damage
-6. loop effects for turn end and reduction of turns of effects and reactions - trigger: `onTurnEnd`
-- usageTiming: `etiOnTurnEnd`
+- loop on entity: `enemy`
+  - usageTiming: `etiOnSkillStart`
+  - block (`ecaBlockDamage`, `ecaStopSkill`, `ecaBlockDebuffs`, )
+  - change target (`ecaChangeTarget`)
+- loop on entity: `self`
+  - usageTiming: `etiOnSkillCalculation`
+  - block (`ecaBlockBuffs`)
+  - decrease/increase power (`ecaIncreasePower`, `ecaDecreasePower`)
+  - decrease/increase damage (`ecaIncreaseOutgoingDamage`, , `ecaDecreaseOutgoingDamage`)
+- deal damage (entity function)
+  - loop on entity: `enemy`
+    - useageTiming: `etiOnIncmoingDamage`, `etiOnActualDamage`
+      - decrease/increase damage (`ecaDecreaseIncomingDamage`, `ecaIncreaseIncomingDamage`)
+- apply effects
+  - loop on entity: `enemy`
+    - useageTiming: `etiOnIncomingEffect`
+3. loop effects for turn end
+- loop on entity: `self`
+  - usageTiming: `etiOnTurnEnd`, `etiOnEffectRemoval`
+  - stats loop
 
-**Turn Process for use talisman**
-
-1. loop effects for turn start
-- entity: `both`
-- usageTiming: `etiOnTurnStart`
-2. `use talisman` command
-...
-
+- stats loop
+  - block (`ecaBlockHealing`)
+  - decrease/increase healing (`ecaIncreaseHealing`, `ecaDecreaseHealing`)
+  - decrease/increase health (`ecaHeal`, `ecaDoDamage`, `ecaTakeDamage`)
+  - decrease/increase strength (`ecaIncreaseStrength`)
+  - remove/add effects (`ecaRemoveEffect`, `ecaChangeEffectTurn`)
 
 # Effect necessities
 
 ```go
-type SkillEffect struct {
-  internalName     string
-  displayName      string
-  description      string
-  talentpointCosts int
-  probability      float32
-  effectType       effectType
-  category         effectCategory
-  execute          func()
-  checkCondition   func() bool
-  usageTiming      effectTiming
-  multi            float32
-}
-
+type SkillEffect struct {}
 
 type EffectCategory int
 const (
   ecaHeal effectCategory = iota
   ecaDoDamage
   ecaIncreasePower
+  ecaIncreaseStrength
   ecaIncreaseOutgoingDamage
   ecaDecreaseIncomingDamage
   ecaIncreaseHealing
-  ecaaBlockDebuffs
+  ecaAddEffect
+  ecaBlockDebuffs
   ecaBlockDamage
   ecaStopSkill
   ecaChangeTarget
@@ -68,11 +68,13 @@ const (
 type EffectTiming int
 const (
   etiOnTurnStart effectTiming = iota
-  etiOnSkillStart
+  etiOnIncmoingDamage
   etiOnSkillCalculation
   etiOnTurnEnd
   etiOnEffectRemoval
-  etiOnSkillEnd
+  etiOnActualDamage
+  etiOnIncomingEffect
+  etiOnSkillStart
 )
 
 type EffectType int
@@ -80,28 +82,25 @@ const (
   etyBuff EffectType = iota
   etyDebuff
 )
-
-type BattleState struct {
-  currentHealth        int
-  currentPower         int
-  totalBuffTurnsCount  int
-  totalBuffCount       int
-  totalDebuffTurnCount int
-  totalDebuffCount     int
-  activeEffectsList    []ActiveEffect
-  currentBattlePhase   BattlePhase
-}
-
-type ActiveEffect struct {
-  skillEffect SkillEffect
-  rawSkillPower  int
-  turnsLeft   int
-  source      Entity
-  target      Entity
-}
 ```
 
 # Calculations
+
+maybe calculate currentStrength at TurnStart and remove modifiedStrength
+
+- currentStrength => currentStrength from battleState
+- modifiedStrength => currentStrength +/-/* buff/debuff effects source Entity
+
+- rawSkillPower => modifiedStrength * skillDmgmulti
+- rawSkillDamage => 1 damage per 1 rawSkillPower
+- skillDamage => rawSkillDamage +/-/* buff/debuff effects source Entity
+- actualDamageTaken => skillDamage +/-/* buff/debuff effects target Entity
+
+- effectPower => based on effect (can be modifiedStrength)
+
+
+
+
 
 - basePower => currentPower from battleState
 - modifiedPower => basePower +/- buffs/debuffs source Entity
@@ -111,50 +110,6 @@ type ActiveEffect struct {
 - incomingDamage => outgoingDamage
 - actualDamageTaken => incomingDamage +/- buffs/debuffs target Entity
 
-example rawSkillPower:
-
-```
-// new player name difficulty health power speed
-// new skill <name> <dmgmulti> <duration> [effect effect effect...]
-
-new player John normal 125 15 8
-new skill Fireball 1.5 4
-
-1.5    * 15      = 23
-23     * 1,46    = 34
-```
-
-|          Category         |        Trigger        |      Description      |             Calc            | Value |
-|---------------------------|-----------------------|-----------------------|-----------------------------|-------|
-| SkillDamage               | -                     | 1 damage per 1 power  | rawSkillPower               | 23    |
-| ecaHeal                   | etiOnTurnEnd          | 2 Health per 3 power  | rawSkillPower / 3 * 2       | 16    |
-| ecaDoDamage               | etiOnSkillCalculation | -                     | -                           | -     |
-| ecaIncreasePower          | etiOnSkillCalculation | 0.1 multi per 5 power | rawSkillPower / 5 * 0,1 + 1 | 1,46  |
-| ecaIncreaseOutgoingDamage | etiOnSkillCalculation | 0.1 multi per 5 power | rawSkillPower / 5 * 0,1 + 1 | 1,46  |
-| ecaDecreaseIncomingDamage | etiOnSkillCalculation | 0.1 multi per 5 power | rawSkillPower / 5 * 0,1 + 1 | 1,46  |
-| ecaIncreaseHealing        | etiOnSkillCalculation | 0.1 multi per 3 power | rawSkillPower / 3 * 0,1 + 1 | 1,76  |
-| ecaaBlockDebuffs          | etiOnSkillStart       | -                     | -                           | -     |
-| ecaBlockDamage            | etiOnSkillStart       | -                     | -                           | -     |
-| ecaStopSkill              | etiOnSkillStart       | -                     | -                           | -     |
-| ecaChangeTarget           | etiOnSkillStart       | -                     | -                           | -     |
-| ecaRemoveEffect           | etiOnSkillStart       | 1 effect per 10 power | rawSkillPower / 10          | 2     |
-| ecaDecreasePower          | etiOnSkillCalculation | 0.1 multi per 5 power | rawSkillPower / 5 * 0,1 + 1 | 1,46  |
-| ecaBlockHealing           | etiOnSkillStart       | -                     | -                           | -     |
-| ecaTakeDamage             | etiOnTurnStart        | 2 Damage per 3 power  | rawSkillPower / 3 * 2       | 16    |
-| ecaDecreaseOutgoingDamage | etiOnSkillCalculation | 0.1 multi per 5 power | rawSkillPower / 5 * 0,1 + 1 | 1,46  |
-| ecaIncreaseIncomingDamage | etiOnSkillCalculation | 0.1 multi per 5 power | rawSkillPower / 5 * 0,1 + 1 | 1,46  |
-| ecaDecreaseHealing        | etiOnSkillCalculation | 0.1 multi per 5 power | rawSkillPower / 5 * 0,1 + 1 | 1,46  |
-| ecaBlockBuffs             | etiOnSkillStart       | -                     | -                           | -     |
-| ecaChangeEffectTurn       | etiOnSkillStart       | 1 turn per 10 power   | rawSkillPower / 10          | 2     |
-
-|        Trigger        |      Description      |
-|-----------------------|-----------------------|
-| etiOnSkillCalculation | 0.1 multi per 5 power |
-| etiOnTurnEnd          | 2 y per 3 power       |
-| etiOnTurnStart        | 2 y per 3 power       |
-| etiOnSkillStart       | 1 y per 10 power      |
-
-unless otherwise defined
 
 
 # Game Effects Table
@@ -164,17 +119,18 @@ unless otherwise defined
 
 |         Name         |        Trigger        |          Category         |     outputBase    |                          Description                           |
 |----------------------|-----------------------|---------------------------|-------------------|----------------------------------------------------------------|
-| heal1                | etiOnSkillEnd         | ecaHeal                   | OutgoingDamage    | Gain 50% of your Damage in Health                              |
-| heal2                | etiOnSkillEnd         | ecaHeal                   | ActualDamageTaken | Heal 50% of the Damage you take                                |
+| heal1                | etiOnActualDamage     | ecaHeal                   | OutgoingDamage    | Gain 50% of your Damage in Health                              |
+| heal2                | etiOnActualDamage     | ecaHeal                   | ActualDamageTaken | Heal 50% of the Damage you take                                |
 | heal3                | etiOnTurnStart        | ecaHeal                   | effectMulti       | Restores health at the start of each turn                      |
 | heal4                | etiOnTurnEnd          | ecaHeal                   | effectMulti       | Restores health at the end of each turn                        |
 | heal5                | etiOnEffectRemoval    | ecaHeal                   | effectMulti       | gain a massive heal when this effect expires or is removed     |
-| doDamage1            | etiOnSkillEnd         | ecaDoDamage               | ActualDamageTaken | deal 50% of the damage you Receive                             |
-| increasePower1       | etiOnSkillCalculation | ecaIncreasePower          | effectMulti       | Increase power                                                 |
-| increasePower2       | etiOnSkillCalculation | ecaIncreasePower          | effectMulti       | Power increases by 10% for each 10% of your missing health     |
-| increasePower3       | etiOnSkillCalculation | ecaIncreasePower          | effectMulti       | Power increases by 10% for each active buff you have           |
-| increasePower4       | etiOnSkillCalculation | ecaIncreasePower          | effectMulti       | Power increases by 20% when at full health                     |
-| increasePower5       | etiOnSkillCalculation | ecaIncreasePower          | effectMulti       | Power increases by 10% for each defeated boss                  |
+| doDamage1            | etiOnActualDamage     | ecaDoDamage               | ActualDamageTaken | deal 50% of the damage you Receive                             |
+| increaseStrength1    | etiOnTurnStart        | ecaIncreaseStrength       | effectMulti       | Increase strength                                              |
+| increaseStrength2    | etiOnTurnStart        | ecaIncreaseStrength       | effectMulti       | strength increases by 10% for each 10% of your missing health  |
+| increaseStrength3    | etiOnTurnStart        | ecaIncreaseStrength       | effectMulti       | strength increases by 10% for each active buff you have        |
+| increaseStrength4    | etiOnTurnStart        | ecaIncreaseStrength       | effectMulti       | strength increases by 20% when at full health                  |
+| increaseStrength5    | etiOnTurnStart        | ecaIncreaseStrength       | effectMulti       | strength increases by 10% for each defeated boss               |
+| increasePower1       | etiOnSkillCalculation | ecaIncreasePower          | effectMulti       | increase power                                                 |
 | increaseDamageDone1  | etiOnSkillCalculation | ecaIncreaseOutgoingDamage | effectMulti       | Adds bonus damage if enemy is low                              |
 | increaseDamageDone2  | etiOnSkillCalculation | ecaIncreaseOutgoingDamage | effectMulti       | 50% Chance to double the damage                                |
 | increaseDamageDone3  | etiOnSkillCalculation | ecaIncreaseOutgoingDamage | effectMulti       | Deal double the damage if the same skill is used repeatedly    |
@@ -209,6 +165,8 @@ unless otherwise defined
 | removeEffect9        | etiOnTurnStart        | ecaRemoveEffect           | -                 | remove the newest debuff                                       |
 | removeEffect10       | etiOnTurnStart        | ecaRemoveEffect           | -                 | remove the debuff with the most remaining turns                |
 | removeEffect11       | etiOnTurnStart        | ecaRemoveEffect           | -                 | remove the debuff with the least remaining turns               |
+| addEffect1           | etiOnTurnStart        | ecaAddEffect              | -                 | add a random buff                                              |
+| addEffect2           | etiOnTurnEnd          | ecaAddEffect              | -                 | add a random buff                                              |
 
 
 ## Debuffs (Enemy)
@@ -251,6 +209,9 @@ unless otherwise defined
 | RemoveEffect1        | etiOnTurnStart        | ecaRemoveEffect           | -              | remove a random Buff                                                  |
 | RemoveEffect2        | etiOnSkillStart       | ecaRemoveEffect           | -              | remove a random Buff when attacked                                    |
 | RemoveEffect3        | etiOnSkillStart       | ecaRemoveEffect           | -              | remove a random debuff of the enemy when attacked                     |
+| addEffect1           | etiOnTurnStart        | ecaAddEffect              | -              | add a random debuff                                                   |
+| addEffect2           | etiOnTurnEnd          | ecaAddEffect              | -              | add a random debuff                                                   |
+
 
 ## Talismans (One-time Use Items)
 

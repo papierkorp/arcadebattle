@@ -41,7 +41,7 @@ type GameTextStatus struct {
 type GameTextStatusPlayer struct {
 	Name                   string `json:"name"`
 	Health                 string `json:"health"`
-	Power                  string `json:"power"`
+	Strength               string `json:"strength"`
 	Speed                  string `json:"speed"`
 	Skilllist              string `json:"skilllist"`
 	Talentpoints_Total     string `json:"talentpointstotal"`
@@ -56,7 +56,7 @@ type GameTextStatusPlayer struct {
 type GameTextStatusBoss struct {
 	Name             string `json:"name"`
 	Health           string `json:"health"`
-	Power            string `json:"power"`
+	Strength         string `json:"strength"`
 	Speed            string `json:"speed"`
 	Skilllist        string `json:"skilllist"`
 	ActiveEffectList string `json:"activeeffectlist"`

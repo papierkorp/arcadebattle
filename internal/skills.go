@@ -179,7 +179,7 @@ func (s *Skill) Use(skillSource string) error {
 	effectIsBlocked := false
 
 	for _, effect := range s.effectList {
-		if effect.usageTiming == etiOnSkillStart {
+		if effect.usageTiming == etiOnIncmoingDamage {
 			if effect.category == ecaBlockBuffs {
 				// & s.effect == buff
 				effectIsBlocked = true
@@ -277,14 +277,15 @@ func (s *Skill) Use(skillSource string) error {
 
 func calculateRawSkillPower(s *Skill, source Entity, target Entity) (int, error) {
 	//todo: return error
-	var basePower float32 = float32(source.GetBattleState().currentPower)
+	var basePower float32 = float32(source.GetBattleState().currentStrength)
 	modifiedPower := basePower
 
 	for _, effect := range s.effectList {
 		if effect.usageTiming == etiOnSkillCalculation {
 			if effect.category == ecaIncreasePower || effect.category == ecaDecreasePower {
 				if rand.Float32() <= effect.probability {
-					modifiedPower = float32(basePower/effect.powerRatio*effect.baseValue + 1)
+					// modifiedPower = float32(basePower/effect.powerRatio*effect.baseValue + 1)
+					modifiedPower = 1.0
 				}
 			}
 		}
@@ -294,7 +295,8 @@ func calculateRawSkillPower(s *Skill, source Entity, target Entity) (int, error)
 		if effect.skillEffect.usageTiming == etiOnSkillCalculation {
 			if effect.skillEffect.category == ecaIncreasePower || effect.skillEffect.category == ecaDecreasePower {
 				if rand.Float32() <= effect.skillEffect.probability {
-					modifiedPower = float32(basePower/effect.skillEffect.powerRatio*effect.skillEffect.baseValue + 1)
+					// modifiedPower = float32(basePower/effect.skillEffect.powerRatio*effect.skillEffect.baseValue + 1)
+					modifiedPower = 1.0
 				}
 			}
 		}
@@ -318,7 +320,8 @@ func calculateOutgoingDamage(s *Skill, source Entity, calculatedDamage int) (int
 		if effect.skillEffect.usageTiming == etiOnSkillCalculation {
 			if effect.skillEffect.category == ecaIncreasePower || effect.skillEffect.category == ecaDecreasePower {
 				if rand.Float32() <= effect.skillEffect.probability {
-					outgoingDamage = float32(basePower/5*effect.skillEffect.baseValue + 1)
+					// outgoingDamage = float32(basePower/5*effect.skillEffect.baseValue + 1)
+					outgoingDamage = 1
 				}
 			}
 		}
@@ -333,7 +336,8 @@ func calculateActualDamageTaken(s *Skill, target Entity, incomingDamage int) (in
 		if effect.skillEffect.usageTiming == etiOnSkillCalculation {
 			if effect.skillEffect.category == ecaIncreasePower || effect.skillEffect.category == ecaDecreasePower {
 				if rand.Float32() <= effect.skillEffect.probability {
-					modifiedPower = float32(basePower/5*effect.skillEffect.baseValue + 1)
+					// actualDamageTaken = float32(basePower/5*effect.skillEffect.baseValue + 1)
+					actualDamageTaken = 1.0
 				}
 			}
 		}
