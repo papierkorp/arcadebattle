@@ -65,17 +65,6 @@ const (
   ecaChangeEffectTurn
 )
 
-type EffectTiming int
-const (
-  etiOnTurnStart effectTiming = iota
-  etiOnIncmoingDamage
-  etiOnSkillCalculation
-  etiOnTurnEnd
-  etiOnEffectRemoval
-  etiOnActualDamage
-  etiOnIncomingEffect
-  etiOnSkillStart
-)
 
 type EffectType int
 const (
@@ -86,33 +75,83 @@ const (
 
 # Calculations
 
-maybe calculate currentStrength at TurnStart and remove modifiedStrength
-
-- currentStrength => currentStrength from battleState
-- modifiedStrength => currentStrength +/-/* buff/debuff effects source Entity
+- rawStrength => strength from stats
+- modifiedStrength => currentStrength +/- buff/debuff effects - source Entity
 
 - rawSkillPower => modifiedStrength * skillDmgmulti
-- rawSkillDamage => 1 damage per 1 rawSkillPower
-- skillDamage => rawSkillDamage +/-/* buff/debuff effects source Entity
-- actualDamageTaken => skillDamage +/-/* buff/debuff effects target Entity
+- modifiedSkillPower => rawSkillPower +/- buff/debuff effects - source Entity
 
-- effectPower => based on effect (can be modifiedStrength)
+- rawSkillImpact => 1 impact per 1 rawSkillPower
+- modifiedSkillImpact => rawSkillImpact +/- buff/debuff - source Entity
 
+- rawEffectPower => based on effect (e.g. increase by 10% = modifiedStrength*0,1)
+- modifiedEffectPower => rawEffectPower +/- buff/debuff - source Entity (e.g. increaseHealing)
 
+- rawEffectImpact => 1 impact per 1 rawEffectPower
+- modifiedEffectImpact => ??? (how to prevent infinite loop)
 
+- actualSkillDamageTaken => modifiedSkillImpact +/-/* buff/debuff effects - target Entity
+- actualEffectDamageTaken
+- actualEffectHealTaken
 
+```
+e.g. Gain 50% of your Damage in Health + Healing effects are 10% stronger
 
-- basePower => currentPower from battleState
-- modifiedPower => basePower +/- buffs/debuffs source Entity
-- rawSkillPower => modifiedPower * skillDmgmulti
-- calculatedDamage => 1 damage per 1 rawSkillPower
-- outgoingDamage => calculatedDamage +/- buffs/debuffs source Entity
-- incomingDamage => outgoingDamage
-- actualDamageTaken => incomingDamage +/- buffs/debuffs target Entity
-
-
+actualSkillDamageTaken = 50
+rawEffectPower = 50% of actualSkillDamageTaken (50) => 25
+modifiedEffectPower = 10% of rawEffectPower (25) => 2.5 = 3 + rawEffectPower (25) => 28 (25*1,1)
+```
 
 # Game Effects Table
+
+
+**Trigger**
+
+- OnTurnStart
+- OnIncmoingDamage
+- OnSkillCalculation
+- OnTurnEnd
+- OnEffectRemoval
+- OnActualDamage
+- OnIncomingEffect
+- OnSkillStart
+
+**Condition**
+
+- current_health
+- totalBuffTurnsCount
+- totalBuffCount
+- totalDebuffTurnCount
+- totalDebuffCount
+
+**affected Value**
+
+- self currentHealth
+- enemy currentHealth (deal damage)
+- self modifiedStrength
+- self modifiedSkillPower
+- self modifiedSkillDamage
+- enemy modifiedSkillDamage
+- self effectHeal
+
+**effectValue**
+
+=> effectValueBase + effectValueCalculation
+
+- rawStrength
+  - 5 damage/heal
+- modifiedStrength
+- rawSkillPower
+- modifiedSkillPower
+- rawSkillDamage
+- modifiedSkillDamage
+- actualDamageTaken
+- maxHealth
+- currentHealth
+- totalBuffTurnsCount 
+- totalBuffCount      
+- totalDebuffTurnCount
+- totalDebuffCount    
 
 
 ## Buffs (Self)
