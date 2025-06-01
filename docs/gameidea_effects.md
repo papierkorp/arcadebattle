@@ -81,18 +81,16 @@ const (
 - rawSkillPower => modifiedStrength * skillDmgmulti
 - modifiedSkillPower => rawSkillPower +/- buff/debuff effects - source Entity
 
-- rawSkillImpact => 1 impact per 1 rawSkillPower
-- modifiedSkillImpact => rawSkillImpact +/- buff/debuff - source Entity
+- rawSkillDamage => 1 damage per 1 rawSkillPower
+- modifiedSkillDamage => rawSkillDamage +/- buff/debuff - source Entity
 
-- rawEffectPower => based on effect (e.g. increase by 10% = modifiedStrength*0,1)
-- modifiedEffectPower => rawEffectPower +/- buff/debuff - source Entity (e.g. increaseHealing)
+- rawEffectValue => based on effect (e.g. increase by 10% = modifiedStrength*0,1)
+- modifiedEffectDamage => rawEffectValue +/- buff/debuff - source Entity (e.g. ???)
+- modifiedEffectHeal => rawEffectValue +/- buff/debuff - source Entity (e.g. increaseHealing)
 
-- rawEffectImpact => 1 impact per 1 rawEffectPower
-- modifiedEffectImpact => ??? (how to prevent infinite loop)
-
-- actualSkillDamageTaken => modifiedSkillImpact +/-/* buff/debuff effects - target Entity
-- actualEffectDamageTaken
-- actualEffectHealTaken
+- actualSkillDamageTaken => modifiedSkillDamage +/-/* buff/debuff effects - target Entity
+- actualEffectDamageTaken => modifiedEffectDamage +/-/* buff/debuff effects - target Entity
+- actualEffectHealTaken => modifiedEffectHeal +/-/* buff/debuff effects - target Entity
 
 ```
 e.g. Gain 50% of your Damage in Health + Healing effects are 10% stronger
