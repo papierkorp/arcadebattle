@@ -78,13 +78,10 @@ const (
 - rawStrength => strength from stats
 - modifiedStrength => currentStrength +/- buff/debuff effects - source Entity
 
-- rawSkillPower => modifiedStrength * skillDmgmulti
-- modifiedSkillPower => rawSkillPower +/- buff/debuff effects - source Entity
-
-- rawSkillDamage => 1 damage per 1 rawSkillPower
+- rawSkillDamage => modifiedStrength * skillDmgmulti (1 damage per 1 rawSkillDamage)
 - modifiedSkillDamage => rawSkillDamage +/- buff/debuff - source Entity
 
-- rawEffectValue => based on effect (e.g. increase by 10% = modifiedStrength*0,1)
+- rawEffectValue => based on effect (e.g. increase by 10% = modifiedStrengthx0,1 / 1 damage/heal per 1 value)
 - modifiedEffectDamage => rawEffectValue +/- buff/debuff - source Entity (e.g. ???)
 - modifiedEffectHeal => rawEffectValue +/- buff/debuff - source Entity (e.g. increaseHealing)
 
