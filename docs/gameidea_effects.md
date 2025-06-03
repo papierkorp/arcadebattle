@@ -99,27 +99,12 @@ modifiedEffectPower = 10% of rawEffectPower (25) => 2.5 = 3 + rawEffectPower (25
 
 # Game Effects Table
 
-
-**Trigger**
-
-- OnTurnStart
-- OnIncmoingDamage
-- OnSkillCalculation
-- OnTurnEnd
-- OnEffectRemoval
-- OnActualDamage
-- OnIncomingEffect
-- OnSkillStart
-
-**Condition**
-
-- current_health
-- totalBuffTurnsCount
-- totalBuffCount
-- totalDebuffTurnCount
-- totalDebuffCount
-
 **affected Value**
+
+- currentHealth
+- modifiedEffectDamage
+- actualSkillDamageTaken
+- actualEffectDamageTaken
 
 - buff
   - currentHealth
@@ -127,32 +112,40 @@ modifiedEffectPower = 10% of rawEffectPower (25) => 2.5 = 3 + rawEffectPower (25
   - rawSkillDamage
   - rawEffectValue
   - rawEffectValue
+  - randomBuffTurns
+  - allBuffsTurns
+  - randomDebuffTurns
+  - allDebuffsTurns
 - debuff
   - currentHealth
   - rawStrength
   - rawSkillDamage
   - rawEffectValue
   - rawEffectValue
+  - randomBuffTurns
+  - allBuffsTurns
+  - randomDebuffTurns
+  - allDebuffsTurns
+
+**Trigger**
+
+- onDealDamage
+- onDamageTaken
+- onTurnStart
+- onTurnEnd
+- onEffectRemoved
+
+
+**Condition**
+
 
 
 **effectValue**
 
-=> effectValueBase + effectValueCalculation
+- x% of modifiedSkillDamage
+- x% of actualSkillDamageTaken/actualEffectDamageTaken
+- x per modifiedStrength
 
-- rawStrength
-  - 5 damage/heal
-- modifiedStrength
-- rawSkillPower
-- modifiedSkillPower
-- rawSkillDamage
-- modifiedSkillDamage
-- actualDamageTaken
-- maxHealth
-- currentHealth
-- totalBuffTurnsCount 
-- totalBuffCount      
-- totalDebuffTurnCount
-- totalDebuffCount    
 
 
 ## Buffs (Self)
