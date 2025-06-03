@@ -99,33 +99,16 @@ modifiedEffectPower = 10% of rawEffectPower (25) => 2.5 = 3 + rawEffectPower (25
 
 # Game Effects Table
 
+**target**
+
+- self
+- enemy
+
 **affected Value**
 
 - currentHealth
-- modifiedEffectDamage
-- actualSkillDamageTaken
-- actualEffectDamageTaken
+- rawStrength
 
-- buff
-  - currentHealth
-  - rawStrength
-  - rawSkillDamage
-  - rawEffectValue
-  - rawEffectValue
-  - randomBuffTurns
-  - allBuffsTurns
-  - randomDebuffTurns
-  - allDebuffsTurns
-- debuff
-  - currentHealth
-  - rawStrength
-  - rawSkillDamage
-  - rawEffectValue
-  - rawEffectValue
-  - randomBuffTurns
-  - allBuffsTurns
-  - randomDebuffTurns
-  - allDebuffsTurns
 
 **Trigger**
 
@@ -134,18 +117,28 @@ modifiedEffectPower = 10% of rawEffectPower (25) => 2.5 = 3 + rawEffectPower (25
 - onTurnStart
 - onTurnEnd
 - onEffectRemoved
+- onCalculation
 
 
 **Condition**
 
-
+- whenAtFullHealth
+- whenEnemyAtLowHealth
 
 **effectValue**
 
+currentHealth
 - x% of modifiedSkillDamage
 - x% of actualSkillDamageTaken/actualEffectDamageTaken
 - x per modifiedStrength
+- x% of actualSkillDamageTaken
+- x% of actualEffectDamageTaken
 
+rawStrength
+- x% of rawStrength
+- x(%) for each 10% of missing Health
+- x(%) for each active Buff
+- x(%) for each defeated Boss
 
 
 ## Buffs (Self)
@@ -274,3 +267,67 @@ modifiedEffectPower = 10% of rawEffectPower (25) => 2.5 = 3 + rawEffectPower (25
 | Time Bomb          | misc | Effect only does damage when it naturally runs out of turns (no removal) but increase the damage for every turn it passed |
 | Health Siphon      | misc | Each turn, steal a small amount of health from the enemy                                                                  |
 | influence Talisman | misc | block talisman..                                                                                                          |
+
+
+# tmp
+
+
+                          Description                           |
+----------------------------------------------------------------|
+ Adds bonus damage if enemy is low                              |
+ 50% Chance to double the damage                                |
+ Deal double the damage if the same skill is used repeatedly    |
+ Receive 50% less damage                                        |
+ Receive 10% less Damage from repeated sources                  |
+ Healing effects are 10% stronger for each debuff you have      |
+ Healing effects are 100% stronger when below 30% health        |
+ Healing effects are 10% stronger for each active buff          |
+ Prevents new debuffs from being applied                        |
+ 50% Chance to block an incoming Debuff                         |
+ Block the next 3 debuffs                                       |
+ Block debuffs that reduce power/damage                         |
+ Block debuffs that cause damage                                |
+ Block debuffs that prevent healing                             |
+ Block debuffs that stop skills/change targets                  |
+ Block buff prevention and effect manipulation                  |
+ 50% Chance to dont get damage                                  |
+ block damage if below 5% health                                |
+ block damage if the enemy used the same skill as a turn before |
+ 50% Chance to reflect the damage                               |
+ 50% Chance to reflect the effects                              |
+ reflect the damage if below 5% health                          |
+ remove a random debuff                                         |
+ remove a random buff of the enemy when attacked                |
+ remove a random debuff when attacked                           |
+ remove a random debuff that reduce power/damage                |
+ remove a random debuff that cause damage                       |
+ remove a random debuff that that prevent healing               |
+ remove a random debuff that that stop skills/change targets    |
+ remove the oldest debuff                                       |
+ remove the newest debuff                                       |
+ remove the debuff with the most remaining turns                |
+ remove the debuff with the least remaining turns               |
+ add a random buff                                              |
+ add a random buff                                              |
+
+
+|                              Description                              |
+|-----------------------------------------------------------------------|
+| Reduce targets Power                                                  |
+| 50% Chance to block heals                                             |
+| Immediately kill the enemy while below 10% health                     |
+| Applies a damaging effect that deals damage at the start of each turn |
+| When cleansed, explodes                                               |
+| Deals damage based on maximum health                                  |
+| Reduces target's damage output by 50%                                 |
+| Receive 50% more damage                                               |
+| Reduces all healing received by 50%                                   |
+| Prevents the target from receiving buffs                              |
+| Prevents the target from receiving healing effects                    |
+| Prevents the target from receiving ecaIncreaseOutgoingDamage effects  |
+| 50% Chance to attack itself                                           |
+| remove a random Buff                                                  |
+| remove a random Buff when attacked                                    |
+| remove a random debuff of the enemy when attacked                     |
+| add a random debuff                                                   |
+| add a random debuff                                                   |
