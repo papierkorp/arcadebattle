@@ -104,10 +104,15 @@ modifiedEffectPower = 10% of rawEffectPower (25) => 2.5 = 3 + rawEffectPower (25
 - self
 - enemy
 
+
+
 **affected Value**
 
 - currentHealth
 - rawStrength
+- rawEffectValue
+- activeEffectsList
+
 
 
 **Trigger**
@@ -118,12 +123,18 @@ modifiedEffectPower = 10% of rawEffectPower (25) => 2.5 = 3 + rawEffectPower (25
 - onTurnEnd
 - onEffectRemoved
 - onCalculation
+- onNewEffectApplied
 
 
 **Condition**
 
 - whenAtFullHealth
 - whenEnemyAtLowHealth
+- whenBelow(x%)Health
+- x(%) chance
+- whenSameSkillWasUsedRoundBefore
+
+
 
 **effectValue**
 
@@ -131,14 +142,30 @@ currentHealth
 - x% of modifiedSkillDamage
 - x% of actualSkillDamageTaken/actualEffectDamageTaken
 - x per modifiedStrength
-- x% of actualSkillDamageTaken
-- x% of actualEffectDamageTaken
+- block damage
+- reflect damage
 
 rawStrength
 - x% of rawStrength
 - x(%) for each 10% of missing Health
 - x(%) for each active Buff
 - x(%) for each defeated Boss
+
+rawEffectValue
+- x% for each active debuff
+- x% for each active buff
+- x2 modifier
+
+activeEffectsList
+- block Debuff
+- block next x debuffs
+- block specific debuff
+  - reduce power/damage
+  - cause damage
+  - prevent healing
+  - stop skills/change targets
+  - block buff prevention/effect manipulation
+- add a random buff
 
 
 ## Buffs (Self)
