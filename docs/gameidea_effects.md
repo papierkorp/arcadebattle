@@ -124,6 +124,7 @@ modifiedEffectPower = 10% of rawEffectPower (25) => 2.5 = 3 + rawEffectPower (25
 - onEffectRemoved
 - onCalculation
 - onNewEffectApplied
+- onEnemySkillUsed
 
 
 **Condition**
@@ -166,6 +167,7 @@ activeEffectsList
   - stop skills/change targets
   - block buff prevention/effect manipulation
 - add a random buff
+- remove a random debuff
 
 
 ## Buffs (Self)
