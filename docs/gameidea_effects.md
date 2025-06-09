@@ -106,15 +106,6 @@ modifiedEffectPower = 10% of rawEffectPower (25) => 2.5 = 3 + rawEffectPower (25
 
 
 
-**affected Value**
-
-- currentHealth
-- rawStrength
-- rawEffectValue
-- activeEffectsList
-
-
-
 **Trigger**
 
 - onDealDamage
@@ -125,6 +116,8 @@ modifiedEffectPower = 10% of rawEffectPower (25) => 2.5 = 3 + rawEffectPower (25
 - onCalculation
 - onNewEffectApplied
 - onEnemySkillUsed
+- onSkillUsed
+
 
 
 **Condition**
@@ -137,16 +130,20 @@ modifiedEffectPower = 10% of rawEffectPower (25) => 2.5 = 3 + rawEffectPower (25
 
 
 
-**effectValue**
+**Action**
 
-currentHealth
-- x% of modifiedSkillDamage
-- x% of actualSkillDamageTaken/actualEffectDamageTaken
-- x per modifiedStrength
-- block damage
-- reflect damage
+- increase/decrease modifiedEffectDamage
+- increase/decrease modifiedEffectHeal
+- increase/decrease modifiedSkillDamage
+- apply modifiedEffectDamage currentHealth
+- apply modifiedEffectHeal to currentHealth
+- reflect modifiedSkillDamage/modifiedEffectDamage
 
-rawStrength
+
+
+**affected Value + effectValue**
+
+modifiedStrength
 - x% of rawStrength
 - x(%) for each 10% of missing Health
 - x(%) for each active Buff
@@ -156,18 +153,44 @@ rawEffectValue
 - x% for each active debuff
 - x% for each active buff
 - x2 modifier
+- x% of modifiedSkillDamage
+- x% of actualSkillDamageTaken/actualEffectDamageTaken
+- x per modifiedStrength
+- x per maxHealth
+
+modifiedEffectDamage/modifiedSkillDamage
+- x%
+- x% for each active debuff
+- x% for each active buff
+- x2 modifier
+- x% of modifiedSkillDamage
+- x% of actualSkillDamageTaken/actualEffectDamageTaken
+- x per modifiedStrength
+- set to 0
+- x per maxHealth
+
+modifiedEffectHeal
+- set to 0
+- x%
+- x% for each active debuff
+- x% for each active buff
+- x2 modifier
 
 activeEffectsList
-- block Debuff
-- block next x debuffs
-- block specific debuff
+- block next x debuffs/buffs
+- block specific debuff/buffs
   - reduce power/damage
   - cause damage
   - prevent healing
   - stop skills/change targets
   - block buff prevention/effect manipulation
-- add a random buff
-- remove a random debuff
+- add a random debuff/buff
+- remove a random debuff/buff
+- remove oldest debuff/buff
+- remove neweset debuff/buff
+- remove debuff/buff with most remaining turns
+- remove debuff/buff with least remaining turns
+
 
 
 ## Buffs (Self)
