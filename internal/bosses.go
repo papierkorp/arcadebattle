@@ -246,41 +246,7 @@ func (b *Boss) SetCurrentSkillUsed(skill *Skill) {
 	b.battlestate.currentSkillUsed = skill
 }
 
-// -------------------------------------------------------------------------
-// -------------------------------handle state------------------------------
-// -------------------------------------------------------------------------
-
-func checkCurrentBoss() error {
-	stats := Stats{
-		health:   0,
-		strength: 0.0,
-		speed:    0,
-	}
-	boss, err := createBoss(stats)
-	if err != nil {
-		internalErrMsg := GetGameTextError("internal")
-		invalidBossMsg := GetGameTextError("invalidboss")
-		return fmt.Errorf(internalErrMsg + ": " + invalidBossMsg)
-	}
-
-	currentBoss = *boss
-	return nil
-}
-
-func leaveBattle() {
-	currentPlayer.state = idle
-	goodbyeMsg := GetGameTextGameMessage("goodbyebattle")
-	promptMsg := GetGameTextGameMessage("prompt")
-
-	fmt.Println(goodbyeMsg)
-	rl.SetPrompt(promptMsg)
-}
-
-// -------------------------------------------------------------------------
-// -------------------------------boss ai------------------------------
-// -------------------------------------------------------------------------
-
-func bossTurn() {
+func (b *Boss) Turn() {
 	separator2Msg := GetGameTextGameMessage("separator2")
 	fmt.Println(separator2Msg)
 	fmt.Print("boss turn\n")
@@ -315,3 +281,37 @@ func bossTurn() {
 	updateTurnOrderCurrentTurn()
 	checkCurrentTurn()
 }
+
+// -------------------------------------------------------------------------
+// -------------------------------handle state------------------------------
+// -------------------------------------------------------------------------
+
+func checkCurrentBoss() error {
+	stats := Stats{
+		health:   0,
+		strength: 0.0,
+		speed:    0,
+	}
+	boss, err := createBoss(stats)
+	if err != nil {
+		internalErrMsg := GetGameTextError("internal")
+		invalidBossMsg := GetGameTextError("invalidboss")
+		return fmt.Errorf(internalErrMsg + ": " + invalidBossMsg)
+	}
+
+	currentBoss = *boss
+	return nil
+}
+
+func leaveBattle() {
+	currentPlayer.state = idle
+	goodbyeMsg := GetGameTextGameMessage("goodbyebattle")
+	promptMsg := GetGameTextGameMessage("prompt")
+
+	fmt.Println(goodbyeMsg)
+	rl.SetPrompt(promptMsg)
+}
+
+// -------------------------------------------------------------------------
+// -------------------------------boss ai------------------------------
+// -------------------------------------------------------------------------

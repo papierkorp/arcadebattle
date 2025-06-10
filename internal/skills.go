@@ -193,9 +193,9 @@ func (s *Skill) Use(skillSource string) error {
 		return nil
 	}
 
-	//-------------- Calculate Power --------------
+	//-------------- Calculate Strength --------------
 
-	rawSkillPower, err := calculateRawSkillPower(s, source, target)
+	rawStrength, err := calculateModifiedStrength(s, source, target)
 
 	if err != nil {
 		internalErrorMsg := GetGameTextError("internal")
@@ -220,7 +220,7 @@ func (s *Skill) Use(skillSource string) error {
 		if !isBlocked {
 			newEffect := ActiveEffect{
 				skillEffect:   effect,
-				rawSkillPower: rawSkillPower,
+				rawSkillPower: rawStrength,
 				turnsLeft:     s.duration,
 				source:        source,
 				target:        target,
@@ -229,17 +229,17 @@ func (s *Skill) Use(skillSource string) error {
 			fmt.Println("effect.effectType: ", effect.effectType)
 
 			if effect.effectType == etyBuff {
-				source.SetLastRawSkillPowerUsed(rawSkillPower)
+				source.SetLastRawSkillPowerUsed(rawStrength)
 				source.AddActiveEffect(newEffect)
 			} else if effect.effectType == etyDebuff {
-				source.SetLastRawSkillPowerUsed(rawSkillPower)
+				source.SetLastRawSkillPowerUsed(rawStrength)
 				target.AddActiveEffect(newEffect)
 			}
 		}
 
 		//-------------- Handle Damage --------------
 
-		calculatedDamage, err := calculateCalculatedDamage(s, rawSkillPower)
+		calculatedDamage, err := calculateCalculatedDamage(s, rawStrength)
 
 		if err != nil {
 			internalErrorMsg := GetGameTextError("internal")
@@ -268,14 +268,14 @@ func (s *Skill) Use(skillSource string) error {
 		source.SetLastOutgoingDamage(outgoingDamage)
 		target.SetLastIncomingDamage(incomingDamage)
 		target.SetLastActualDamageTaken(actualDamageTaken)
-		target.ApplyDamage(rawSkillPower)
+		target.ApplyDamage(rawStrength)
 
 	}
 
 	return nil
 }
 
-func calculateRawSkillPower(s *Skill, source Entity, target Entity) (int, error) {
+func calculateModifiedStrength(s *Skill, source Entity, target Entity) (int, error) {
 	//todo: return error
 	var basePower float32 = float32(source.GetBattleState().currentStrength)
 	modifiedPower := basePower

@@ -81,9 +81,9 @@ func checkCurrentTurn() {
 		}
 
 		if turnType == "player" {
-			playerTurn()
+			currentPlayer.Turn()
 		} else {
-			bossTurn()
+			currentBoss.Turn()
 		}
 	} else {
 		internal := GetGameTextError("internal")

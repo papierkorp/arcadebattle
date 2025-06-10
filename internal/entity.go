@@ -13,6 +13,7 @@ type Entity interface {
 
 	// BattleState
 	GetBattleState() *BattleState
+	Turn()
 	SetCurrentHealth(health int)
 	SetTotalTurnsBuffs(turns int)
 	SetTotalTurnsDebuff(turns int)

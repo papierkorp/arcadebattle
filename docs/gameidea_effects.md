@@ -76,26 +76,33 @@ const (
 # Calculations
 
 - rawStrength => strength from stats
-- modifiedStrength => currentStrength +/- buff/debuff effects - source Entity
-
+- modifiedStrength => currentStrength(rawStrength) +/- buff/debuff effects - source Entity
 - rawSkillDamage => modifiedStrength * skillDmgmulti (1 damage per 1 rawSkillDamage)
 - modifiedSkillDamage => rawSkillDamage +/- buff/debuff - source Entity
 
-- rawEffectValue => based on effect (e.g. increase by 10% = modifiedStrength x 0,1 / 1 damage/heal per 1 value)
-- modifiedEffectDamage => rawEffectValue +/- buff/debuff - source Entity (e.g. ???)
-- modifiedEffectHeal => rawEffectValue +/- buff/debuff - source Entity (e.g. increaseHealing)
+- rawEffectDamage => based on effect or 0
+- rawEffectHeal => based on effect or 0
+- modifiedEffectDamage => rawEffectDamage +/- buff/debuff - source Entity
+- modifiedEffectHeal => rawEffectHeal +/- buff/debuff - source Entity
 
-- actualSkillDamageTaken => modifiedSkillDamage
-- actualEffectDamageTaken => modifiedEffectDamage
-- actualEffectHealTaken => modifiedEffectHeal
+- rawTalismanDamage => based on talisman or 0
+- rawTalismanHeal => based on talisman or 0
+- modifiedTalismanDamage => rawTalismanDamage +/- buff/debuff - source Entity
+- modifiedTalismanHeal => rawTalismanDamage +/- buff/debuff - source Entity
 
-```
-e.g. Gain 50% of your Damage in Health + Healing effects are 10% stronger
+- fullTurnDamage = modifiedSkillDamage + modifiedEffectDamage + modifiedTalismanDamage
+- fullTurnHeal = modifiedEffectHeal + modifiedTalismanHeal
 
-actualSkillDamageTaken = 50
-rawEffectPower = 50% of actualSkillDamageTaken (50) => 25
-modifiedEffectPower = 10% of rawEffectPower (25) => 2.5 = 3 + rawEffectPower (25) => 28 (25*1,1)
-```
+- actualDamageTaken => fullTurnDamage +/- buff/debuff - target Entity
+- actualHealTaken => fullTurnHeal +/- buff/debuff - target Entity
+
+-----
+
+this means i have
+
+1 fullTurnDamage Function which is triggered at onSkillUse
+1 fullTurnHeal Function
+
 
 # Game Effects Table
 
@@ -106,17 +113,22 @@ modifiedEffectPower = 10% of rawEffectPower (25) => 2.5 = 3 + rawEffectPower (25
 
 
 
+**turn**
+- own
+- enemy
+
+
+
 **Trigger**
 
-- onDealDamage
-- onDamageTaken
-- onTurnStart
-- onTurnEnd
-- onEffectRemoved
-- onCalculation
-- onNewEffectApplied
-- onEnemySkillUsed
-- onSkillUsed
+- onSkillUsed (Skill.Use)
+- onApplyDamage (target.ApplyDamage)
+- onApplyHealing (target.ApplyHealing)
+- onTurnStart (target.Turn)
+- onTurnEnd (target.Turn)
+- onCalculation (Skill.Use)
+- onRemoveActiveEffect (target.RemoveActiveEffect)
+- onAddActiveEffect (target.AddActiveEffect)
 
 
 
@@ -132,29 +144,42 @@ modifiedEffectPower = 10% of rawEffectPower (25) => 2.5 = 3 + rawEffectPower (25
 
 **Action**
 
+- setRawEffectDamage
+- setRawEffectHeal
+
+
+
+```
 - increase/decrease modifiedEffectDamage
 - increase/decrease modifiedEffectHeal
 - increase/decrease modifiedSkillDamage
 - apply modifiedEffectDamage currentHealth
 - apply modifiedEffectHeal to currentHealth
 - reflect modifiedSkillDamage/modifiedEffectDamage
-
+```
 
 
 **affected Value + effectValue**
 
+rawEffectDamage/rawEffectHeal
+- x% of fullTurnDamage
+
+
+
+
+```
 modifiedStrength
 - x% of rawStrength
 - x(%) for each 10% of missing Health
 - x(%) for each active Buff
 - x(%) for each defeated Boss
 
-rawEffectValue
+rawEffectDamage/rawEffectHeal
 - x% for each active debuff
 - x% for each active buff
 - x2 modifier
-- x% of modifiedSkillDamage
-- x% of actualSkillDamageTaken/actualEffectDamageTaken
+
+- x% of actualDamageTaken
 - x per modifiedStrength
 - x per maxHealth
 
@@ -164,7 +189,7 @@ modifiedEffectDamage/modifiedSkillDamage
 - x% for each active buff
 - x2 modifier
 - x% of modifiedSkillDamage
-- x% of actualSkillDamageTaken/actualEffectDamageTaken
+- x% of actualDamageTaken
 - x per modifiedStrength
 - set to 0
 - x per maxHealth
@@ -190,7 +215,7 @@ activeEffectsList
 - remove neweset debuff/buff
 - remove debuff/buff with most remaining turns
 - remove debuff/buff with least remaining turns
-
+```
 
 
 ## Buffs (Self)
